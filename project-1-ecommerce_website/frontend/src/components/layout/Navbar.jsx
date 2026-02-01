@@ -16,20 +16,35 @@ export const Navbar = () => {
   return (
     <div id="nav-container">
       <ul className="nav-title-box">
-        {navTitle.map((e, i) => {
-          let { title, toPath } = e;
-          return (
-            <li key={i} className="nav-title-list">
-              <NavLink to={toPath}>{title}</NavLink>
-            </li>
-          );
-        })}
+        {/* Left Navigation */}
+        <div className="nav-left">
+          {navTitle.map((e, i) => {
+            let { title, toPath } = e;
+            return (
+              <li key={i} className="nav-title-list">
+                <NavLink
+                  to={toPath}
+                  className={({ isActive }) =>
+                    isActive ? "nav-link active" : "nav-link"
+                  }
+                >
+                  {" "}
+                  {title}
+                </NavLink>
+              </li>
+            );
+          })}
+        </div>
 
-        {user && ( <CartBtn/> )}
+        {/* Right Controls */}
 
-        <li className="nav-title-list auth-controls">
-          <AuthControls user={user}/>
-        </li>
+        <div className="nav-right">
+          {user && <CartBtn />}
+
+          <li className="nav-title-list auth-controls">
+            <AuthControls user={user} />
+          </li>
+        </div>
       </ul>
     </div>
   );

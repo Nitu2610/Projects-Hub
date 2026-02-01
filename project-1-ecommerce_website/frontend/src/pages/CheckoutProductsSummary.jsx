@@ -24,20 +24,20 @@ import { checkoutCartProducts } from "../redux/checkoutSlice";
 export const CheckoutProductsSummary = () => {
   const { items } = useSelector((state) => state.cart);
   const navTo = useNavigate();
-  const dispatch=useDispatch();
+  const dispatch = useDispatch();
 
-// console.log(items)
+  // console.log(items)
 
-useEffect(()=>{
-  dispatch(checkoutCartProducts(items))
-},[items])
+  useEffect(() => {
+    dispatch(checkoutCartProducts(items));
+  }, [items]);
   const { totalPrice, totalProducts } = items.reduce(
     (acc, cur) => {
       acc.totalProducts += cur.productQuantity;
       acc.totalPrice += cur.productQuantity * cur.price;
       return acc;
     },
-    { totalPrice: 0, totalProducts: 0 }
+    { totalPrice: 0, totalProducts: 0 },
   );
 
   const formatPrice = (price) =>
@@ -93,7 +93,6 @@ useEffect(()=>{
           </CardBody>
         </Card>
       </Container>
-
     </Box>
   );
 };

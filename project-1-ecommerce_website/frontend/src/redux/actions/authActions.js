@@ -1,5 +1,4 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
 import { api } from "../../api/axios";
 
 export const signupUser = createAsyncThunk(
@@ -16,21 +15,23 @@ export const signupUser = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(error.message);
     }
-  }
+  },
 );
 
-export const loginUser=createAsyncThunk(
-    "auth/login",
-    async(userCred,{rejectWithValue})=>{
-        try {
-            let checkCred= await api.get(`/users?email=${userCred.email}&password=${userCred.password}`);
-            if(checkCred.data.length===0){
-               return rejectWithValue("Invalid email or password")
-            } else {
-                return checkCred.data[0];
-            }
-        } catch (error) {
-            return rejectWithValue(error.message)
-        }
+export const loginUser = createAsyncThunk(
+  "auth/login",
+  async (userCred, { rejectWithValue }) => {
+    try {
+      let checkCred = await api.get(
+        `/users?email=${userCred.email}&password=${userCred.password}`,
+      );
+      if (checkCred.data.length === 0) {
+        return rejectWithValue("Invalid email or password");
+      } else {
+        return checkCred.data[0];
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
     }
-)
+  },
+);

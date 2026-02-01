@@ -1,0 +1,1 @@
+export const base_API= 'https://project-1-ecommerce-website-backend.onrender.com'

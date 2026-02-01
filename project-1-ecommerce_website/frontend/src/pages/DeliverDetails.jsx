@@ -10,8 +10,8 @@ import {
 import { DeliveryAddressForm } from "../components/DeliveryAddressForm";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
 import { checkoutDeliveryAddress } from "../redux/checkoutSlice";
+import { api } from "../api/axios";
 
 export const DeliverDetails = () => {
   const [showForm, setShowForm] = useState(false);
@@ -25,8 +25,8 @@ export const DeliverDetails = () => {
   const fetchAddress = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(
-        `http://localhost:8080/addresses?userId=${user.id}`,
+      const res = await api.get(
+        `/addresses?userId=${user.id}`,
       );
       const data = res.data;
       setDeliveryAddress(data);
@@ -50,6 +50,7 @@ export const DeliverDetails = () => {
     }
   }, [deliveryAddress, selectedAddress, dispatch]);
 
+
   if (loading) {
     return (
       <Container centerContent>
@@ -61,22 +62,18 @@ export const DeliverDetails = () => {
   return (
     <Container> 
       <Heading mb={4}>Delivery Deta </Heading>
-      {deliveryAddress?.length === 0 ? (
+     {deliveryAddress.length === 0 && (
         <>
-          <Text>
+          <Text mb={2}>
             No delivery address found. Please add one to place the order.
           </Text>
-
-          <Button
-            colorScheme="blue"
-            onClick={() => {
-              setShowForm(true);
-            }}
-          >
+          <Button colorScheme="blue" onClick={() => setShowForm(true)}>
             Add Address
           </Button>
         </>
-      ) : (
+      )}
+
+      {deliveryAddress.length > 0 && (
         <>
           <Heading size="md" mb={2}>
             Your Delivery Address
@@ -84,7 +81,7 @@ export const DeliverDetails = () => {
 
           {deliveryAddress.map((addr) => (
             <Box
-              key={addr.id} // always use server id
+              key={addr.id}
               boxShadow={
                 selectedAddress?.id === addr.id
                   ? "rgba(26, 136, 240, 0.16) 0px 1px 4px, rgb(26, 136, 240) 0px 0px 0px 2px"
@@ -93,10 +90,8 @@ export const DeliverDetails = () => {
               borderRadius={"10"}
               p={5}
               mb={2}
-              // _hover={{boxShadow: 'rgba(170, 236, 162, 0.16) 0px 1px 4px'}}
               cursor={"pointer"}
               onClick={() => {
-                // console.log(addr);
                 setSelectedAddress(addr);
                 dispatch(checkoutDeliveryAddress(addr));
               }}
@@ -117,6 +112,13 @@ export const DeliverDetails = () => {
               <Text>Preferred Time: {addr.preferredTime || "N/A"}</Text>
             </Box>
           ))}
+
+          {/* Show Add Address button only if less than 3 addresses */}
+          {deliveryAddress.length < 3 && (
+            <Button colorScheme="blue" onClick={() => setShowForm(true)} mt={2}>
+              Add Address
+            </Button>
+          )}
         </>
       )}
 

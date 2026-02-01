@@ -36,31 +36,17 @@ export const SignUp = () => {
   //** getInitialState dyamically add the value to every key */
   const getInitialState = () => {
     let obj = {};
-    formFields.forEach((e) => (obj[e.name] = ""));
+    formFields.forEach((f) => (obj[f.name] = ""));
     return obj;
   };
 
-  const dispatch=useDispatch();
+  const dispatch = useDispatch();
+  const navigateTo = useNavigate();
 
   const [formData, setFormData] = useState(getInitialState());
-  const {user, loading,error}=useSelector(state=> state.auth);
-  const navigateTo=useNavigate();
+  const { user, loading, error } = useSelector((state) => state.auth);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (formData.password !== formData.confirmPassword) {
-      alert("Password and Confirm Password must match!");
-      return;
-    }
-
-    dispatch(signupUser(formData))
-  //  console.log("Form Submitted:", formData);
-    setFormData(getInitialState());
-  };
-
-  
-useEffect(() => {
+  useEffect(() => {
     if (user) {
       const timer = setTimeout(() => {
         navigateTo("/login");
@@ -79,67 +65,99 @@ useEffect(() => {
     }));
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (formData.password !== formData.confirmPassword) {
+      alert("Password and Confirm Password must match!");
+      return;
+    }
+
+    dispatch(signupUser(formData));
+    //  console.log("Form Submitted:", formData);
+    setFormData(getInitialState());
+  };
+
+   const isSubmitDisabled = formFields.some(
+    (f) => f.required && !formData[f.name]
+  );
+
   return (
-    
     <Box w="100%" py="40px">
       <Heading textAlign="center" mb={10}>
         Sign Up
       </Heading>
 
-    {loading ? <Text>The Details are Updating</Text>  : (
+      {loading ? (
+         <Text textAlign="center">Processing your details...</Text>
+      ) : (
         <Box
-        as="form"
-        onSubmit={handleSubmit}
-        w={["90%", "70%", "50%", "40%"]}
-        mx="auto"
-        p="35px"
-        borderRadius="lg"
-        boxShadow="md"
-      >
-        <VStack spacing={5}>
-          {formFields.map((field, index) => {
-            const isError = field.required && !formData[field.name];
-            return (
-              <FormControl key={index} isInvalid={isError}>
-                <FormLabel>{field.label}</FormLabel>
-                {field.type === "tel" ? (
-                  <InputGroup>
-                    <InputLeftAddon children={"+91"} />
+          as="form"
+          onSubmit={handleSubmit}
+          w={["90%", "70%", "50%", "40%"]}
+          mx="auto"
+          p="35px"
+          borderRadius="lg"
+          boxShadow="md"
+          bg={'white'}
+        >
+          <VStack spacing={5}>
+            {formFields.map((field, index) => {
+              const isError = field.required && !formData[field.name];
+              return (
+                <FormControl key={index} isInvalid={isError}>
+                  <FormLabel>{field.label}</FormLabel>
+                  {field.type === "tel" ? (
+                    <InputGroup>
+                      <InputLeftAddon children={"+91"} />
+                      <Input
+                        type={field.type}
+                        name={field.name}
+                        value={formData[field.name]}
+                        onChange={handleChange}
+                        focusBorderColor="blue.400"
+                      />
+                    </InputGroup>
+                  ) : (
                     <Input
                       type={field.type}
                       name={field.name}
                       value={formData[field.name]}
                       onChange={handleChange}
-                       focusBorderColor="blue.400"
+                      focusBorderColor="blue.400"
                     />
-                  </InputGroup>
-                ) : (
-                  <Input
-                    type={field.type}
-                    name={field.name}
-                    value={formData[field.name]}
-                    onChange={handleChange}
-                     focusBorderColor="blue.400"
-                  />
-                )}
+                  )}
 
-                {!isError ? (
-                  <FormHelperText>Enter {field.label}</FormHelperText>
-                ) : (
-                  <FormErrorMessage>{field.label} is required</FormErrorMessage>
-                )}
-              </FormControl>
-            );
-          })}
+                  {!isError ? (
+                    <FormHelperText>Enter {field.label}</FormHelperText>
+                  ) : (
+                    <FormErrorMessage>
+                      {field.label} is required
+                    </FormErrorMessage>
+                  )}
+                </FormControl>
+              );
+            })}
 
-          <Button colorScheme="blue" type="submit" w="50%" mx="auto">
-            Submit
-          </Button>
-        </VStack>
-      </Box>
-    )}
+            <Button colorScheme="blue" type="submit" w="50%" mx="auto"  isDisabled={isSubmitDisabled}>
+              Submit
+            </Button>
+          </VStack>
+        </Box>
+      )}
 
-    {error ? <Heading>{error.message}</Heading> :" " }
+       {error && (
+        <Text color="red.500" mt={4} textAlign="center">
+          {error.message || "Something went wrong!"}
+        </Text>
+      )}
+
+      {user && (
+        <Text color="green.500" mt={4} textAlign="center">
+          Signup successful! Redirecting to login...
+        </Text>
+      )}
+      
     </Box>
   );
 };

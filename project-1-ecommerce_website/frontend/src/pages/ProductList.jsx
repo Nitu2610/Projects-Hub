@@ -11,22 +11,21 @@ import {
   Stack,
   Skeleton,
   Button,
-  Center,
+  Flex,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { addToCart, clearCart, removeFromCart } from "../redux/cartSlice";
-import { AddToCart } from "../components/buttons/AddToCart";
-import { RemoveFromCart } from "../components/buttons/RemoveFromCart";
+import { clearCart } from "../redux/cartSlice";
 import { Add_Romove_Cart_Container } from "../components/Add_Romove_Cart_Container";
+import { base_API } from "../api/base_api";
 
 export const ProductList = () => {
   const dispatch = useDispatch();
   const { productsArray, loading, error } = useSelector(
-    (state) => state.products
+    (state) => state.products,
   );
 
   const { items, totalQuantity, totalPrice } = useSelector(
-    (state) => state.cart
+    (state) => state.cart,
   );
 
   const navigateTo = useNavigate();
@@ -52,28 +51,19 @@ export const ProductList = () => {
   return (
     <Box w="85%" m="auto" mt={8}>
       <Box
-        w="100%"
-        bg="blue.600"
-        p={4}
-        borderRadius="md"
-        boxShadow="md"
-        color="white"
-        textAlign="center"
-        mb={4}
-      >
-        <Heading size="md">Cart Items: {totalQuantity}</Heading>
-      </Box>
-
-      <Box
         display="flex"
         alignItems="center"
         justifyContent="space-between"
-        bg="gray.50"
-        p={4}
-        borderRadius="md"
-        border="1px solid"
+        bg="white"
+        px={5}
+        py={3}
+        borderBottom="1px solid"
         borderColor="gray.200"
         mb={4}
+        position={"sticky"}
+        top={"0"}
+        zIndex={"100"}
+        boxShadow={"sm"}
       >
         <Box>
           <Text fontSize="lg" fontWeight="bold">
@@ -84,20 +74,34 @@ export const ProductList = () => {
           </Text>
         </Box>
 
-        <Button
-          colorScheme="red"
-          variant="solid"
-          onClick={() => dispatch(clearCart())}
-        >
-          Clear Cart
-        </Button>
+        <Box display={"flex"} columnGap={"20px"}>
+          {items.length > 0 ? (
+            <Button
+              colorScheme="blue"
+              variant="solid"
+              onClick={() => navigateTo("/checkout")}
+            >
+              Move to Checkout
+            </Button>
+          ) : (
+            " "
+          )}
+
+          <Button
+            colorScheme="red"
+            variant="solid"
+            onClick={() => dispatch(clearCart())}
+          >
+            Clear Cart
+          </Button>
+        </Box>
       </Box>
 
       {productsArray.length === 0 && (
         <Text textAlign="center">Internal data is empty</Text>
       )}
 
-      <SimpleGrid columns={[1, 2, 3, 4]} spacing={8}>
+      <SimpleGrid columns={[1, 2, 3, 4]} spacing={10} mt={"60px"}>
         {productsArray.map((item) => {
           const { id, title, brand, price, category, image, description } =
             item;
@@ -107,7 +111,7 @@ export const ProductList = () => {
             <Box
               key={id}
               bg="white"
-              boxShadow="md"
+              boxShadow="rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em"
               borderRadius="lg"
               overflow="hidden"
               transition="all 0.3s"
@@ -115,25 +119,27 @@ export const ProductList = () => {
               display="flex"
               flexDirection="column"
             >
-             <Box 
-             w={'100%'}
-             h={'180px'}
-             bg={'grey.100'}
-             display={'flex'}
-             alignItems={'center'}
-             justifyContent={'center'}
-             onClick={() => {
+              <Box
+                w={"100%"}
+                h={"180px"}
+                bg={"grey.100"}
+                display={"flex"}
+                alignItems={"center"}
+                justifyContent={"center"}
+                mt={"10px"}
+                onClick={() => {
                   navigateTo(`/product/${id}`);
                 }}
-             >
-               <Image
-                src={image}
-                alt={title}
-                objectFit="contain"
-                maxW='100%'
-                maxH='100%'
-              />
-             </Box>
+              >
+                <Image
+                  src={`${base_API}/${image}`}
+                  alt={title}
+                  objectFit="contain"
+                  maxW="100%"
+                  maxH="100%"
+                  borderRadius={"5px"}
+                />
+              </Box>
 
               <Box p={5}>
                 <Stack
@@ -142,6 +148,11 @@ export const ProductList = () => {
                   justify="space-between"
                   mb={3}
                 >
+
+                   <Text fontSize="lg" fontWeight="bold" color="green.600" mb={2}>
+                  ₹{price}
+                </Text>
+
                   <Heading as="h4" size="md">
                     {title}
                   </Heading>
@@ -155,15 +166,16 @@ export const ProductList = () => {
                   Brand: <strong>{brand}</strong>
                 </Text>
 
-                <Text fontSize="lg" fontWeight="bold" color="green.600" mb={2}>
-                  ₹{price}
-                </Text>
+               
 
                 <Text fontSize="sm" color="gray.600" noOfLines={2}>
                   {description}
                 </Text>
               </Box>
-             <Add_Romove_Cart_Container item={item} existingItem={existingItem}/>
+              <Add_Romove_Cart_Container
+                item={item}
+                existingItem={existingItem}
+              />
             </Box>
           );
         })}

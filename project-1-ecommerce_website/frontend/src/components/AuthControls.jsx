@@ -3,24 +3,31 @@ import { SignUpBtn } from "./buttons/SignUpBtn";
 import { LogInBtn } from "./buttons/LogInBtn";
 import { Logout } from "./buttons/LogOutBtn";
 
-
 export const AuthControls = ({ user }) => {
   return (
     <Flex
       align="center"
-      gap={4}
-      p={3}
-      borderRadius="md"
-      backgroundColor={"antiquewhite"}
-      _dark={{ bg: "gray.700" }}
-      boxShadow={"md"}
+      gap={3}
+      px={4}
+      py={2}
+      borderRadius="full"
+      bg={"gray.200"}
+      border={"1px solid  gray.200"}
+      boxShadow={"sd"}
     >
       {user ? (
         <>
-          <Avatar name={user.firstName} size="sm" />
+          <Avatar
+            name={user.firstName}
+            size="sm"
+            bg={"blue.500"}
+            color={"white"}
+          />
 
-          <Box >
-            <Heading size="sm">Hi, {user.firstName}</Heading>
+          <Box lineHeight={1.2}>
+            <Heading size="xs" fontWeight={600}>
+              Hi, {user.firstName}
+            </Heading>
             <Text fontSize="xs" color="gray.500">
               Logged in
             </Text>
@@ -29,7 +36,7 @@ export const AuthControls = ({ user }) => {
           <Logout />
         </>
       ) : (
-        <Flex gap={3}>
+        <Flex gap={2}>
           <LogInBtn />
           <SignUpBtn />
         </Flex>

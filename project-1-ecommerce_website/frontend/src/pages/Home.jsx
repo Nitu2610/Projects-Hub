@@ -1,14 +1,66 @@
-import React from 'react'
+import {Box, Button, Heading, SimpleGrid, Text} from '@chakra-ui/react';
+import {useNavigate} from 'react-router-dom'
 
 export const Home = () => {
+  const navigate=useNavigate();
   return (
-    <div>
-    <h1 style={{fontSize:'36px', fontWeight:'600'}}>Home Page</h1>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapiente quaerat ipsa quasi ipsam nobis at deleniti, accusantium quis, totam id aut mollitia dignissimos, fugit dolore non voluptatibus doloremque officiis pariatur.
-    Aperiam, deserunt ipsa dignissimos voluptatum impedit inventore at similique odit quibusdam tenetur, quam, voluptatem ab corrupti nam saepe ipsam aliquid nulla culpa eius neque. Earum minus dignissimos accusamus aliquid debitis.
-    Molestias facilis debitis asperiores, aliquid expedita eaque repellat adipisci. Unde eius earum ullam itaque cupiditate, incidunt delectus velit! Nesciunt nisi, reiciendis laudantium commodi deleniti animi molestias optio repellat error nostrum.
-    Eius ipsam molestias dignissimos, officiis fugit excepturi est commodi, velit nam architecto explicabo delectus labore quod minima unde iste quam officia ad? Incidunt aut provident sunt iste tenetur reprehenderit a!
-    Quae nobis error veniam sint cumque, corrupti atque dolorum! Quos, facilis illo ut nostrum repudiandae distinctio? Porro laboriosam earum quaerat dolor quae suscipit nam quos! Accusantium fugit recusandae quisquam molestiae.</p>
-    </div>
+  <Box w={'100%'}>
+
+{/*Hero Section */}
+
+<Box bg='gray.50'
+py={20}
+textAlign={'center'}
+>
+  <Heading size={'2xl'} mb={4}> Welcome to ShopEase</Heading>
+  <Text fontSize={'lg'} color={'gray.600'} mb={6}> Discover quality products at the best prices</Text>
+<Button colorScheme='teal' size={'lg'} onClick={()=> navigate('/products')}> Shop Now</Button>
+</Box>
+
+{/* Highlights Sections */}
+
+<SimpleGrid column={[1,2,4]} 
+spacing={6}
+w={'80%'}
+m={'auto'}
+py={12}
+>
+
+  {[ 'Free Delivery', 'Secure Payments', 'Easy Returns', '24/7 Support'] .map((item,i)=>(
+    <Box
+    key={i}
+    p={6}
+    textAlign={'center'}
+    border={'1px solid'}
+    borderColor={'gray.200'}
+    borderRadius={'md'}
+    boxShadow={'sm'}
+    >
+      <Heading size={'md'}> {item}</Heading>
+    </Box>
+  ))}
+
+</SimpleGrid>
+
+<Box 
+bg={'teal.500'}
+color={'white'}
+py={16}
+textAlign={'center'}
+>
+<Heading 
+bg={'teal.500'}
+color='white'
+py={16}
+textAlign={'center'}
+> Start Shopping Today</Heading>
+<Button
+colorScheme='blackAlpha'
+variant={'outline'}
+size={'lg'}
+onClick={()=> navigate('/products')}
+> Browse Products</Button>
+</Box>
+  </Box>
   )
 }

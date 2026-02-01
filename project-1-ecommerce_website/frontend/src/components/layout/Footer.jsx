@@ -1,25 +1,29 @@
-import { Box, Heading, Text, Container } from "@chakra-ui/react";
+import { Box, Heading, Text, Container, Stack } from "@chakra-ui/react";
 
 export const Footer = () => {
   return (
     <Box
-      bg="lightcoral"
-      borderTop="1px solid black"
+      bg={"gray.900"}
+      color={"gray.300"}
+      borderColor={"gray.700"}
+      borderTop={"1px solid"}
       py={8}
-      mt={10}
-      w="100%"
-      marginTop={20}
+      mt={20}
+      w={"100%"}
     >
-      <Container maxW="80%" textAlign="center" >
-        <Heading size="md" mb={3}>
-          I am Footer
-        </Heading>
-
-        <Text fontSize="sm">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam harum
-          et ab quaerat, molestias odio nemo quidem quasi quae iusto eligendi
-          minima culpa explicabo recusandae assumenda quam nulla enim itaque.
-        </Text>
+      <Container maxW={"80%"}>
+        <Stack spacing={4} textAlign={"center"}>
+          <Heading size={"md"} color={"white"}>
+            Ecommerce Store
+          </Heading>
+          <Text fontSize={"sm"}>
+            A demo ecommerce application built using React, Redux Toolkit,
+            Chakra UI, and a mock backend with JSON Server.
+          </Text>
+          <Text fontSize={"xs"} color={"gray.400"}>
+            © {new Date().getFullYear()} Ecommerce Store. All rights reserved.
+          </Text>
+        </Stack>
       </Container>
     </Box>
   );
