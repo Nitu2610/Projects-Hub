@@ -1,0 +1,658 @@
+{
+  "products": [
+    {
+      "id": "1",
+      "title": "Classic White T-Shirt",
+      "brand": "UniBrand",
+      "price": 499,
+      "category": "clothing",
+      "image": "./images/clothing/Classic_White_T-Shirt.jpg",
+      "description": "Soft cotton white T-shirt suitable for daily wear."
+    },
+    {
+      "id": "2",
+      "title": "Slim Fit Black T-Shirt",
+      "brand": "UniBrand",
+      "price": 549,
+      "category": "clothing",
+      "image": "./images/clothing/Slim_Fit_Black_T-Shirt.jpg",
+      "description": "Breathable slim fit T-shirt with a modern look."
+    },
+    {
+      "id": "3",
+      "title": "Casual Checked Shirt",
+      "brand": "UrbanWear",
+      "price": 1199,
+      "category": "clothing",
+      "image": "./images/clothing/Casual_Checked_Shirt.jpg",
+      "description": "Casual checked shirt perfect for office or outings."
+    },
+    {
+      "id": "4",
+      "title": "Slim Fit Jeans",
+      "brand": "DenimPro",
+      "price": 1299,
+      "category": "clothing",
+      "image": "./images/clothing/Slim_Fit_Jeans.jpg",
+      "description": "Comfortable slim fit jeans made with stretchable fabric."
+    },
+    {
+      "id": "5",
+      "title": "Men's Formal Trousers",
+      "brand": "OfficeLine",
+      "price": 1599,
+      "category": "clothing",
+      "image": "./images/clothing/Men's_Formal_Trousers.jpg",
+      "description": "Formal trousers designed for all-day comfort."
+    },
+    {
+      "id": "6",
+      "title": "Running Shoes",
+      "brand": "FitWalk",
+      "price": 1999,
+      "category": "footwear",
+      "image": "./images/footwear/Running_Shoes.jpg",
+      "description": "Lightweight running shoes designed for comfort and performance."
+    },
+    {
+      "id": "7",
+      "title": "Casual Sneakers",
+      "brand": "StreetStep",
+      "price": 1799,
+      "category": "footwear",
+      "image": "./images/footwear/Casual_Sneakers.jpg",
+      "description": "Stylish sneakers suitable for everyday wear."
+    },
+    {
+      "id": "8",
+      "title": "Men's Sandals",
+      "brand": "WalkEasy",
+      "price": 899,
+      "category": "footwear",
+      "image": "./images/footwear/Men's_Sandals.jpg",
+      "description": "Comfortable sandals with anti-slip sole."
+    },
+    {
+      "id": "9",
+      "title": "Formal Leather Shoes",
+      "brand": "EliteFoot",
+      "price": 2499,
+      "category": "footwear",
+      "image": "./images/footwear/Formal_Leather_Shoes.jpg",
+      "description": "Premium leather formal shoes for office and events."
+    },
+    {
+      "id": "10",
+      "title": "Flip Flops",
+      "brand": "Relaxo",
+      "price": 399,
+      "category": "footwear",
+      "image": "./images/footwear/Flip_Flops.jpg",
+      "description": "Lightweight flip flops for daily comfort."
+    },
+    {
+      "id": "11",
+      "title": "Wireless Bluetooth Headphones",
+      "brand": "SoundMax",
+      "price": 1499,
+      "category": "electronics",
+      "image": "./images/electronics/Wireless_Bluetooth_Headphones.jpg",
+      "description": "Noise-cancelling Bluetooth headphones with long battery life."
+    },
+    {
+      "id": "12",
+      "title": "Wireless Earbuds",
+      "brand": "AudioPods",
+      "price": 1299,
+      "category": "electronics",
+      "image": "./images/electronics/Wireless_Earbuds.jpg",
+      "description": "True wireless earbuds with clear sound quality."
+    },
+    {
+      "id": "13",
+      "title": "Portable Bluetooth Speaker",
+      "brand": "BeatHub",
+      "price": 899,
+      "category": "electronics",
+      "image": "./images/electronics/Portable_Bluetooth_Speaker.jpg",
+      "description": "Compact Bluetooth speaker with powerful sound."
+    },
+    {
+      "id": "14",
+      "title": "Smart Fitness Band",
+      "brand": "HealthTrack",
+      "price": 999,
+      "category": "electronics",
+      "image": "./images/electronics/Smart_Fitness_Band.jpg",
+      "description": "Fitness band with heart rate and step tracking."
+    },
+    {
+      "id": "15",
+      "title": "Smart Watch",
+      "brand": "TimeTech",
+      "price": 2499,
+      "category": "electronics",
+      "image": "./images/electronics/Smart_Watch.jpg",
+      "description": "Smart watch with notifications and health features."
+    },
+    {
+      "id": "16",
+      "title": "Laptop Backpack",
+      "brand": "BagWorks",
+      "price": 1899,
+      "category": "accessories",
+      "image": "./images/accessories/Laptop_Backpack.jpg",
+      "description": "Spacious backpack with padded laptop compartment."
+    },
+    {
+      "id": "17",
+      "title": "Leather Wallet",
+      "brand": "UrbanCarry",
+      "price": 699,
+      "category": "accessories",
+      "image": "./images/accessories/Leather_Wallet.jpg",
+      "description": "Premium leather wallet with multiple card slots."
+    },
+    {
+      "id": "18",
+      "title": "Cotton Baseball Cap",
+      "brand": "Capster",
+      "price": 299,
+      "category": "accessories",
+      "image": "./images/accessories/Cotton_Baseball_Cap.jpg",
+      "description": "Adjustable cotton cap for outdoor activities."
+    },
+    {
+      "id": "19",
+      "title": "Sports Duffel Bag",
+      "brand": "ProGear",
+      "price": 1490,
+      "category": "accessories",
+      "image": "./images/accessories/Sports_Duffel_Bag.jpg",
+      "description": "Durable duffel bag for gym and travel."
+    },
+    {
+      "id": "20",
+      "title": "Sunglasses",
+      "brand": "SunX",
+      "price": 999,
+      "category": "accessories",
+      "image": "./images/accessories/Sunglasses.jpg",
+      "description": "UV-protected stylish sunglasses."
+    },
+    {
+      "id": "21",
+      "title": "Stainless Steel Water Bottle",
+      "brand": "PureSip",
+      "price": 399,
+      "category": "accessories",
+      "image": "./images/accessories/Stainless_Steel_Water_Bottle.jpg",
+      "description": "Insulated bottle keeps drinks cold for hours."
+    },
+    {
+      "id": "22",
+      "title": "Coffee Mug",
+      "brand": "MugLife",
+      "price": 249,
+      "category": "home",
+      "image": "./images/home/Coffee_Mug.jpg",
+      "description": "Ceramic coffee mug with heat resistance."
+    },
+    {
+      "id": "23",
+      "title": "Electric Kettle",
+      "brand": "HomeHeat",
+      "price": 1799,
+      "category": "home",
+      "image": "./images/home/Electric_Kettle.jpg",
+      "description": "Fast boiling electric kettle with auto shut-off."
+    },
+    {
+      "id": "24",
+      "title": "Non-Stick Frying Pan",
+      "brand": "CookWell",
+      "price": 1299,
+      "category": "home",
+      "image": "./images/home/Non-Stick_Frying_Pan.jpg",
+      "description": "Non-stick pan suitable for daily cooking."
+    },
+    {
+      "id": "25",
+      "title": "Desk Table Lamp",
+      "brand": "BrightLite",
+      "price": 899,
+      "category": "home",
+      "image": "./images/home/Desk_Table_Lamp.jpg",
+      "description": "LED desk lamp with adjustable brightness."
+    },
+    {
+      "id": "26",
+      "title": "Yoga Mat",
+      "brand": "FlexFit",
+      "price": 699,
+      "category": "fitness",
+      "image": "./images/fitness/Yoga_Mat.jpg",
+      "description": "Anti-slip yoga mat for workouts and yoga."
+    },
+    {
+      "id": "27",
+      "title": "Dumbbell Set",
+      "brand": "IronCore",
+      "price": 2499,
+      "category": "fitness",
+      "image": "./images/fitness/Dumbbell_Set.jpg",
+      "description": "Adjustable dumbbell set for strength training."
+    },
+    {
+      "id": "28",
+      "title": "Resistance Bands",
+      "brand": "FlexFit",
+      "price": 499,
+      "category": "fitness",
+      "image": "./images/fitness/Resistance_Bands.jpg",
+      "description": "Set of resistance bands for home workouts."
+    },
+    {
+      "id": "29",
+      "title": "Skipping Rope",
+      "brand": "JumpPro",
+      "price": 299,
+      "category": "fitness",
+      "image": "./images/fitness/Skipping_Rope.jpg",
+      "description": "Durable skipping rope for cardio workouts."
+    },
+    {
+      "id": "30",
+      "title": "Ab Roller",
+      "brand": "CoreMax",
+      "price": 599,
+      "category": "fitness",
+      "image": "./images/fitness/Ab_Roller.jpg",
+      "description": "Ab roller for core strengthening exercises."
+    },
+    {
+      "id": "31",
+      "title": "Men's Hoodie",
+      "brand": "WarmWear",
+      "price": 1599,
+      "category": "clothing",
+      "image": "./images/clothing/Men's_Hoodie.jpg",
+      "description": "Comfortable hoodie suitable for casual wear."
+    },
+    {
+      "id": "32",
+      "title": "Women's Kurti",
+      "brand": "EthniStyle",
+      "price": 1299,
+      "category": "clothing",
+      "image": "./images/clothing/Women's_Kurti.jpg",
+      "description": "Elegant cotton kurti for daily and festive wear."
+    },
+    {
+      "id": "33",
+      "title": "Men's Track Pants",
+      "brand": "ActiveMove",
+      "price": 899,
+      "category": "clothing",
+      "image": "./images/clothing/Men's_Track_Pants.jpg",
+      "description": "Breathable track pants for workouts and lounging."
+    },
+    {
+      "id": "34",
+      "title": "Women's Leggings",
+      "brand": "FlexWear",
+      "price": 699,
+      "category": "clothing",
+      "image": "./images/clothing/Women's_Leggings.jpg",
+      "description": "Stretchable leggings with all-day comfort."
+    },
+    {
+      "id": "35",
+      "title": "Casual Loafers",
+      "brand": "StepSmart",
+      "price": 1899,
+      "category": "footwear",
+      "image": "./images/footwear/Casual_Loafers.jpg",
+      "description": "Slip-on loafers with cushioned sole."
+    },
+    {
+      "id": "36",
+      "title": "Women's Flats",
+      "brand": "ComfortWalk",
+      "price": 1199,
+      "category": "footwear",
+      "image": "./images/footwear/Women's_Flats.jpg",
+      "description": "Lightweight flats ideal for everyday use."
+    },
+    {
+      "id": "37",
+      "title": "Mobile Phone Stand",
+      "brand": "DeskMate",
+      "price": 299,
+      "category": "electronics",
+      "image": "./images/electronics/Mobile_Phone_Stand.jpg",
+      "description": "Adjustable phone stand for desk and bedside."
+    },
+    {
+      "id": "38",
+      "title": "Power Bank 10000mAh",
+      "brand": "ChargeGo",
+      "price": 1399,
+      "category": "electronics",
+      "image": "./images/electronics/Power_Bank_10000mAh.jpg",
+      "description": "Fast-charging power bank with dual USB output."
+    },
+    {
+      "id": "39",
+      "title": "USB-C Fast Charger",
+      "brand": "VoltUp",
+      "price": 799,
+      "category": "electronics",
+      "image": "./images/electronics/USB-C_Fast_Charger.jpg",
+      "description": "Fast charger compatible with multiple devices."
+    },
+    {
+      "id": "40",
+      "title": "Wireless Mouse",
+      "brand": "ClickPro",
+      "price": 599,
+      "category": "electronics",
+      "image": "./images/electronics/Wireless_Mouse.jpg",
+      "description": "Ergonomic wireless mouse with smooth tracking."
+    },
+    {
+      "id": "41",
+      "title": "Laptop Cooling Pad",
+      "brand": "CoolTech",
+      "price": 1099,
+      "category": "electronics",
+      "image": "./images/electronics/Laptop_Cooling_Pad.jpg",
+      "description": "Cooling pad to prevent laptop overheating."
+    },
+    {
+      "id": "42",
+      "title": "Key Holder Rack",
+      "brand": "HomeEase",
+      "price": 499,
+      "category": "home",
+      "image": "./images/home/Key_Holder_Rack.jpg",
+      "description": "Wall-mounted key holder with hooks."
+    },
+    {
+      "id": "43",
+      "title": "Bedside Alarm Clock",
+      "brand": "TimeKeep",
+      "price": 899,
+      "category": "home",
+      "image": "./images/home/Bedside_Alarm_Clock.jpg",
+      "description": "Digital alarm clock with snooze function."
+    },
+    {
+      "id": "44",
+      "title": "Door Mat",
+      "brand": "CleanStep",
+      "price": 399,
+      "category": "home",
+      "image": "./images/home/Door_Mat.jpg",
+      "description": "Anti-slip door mat for home entrance."
+    },
+    {
+      "id": "45",
+      "title": "Cushion Covers Set",
+      "brand": "DecorNest",
+      "price": 799,
+      "category": "home",
+      "image": "./images/home/Cushion_Covers_Set.jpg",
+      "description": "Set of decorative cushion covers."
+    },
+    {
+      "id": "46",
+      "title": "Wall Photo Frame",
+      "brand": "FrameIt",
+      "price": 999,
+      "category": "home",
+      "image": "./images/home/Wall_Photo_Frame.jpg",
+      "description": "Modern wall photo frame for home decor."
+    },
+    {
+      "id": "47",
+      "title": "Hand Grip Strengthener",
+      "brand": "GripMax",
+      "price": 349,
+      "category": "fitness",
+      "image": "./images/fitness/Hand_Grip_Strengthener.jpg",
+      "description": "Hand grip tool for forearm strengthening."
+    },
+    {
+      "id": "48",
+      "title": "Foam Roller",
+      "brand": "RecoverFit",
+      "price": 899,
+      "category": "fitness",
+      "image": "./images/fitness/Foam_Roller.jpg",
+      "description": "Foam roller for muscle recovery exercises."
+    },
+    {
+      "id": "49",
+      "title": "Gym Gloves",
+      "brand": "LiftSafe",
+      "price": 499,
+      "category": "fitness",
+      "image": "./images/fitness/Gym_Gloves.jpg",
+      "description": "Non-slip gym gloves for weight training."
+    },
+    {
+      "id": "50",
+      "title": "Protein Shaker Bottle",
+      "brand": "ShakePro",
+      "price": 349,
+      "category": "fitness",
+      "image": "./images/fitness/Protein_Shaker_Bottle.jpg",
+      "description": "Leak-proof shaker bottle for protein drinks."
+    },
+    {
+      "id": "51",
+      "title": "Travel Neck Pillow",
+      "brand": "RestEasy",
+      "price": 799,
+      "category": "accessories",
+      "image": "./images/accessories/Travel_Neck_Pillow.jpg",
+      "description": "Soft neck pillow for comfortable travel."
+    },
+    {
+      "id": "52",
+      "title": "Travel Organizer Pouch",
+      "brand": "PackSmart",
+      "price": 599,
+      "category": "accessories",
+      "image": "./images/accessories/Travel_Organizer_Pouch.jpg",
+      "description": "Compact pouch for organizing travel items."
+    },
+    {
+      "id": "53",
+      "title": "Leather Belt",
+      "brand": "UrbanCarry",
+      "price": 799,
+      "category": "accessories",
+      "image": "./images/accessories/Leather_Belt.jpg",
+      "description": "Genuine leather belt with classic buckle."
+    },
+    {
+      "id": "54",
+      "title": "Analog Wrist Watch",
+      "brand": "TimeLine",
+      "price": 1999,
+      "category": "accessories",
+      "image": "./images/accessories/Analog_Wrist_Watch.jpg",
+      "description": "Classic analog watch with leather strap."
+    },
+    {
+      "id": "55",
+      "title": "Laptop Sleeve",
+      "brand": "CasePro",
+      "price": 999,
+      "category": "accessories",
+      "image": "./images/accessories/Laptop_Sleeve.jpg",
+      "description": "Protective laptop sleeve with soft padding."
+    },
+    {
+      "id": "56",
+      "title": "Car Phone Holder",
+      "brand": "DriveSafe",
+      "price": 499,
+      "category": "accessories",
+      "image": "./images/Car_Phone_Holder.jpg",
+      "description": "Dashboard-mounted phone holder for cars."
+    },
+    {
+      "id": "57",
+      "title": "Notebook Set",
+      "brand": "WriteOn",
+      "price": 349,
+      "category": "stationery",
+      "image": "./images/stationery/Notebook_Set.jpg",
+      "description": "Set of ruled notebooks for daily use."
+    },
+    {
+      "id": "58",
+      "title": "Ball Pen Pack",
+      "brand": "InkFlow",
+      "price": 199,
+      "category": "stationery",
+      "image": "./images/stationery/Ball_Pen_Pack.jpg",
+      "description": "Smooth-writing ball pens pack."
+    },
+    {
+      "id": "59",
+      "title": "Desk Organizer",
+      "brand": "DeskMate",
+      "price": 699,
+      "category": "stationery",
+      "image": "./images/stationery/Desk_Organizer.jpg",
+      "description": "Organizer to keep desk neat and tidy."
+    },
+    {
+      "id": "60",
+      "title": "Reusable Grocery Bag",
+      "brand": "EcoCarry",
+      "price": 249,
+      "category": "accessories",
+      "image": "./images/accessories/Reusable_Grocery_Bag.jpg",
+      "description": "Eco-friendly reusable grocery shopping bag."
+    }
+  ],
+  "users": [
+    {
+      "id": "bed5",
+      "firstName": "Nitesh",
+      "lastName": "Kumar ",
+      "email": "niteshbos@gmail.com",
+      "password": "123",
+      "confirmPassword": "123",
+      "dob": "2025-10-30",
+      "mobile": "8668069441"
+    }
+  ],
+  "addresses": [
+    {
+      "id": "d4d3b",
+      "userId": "bed5",
+      "fName": "Nitesh ",
+      "lName": "Kumar Ji",
+      "mNum": "8668069441",
+      "address": {
+        "houseNum": "4/63",
+        "street": "Aziz Mulk 2nd street",
+        "landmark": "pine tree hotel",
+        "area": "Greams Road",
+        "pincode": "600006",
+        "district": "Chennai",
+        "state": "Tamil Nadu",
+        "country": "INR"
+      },
+      "preferredTime": ""
+    }
+  ],
+  "orders": [
+    {
+      "id": "bdfc",
+      "OrderedProduct": [
+        {
+          "id": "1",
+          "title": "Classic White T-Shirt",
+          "price": 499,
+          "productQuantity": 1
+        }
+      ],
+      "DeliveryAddress": {
+        "id": "d4db",
+        "userId": "bed5",
+        "fName": "Nitesh",
+        "lName": "Kumar",
+        "mNum": "8668069441",
+        "address": {
+          "houseNum": "4/63",
+          "street": "AM2nd street",
+          "landmark": "pine tree hotel",
+          "area": "Greams Road",
+          "pincode": "600006",
+          "district": "Chennai",
+          "state": "Tamil Nadu",
+          "country": "INR"
+        },
+        "preferredTime": ""
+      },
+      "PaymentMode": "Internet Banking",
+      "orderId": 1769848906182
+    },
+    {
+      "id": "4f80",
+      "OrderedProduct": [
+        {
+          "id": "1",
+          "title": "Classic White T-Shirt",
+          "price": 499,
+          "productQuantity": 1
+        },
+        {
+          "id": "4",
+          "title": "Stainless Steel Water Bottle",
+          "price": 399,
+          "productQuantity": 1
+        },
+        {
+          "id": "5",
+          "title": "Slim Fit Jeans",
+          "price": 1299,
+          "productQuantity": 1
+        },
+        {
+          "id": "6",
+          "title": "Smart Fitness Band",
+          "price": 999,
+          "productQuantity": 2
+        }
+      ],
+      "DeliveryAddress": {
+        "id": "d4d3b",
+        "userId": "bed5",
+        "fName": "Nitesh ",
+        "lName": "Kumar Ji",
+        "mNum": "8668069441",
+        "address": {
+          "houseNum": "4/63",
+          "street": "Aziz Mulk 2nd street",
+          "landmark": "pine tree hotel",
+          "area": "Greams Road",
+          "pincode": "600006",
+          "district": "Chennai",
+          "state": "Tamil Nadu",
+          "country": "INR"
+        },
+        "preferredTime": ""
+      },
+      "PaymentMode": "Debit Card",
+      "orderId": 1769850764475
+    }
+  ]
+}
