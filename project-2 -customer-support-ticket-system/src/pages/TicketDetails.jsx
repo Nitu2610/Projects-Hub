@@ -1,8 +1,8 @@
 import { useParams } from "react-router-dom";
 import { ticketsData } from "../data/tickets";
 import { Box, Container, Heading } from "@chakra-ui/react";
-import { priorityConvert } from "../utils/priorityConvert";
-import { statusConvert } from "../utils/statusConvert";
+import { formatPriority } from "../utils/formatPriority";
+import { formatStatus } from "../utils/formatStatus";
 
 export const TicketDetails = () => {
   const { id } = useParams(); // return an object(id) with key (id)
@@ -30,11 +30,11 @@ export const TicketDetails = () => {
         <Box> {title} </Box>
         <Box> {description} </Box>
         <Box>
-          {statusConvert(status)}{" "}
+          {formatStatus(status)}{" "}
         </Box>
         <Box>
           {" "}
-          {priorityConvert(priority)}{" "}
+          {formatPriority(priority)}{" "}
         </Box>
         <Box>
           {" "}

@@ -1,8 +1,8 @@
 import React from "react";
 import { Box, Container } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { priorityConvert } from "../utils/priorityConvert";
-import { statusConvert } from "../utils/statusConvert";
+import { formatPriority } from "../utils/formatPriority";
+import { formatStatus } from "../utils/formatStatus";
 
 export const TicketCard = ({ ticket }) => {
   const navigate = useNavigate();
@@ -19,9 +19,9 @@ export const TicketCard = ({ ticket }) => {
       </Box>
       <Box> {description} </Box>
       <Box>
-        {statusConvert(status)}{" "}
+        {formatStatus(status)}{" "}
       </Box>
-      <Box> {priorityConvert(priority)} </Box>
+      <Box> {formatPriority(priority)} </Box>
       <Box>
         {" "}
         {createdBy} on {createdAt} <hr />

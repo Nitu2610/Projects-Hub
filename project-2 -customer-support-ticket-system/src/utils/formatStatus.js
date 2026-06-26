@@ -1,6 +1,6 @@
-import React from 'react'
 
-export const statusConvert = (value) => {
+
+export const formatStatus = (value) => {
   return value === "open"
             ? "Open"
             : value === "closed"
