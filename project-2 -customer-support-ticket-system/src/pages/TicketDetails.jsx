@@ -26,19 +26,23 @@ export const TicketDetails = () => {
       <Heading>Tickets Details for Id: {ticketId}</Heading>
 
       <Container>
-        <Box> {title} </Box>
-        <Box> {description} </Box>
-        <Box>
+        <Box> Title: {" "} {title} </Box>
+        <Box> Description:{" "} {description} </Box>
+        <Box> Status:{" "}
           {formatStatus(status)}{" "}
         </Box>
-        <Box>
+        <Box> Priority:
           {" "}
           {formatPriority(priority)}{" "}
         </Box>
-        <Box>
+        <Box> Created by:
           {" "}
-          {createdBy} on {createdAt} <hr />
+          {createdBy}
         </Box>
+         <Box> Created on:
+          {" "}
+          {createdAt} 
+             </Box> <hr />
       </Container>
     </>
   );

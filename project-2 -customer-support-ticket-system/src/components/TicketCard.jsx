@@ -17,14 +17,13 @@ export const TicketCard = ({ ticket }) => {
         {" "}
         {id}. {title}{" "}
       </Box>
-      <Box> {description} </Box>
-      <Box>
+      <Box> Status: {" "}
         {formatStatus(status)}{" "}
-      </Box>
-      <Box> {formatPriority(priority)} </Box>
+      </Box> 
+      <Box> Priority :{" "} {formatPriority(priority)} </Box>
       <Box>
         {" "}
-        {createdBy} on {createdAt} <hr />
+       By, {createdBy} <hr />
       </Box>
     </Container>
   );
