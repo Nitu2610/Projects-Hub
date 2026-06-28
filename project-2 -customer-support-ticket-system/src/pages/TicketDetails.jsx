@@ -1,8 +1,7 @@
 import { useParams } from "react-router-dom";
 import { ticketsData } from "../data/tickets";
 import { Box, Container, Heading } from "@chakra-ui/react";
-import { formatPriority } from "../utils/formatPriority";
-import { formatStatus } from "../utils/formatStatus";
+import { formatPriority, formatStatus } from "../utils/formatFieldLables";
 
 export const TicketDetails = () => {
   const { id } = useParams(); // return an object(id) with key (id)

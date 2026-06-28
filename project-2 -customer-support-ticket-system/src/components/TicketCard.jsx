@@ -1,8 +1,8 @@
 import React from "react";
 import { Box, Container } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { formatPriority } from "../utils/formatPriority";
-import { formatStatus } from "../utils/formatStatus";
+import { formatPriority, formatStatus } from "../utils/formatFieldLables";
+
 
 export const TicketCard = ({ ticket }) => {
   const navigate = useNavigate();
