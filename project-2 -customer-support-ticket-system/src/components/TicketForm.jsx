@@ -12,6 +12,7 @@ import {
 } from "@chakra-ui/react";
 
 export const TicketForm = ({
+  heading,
   formData,
   handleChange,
   handleSubmit,
@@ -21,7 +22,7 @@ export const TicketForm = ({
       <Card.Root>
         <Card.Body>
           <Heading size="lg" mb={6}>
-            Create Ticket
+           {heading}
           </Heading>
 
           <form onSubmit={handleSubmit}>
@@ -95,7 +96,7 @@ export const TicketForm = ({
                 colorPalette="blue"
                 size="lg"
               >
-                Create Ticket
+                Submit
               </Button>
             </Stack>
           </form>

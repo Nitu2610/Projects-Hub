@@ -10,7 +10,7 @@ function App() {
     <>
      <h1> The react app</h1>
      <AppRoutes/>
-    <CreateTickets/>
+     
     </>
   )
 }

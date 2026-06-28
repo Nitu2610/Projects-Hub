@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { TicketForm } from "../components/TicketForm";
+import { useNavigate } from "react-router-dom";
 
-const INITIAL_FORM_STATE  = {
+export const INITIAL_FORM_STATE  = {
   title: "",
   description: "",
   status: "open",
@@ -37,6 +38,7 @@ export const CreateTickets = () => {
   };
   return (
     <TicketForm
+    heading="Create Ticket"
       formData={formData}
       handleChange={handleChange}
       handleSubmit={handleSubmit}

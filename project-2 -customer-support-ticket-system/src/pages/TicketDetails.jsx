@@ -1,10 +1,11 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ticketsData } from "../data/tickets";
-import { Box, Container, Heading } from "@chakra-ui/react";
+import { Box, Button, Container, Heading } from "@chakra-ui/react";
 import { formatPriority, formatStatus } from "../utils/formatFieldLables";
 
 export const TicketDetails = () => {
   const { id } = useParams(); // return an object(id) with key (id)
+  let navigate=useNavigate()
   const ticketId = +id;
   // console.log(typeof ticketId)
   const ticketDetails = ticketsData.find((ticket) => ticket.id === ticketId);
@@ -44,6 +45,9 @@ export const TicketDetails = () => {
           {createdAt} 
              </Box> <hr />
       </Container>
+      <Button onClick={()=> {
+        navigate('edit')
+      }}>Edit</Button>
     </>
   );
 };
