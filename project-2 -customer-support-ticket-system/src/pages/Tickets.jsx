@@ -1,13 +1,12 @@
-import { ticketsData } from "../data/tickets";
 import { TicketCard } from "../components/TicketCard";
 import { useState } from "react";
 import { FilterComp } from "../components/FilterComp";
 import { filterCompContent } from "../utils/filterCompContent";
 import { filterFieldResult } from "../utils/filterFieldResult";
 import { getSortedTicket } from "../utils/getSortedTickets";
-import { Input,Container } from "@chakra-ui/react";
+import { Input,Container, Heading } from "@chakra-ui/react";
 
-export const Tickets = () => {
+export const Tickets = ({ticketsData}) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
@@ -15,6 +14,8 @@ export const Tickets = () => {
  
 
   const handleSearch = (e) => setSearchTerm(e.target.value);
+
+
 
   // Derived State- If data can be calculated from existing state, don't store it as separate state.
   const normalizedSearch = searchTerm.trim().toLowerCase();
@@ -30,6 +31,8 @@ export const Tickets = () => {
   .filter(filterFieldResult(priorityFilter, "priority", "number"));
 
   const sortedTickets= getSortedTicket(filteredTickets,sortBy);
+
+  if(ticketsData.length ===0 ) return <Heading>No Tickets Availiable.</Heading>
 
   return (
     <>
@@ -67,7 +70,7 @@ export const Tickets = () => {
         />
       </Container>
 
-      {sortedTickets.map((ticket) => (
+      {sortedTickets && sortedTickets.map((ticket) => (
         <TicketCard key={ticket.id} ticket={ticket} />
       ))}
     </>
