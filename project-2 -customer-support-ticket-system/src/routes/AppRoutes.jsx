@@ -6,20 +6,16 @@ import { TicketDetails } from "../pages/TicketDetails";
 import { CreateTickets } from "../pages/CreateTicket";
 import { EditTicket } from "../pages/EditTicket";
 
-export const AppRoutes = ({ticketsData, setTicketsData }) => {
+export const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
 
-      <Route path="/tickets" element={<Tickets  
-      ticketsData={ticketsData} setTicketsData={setTicketsData} />} />
-      <Route path="/tickets/:id" element={<TicketDetails 
-      ticketsData={ticketsData} setTicketsData={setTicketsData}  />} />
-      <Route path="/tickets/:id/edit" element={<EditTicket
-      ticketsData={ticketsData} setTicketsData={setTicketsData}   />} />
+      <Route path="/tickets" element={<Tickets />} />
+      <Route path="/tickets/:id" element={<TicketDetails />} />
+      <Route path="/tickets/:id/edit" element={<EditTicket />} />
 
-      <Route path="/create" element={<CreateTickets
-       setTicketsData={setTicketsData}  />} />
+      <Route path="/create" element={<CreateTickets />} />
     </Routes>
   );
 };

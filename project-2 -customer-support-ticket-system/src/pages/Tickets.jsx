@@ -1,16 +1,19 @@
 import { TicketCard } from "../components/TicketCard";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { FilterComp } from "../components/FilterComp";
 import { filterCompContent } from "../utils/filterCompContent";
 import { filterFieldResult } from "../utils/filterFieldResult";
 import { getSortedTicket } from "../utils/getSortedTickets";
 import { Input,Container, Heading } from "@chakra-ui/react";
+import { TicketsContext } from "../context/TicketsContext";
 
-export const Tickets = ({ticketsData}) => {
+export const Tickets = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
   const [sortBy, setSortBy] = useState("all");
+
+  const {ticketsData} = useContext(TicketsContext);
  
 
   const handleSearch = (e) => setSearchTerm(e.target.value);

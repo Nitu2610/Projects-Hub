@@ -1,8 +1,11 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { Box, Button, Container, Heading } from "@chakra-ui/react";
 import { formatPriority, formatStatus } from "../utils/formatFieldLables";
+import { useContext } from "react";
+import { TicketsContext } from "../context/TicketsContext";
 
-export const TicketDetails = ({ ticketsData, setTicketsData }) => {
+export const TicketDetails = () => {
+  const { ticketsData, setTicketsData } =useContext(TicketsContext)
   const { id: urlId } = useParams(); // return an object(id) with key (id)
 
   let navigate = useNavigate();

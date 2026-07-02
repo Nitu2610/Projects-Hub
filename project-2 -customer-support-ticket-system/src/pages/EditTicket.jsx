@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { TicketForm } from "../components/TicketForm";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { INITIAL_FORM_STATE } from "./CreateTicket";
 import { Heading } from "@chakra-ui/react";
+import { TicketsContext } from "../context/TicketsContext";
 
-export const EditTicket = ({ ticketsData, setTicketsData }) => {
+export const EditTicket = () => {
+    const { ticketsData, setTicketsData } =useContext(TicketsContext)
   const { id:editId } = useParams(); // grab the id from url
   const navigate = useNavigate();
 
