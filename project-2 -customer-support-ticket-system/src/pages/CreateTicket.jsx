@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { TicketForm } from "../components/TicketForm";
 import { useNavigate } from "react-router-dom";
+import { useForm } from "../customHooks/useForm";
 
-export const INITIAL_FORM_STATE  = {
+export const INITIAL_FORM_STATE = {
   title: "",
   description: "",
   status: "open",
@@ -11,34 +12,23 @@ export const INITIAL_FORM_STATE  = {
 };
 
 export const CreateTickets = () => {
-  const [formData, setFormData] = useState(INITIAL_FORM_STATE );
   const navigate=useNavigate();
-  const handleChange = (e) => {
-    let { name, value } = e.target;
-    if (name === "priority") {
-      value = Number(value);
-    }
-    // console.log(name, value);
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleCreateTicket = (updatedData) => {
     const newTicket = {
-      ...formData,
-      createdAt: new Date().toISOString(),
+      ...updatedData,
       id: Date.now(),
+      createdAt: new Date().toISOString(),
     };
-    setFormData(INITIAL_FORM_STATE );
-  //  console.log(newTicket);
-    navigate('/tickets');
+    console.log(newTicket);
+    navigate('/tickets')
   };
+  const { formData, setFormData } = useForm(
+    INITIAL_FORM_STATE,
+    handleCreateTicket,
+  );
   return (
     <TicketForm
-    heading="Create Ticket"
+      heading="Create Ticket"
       formData={formData}
       handleChange={handleChange}
       handleSubmit={handleSubmit}

@@ -1,19 +1,18 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { TicketForm } from "../components/TicketForm";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { INITIAL_FORM_STATE } from "./CreateTicket";
 import { Heading } from "@chakra-ui/react";
-import { TicketsContext } from "../context/TicketsContext";
+import { useTickets } from "../customHooks/useTickets";
+import { useTicketById } from "../customHooks/useTicketById";
 
 export const EditTicket = () => {
-    const { ticketsData, setTicketsData } =useContext(TicketsContext)
-  const { id:editId } = useParams(); // grab the id from url
-  const navigate = useNavigate();
-
-  let foundTicket = ticketsData.find(({ id }) => id === +editId); // fetch the data
-  if (!foundTicket) return <Heading>Ticket not found</Heading>;
-  // Now update the data, so there is no data.
-  const [editedData, setEditedData] = useState(foundTicket);
+  const { ticketsData, setTicketsData } = useTickets();
+  const { urlId, ticketDetailsWithId } = useTicketById();
+    let navigate = useNavigate();
+  if (!ticketDetailsWithId) return <Heading>Ticket not found</Heading>;
+  // Now update the data, if there is no data present.
+  const [editedData, setEditedData] = useState(ticketDetailsWithId);
 
   const handleChange = (e) => {
     let { name, value } = e.target;
@@ -35,7 +34,7 @@ export const EditTicket = () => {
     };
     const updatedData = ticketsData.map((item) => {
       let { id: defaultId } = item;
-      if (defaultId === +editId) {
+      if (defaultId === urlId) {
         //  console.log(item)
         return { ...item, ...editedTicket };
       }
@@ -45,7 +44,7 @@ export const EditTicket = () => {
     setTicketsData(updatedData);
 
     alert("Edit is successfull");
-    navigate(`/tickets/${+editId}`);
+    navigate(`/tickets/${urlId}`);
   };
 
   if (!editedData) {
@@ -62,4 +61,3 @@ export const EditTicket = () => {
     </>
   );
 };
-

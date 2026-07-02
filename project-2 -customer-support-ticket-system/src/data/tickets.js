@@ -1,4 +1,4 @@
-export let ticketsDataSet=[
+export const  ticketsDataSet=[
   {
     "id": 1,
     "title": "Implement Login Page",

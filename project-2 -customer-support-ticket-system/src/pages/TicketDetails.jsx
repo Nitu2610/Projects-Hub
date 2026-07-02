@@ -1,18 +1,15 @@
-import { useNavigate, useParams } from "react-router-dom";
 import { Box, Button, Container, Heading } from "@chakra-ui/react";
 import { formatPriority, formatStatus } from "../utils/formatFieldLables";
-import { useContext } from "react";
-import { TicketsContext } from "../context/TicketsContext";
+import { useTickets } from "../customHooks/useTickets";
+import { useTicketById } from "../customHooks/useTicketById";
+import { useNavigate } from "react-router-dom";
 
 export const TicketDetails = () => {
-  const { ticketsData, setTicketsData } =useContext(TicketsContext)
-  const { id: urlId } = useParams(); // return an object(id) with key (id)
+  const { ticketsData, setTicketsData } = useTickets();
+  const { urlId, ticketDetailsWithId } = useTicketById();
+    let navigate = useNavigate();
 
-  let navigate = useNavigate();
-
-  const ticketDetails = ticketsData.find((ticket) => ticket.id === +urlId);
-
-  if (ticketDetails === undefined) {
+  if (ticketDetailsWithId === undefined) {
     return <Heading> Ticket ID {urlId} not found. </Heading>;
   } // first check the condition then only destructure!!!
 
@@ -24,7 +21,7 @@ export const TicketDetails = () => {
     priority,
     createdBy,
     createdAt,
-  } = ticketDetails;
+  } = ticketDetailsWithId;
 
   const handleDelete = () => {
     let dataAfterDelete = ticketsData.filter(({ id }) => id !== +urlId);
@@ -44,19 +41,21 @@ export const TicketDetails = () => {
         <Box> Status: {formatStatus(status)} </Box>
         <Box> Priority: {formatPriority(priority)} </Box>
         <Box> Created by: {createdBy}</Box>
-        <Box> Created on: {createdAt}</Box> 
+        <Box> Created on: {createdAt}</Box>
       </Container>
-   <Container  display="flex" justifyContent="space-evenly" mt='20px'  >
-       <Button
-        onClick={() => {
-          navigate("edit");
-        }}
-      >
-        Edit
-      </Button>
-      <Button onClick={handleDelete}>Delete</Button>
-       <Button onClick={()=> navigate('/tickets')}>Back to Ticket Page</Button>
-   </Container>
+      <Container display="flex" justifyContent="space-evenly" mt="20px">
+        <Button
+          onClick={() => {
+            navigate("edit");
+          }}
+        >
+          Edit
+        </Button>
+        <Button onClick={handleDelete}>Delete</Button>
+        <Button onClick={() => navigate("/tickets")}>
+          Back to Ticket Page
+        </Button>
+      </Container>
     </>
   );
 };

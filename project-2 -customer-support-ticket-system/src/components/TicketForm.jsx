@@ -22,7 +22,7 @@ export const TicketForm = ({
       <Card.Root>
         <Card.Body>
           <Heading size="lg" mb={6}>
-           {heading}
+            {heading}
           </Heading>
 
           <form onSubmit={handleSubmit}>
@@ -55,7 +55,7 @@ export const TicketForm = ({
                     value={formData.status}
                     onChange={handleChange}
                   >
-                    <option >Select status</option>
+                    <option>Select status</option>
                     <option value="open">Open</option>
                     <option value="inprogress">In Progress</option>
                     <option value="closed">Closed</option>
@@ -72,7 +72,7 @@ export const TicketForm = ({
                     value={formData.priority}
                     onChange={handleChange}
                   >
-                    <option >Select priority</option>
+                    <option>Select priority</option>
                     <option value={1}>Low</option>
                     <option value={2}>Medium</option>
                     <option value={3}>High</option>
@@ -91,11 +91,7 @@ export const TicketForm = ({
                 />
               </Field.Root>
 
-              <Button
-                type="submit"
-                colorPalette="blue"
-                size="lg"
-              >
+              <Button type="submit" colorPalette="blue" size="lg">
                 Submit
               </Button>
             </Stack>
