@@ -13,6 +13,7 @@ export const INITIAL_FORM_STATE = {
 
 export const CreateTickets = () => {
   const navigate=useNavigate();
+
   const handleCreateTicket = (updatedData) => {
     const newTicket = {
       ...updatedData,
@@ -22,10 +23,13 @@ export const CreateTickets = () => {
     console.log(newTicket);
     navigate('/tickets')
   };
-  const { formData, setFormData } = useForm(
+
+  const { formData, setFormData,    handleChange,
+    handleSubmit, } = useForm(
     INITIAL_FORM_STATE,
     handleCreateTicket,
   );
+
   return (
     <TicketForm
       heading="Create Ticket"
