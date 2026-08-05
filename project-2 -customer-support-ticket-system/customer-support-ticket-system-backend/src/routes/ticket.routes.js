@@ -1,19 +1,23 @@
-const express=require("express");
+const express = require("express");
 
-const router = express.Router();
+const ticketRouter = express.Router();
 
-router.get("/",(req, res)=>{
-  res.status(200).json({
-    success : "true",
-    message:" Customer Support Ticket API in running."
-  })
-})
+const ticketController = require("../controllers/ticket.controller");
 
-router.get("/health", (req, res) =>{
-  res.status(200).json({
-    status:true,
-    message:" Server is healthy."
-  })
-})
+// GET
+ticketRouter.get("/", ticketController.getAllTickets);
+ticketRouter.get("/:ticketId", ticketController.getTicketById); // ensure same variable name is used to to access it from params.
 
-module.exports= router;
+//POST
+ticketRouter.post("/", ticketController.createTicket);
+
+// PATCH
+ticketRouter.patch("/:ticketId", ticketController.updateTicket);
+
+//PUT
+ticketRouter.put("/:ticketId", ticketController.replaceTicket);
+
+// DELETE
+ticketRouter.delete("/:deleteId", ticketController.deleteTicket);
+
+module.exports = ticketRouter;
