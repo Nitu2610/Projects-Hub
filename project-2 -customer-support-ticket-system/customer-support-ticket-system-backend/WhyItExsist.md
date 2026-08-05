@@ -106,4 +106,5 @@
 - ##### Why create a separate filter object instead of passing req.query directly to find()?
   - req.query can contain parameters that are not database fields, such as page, limit, sortBy, or order. By building a separate filter object, we include only the fields intended for filtering, preventing incorrect database queries and making the API easier to extend.
 
-- ##### 
+- ##### Why do we hash passwords instead of encrypting them?
+  - Passwords don't need to be recovered by the server. During login, the server hashes the password entered by the user and compares it with the stored hash. Since hashing is one-way, storing hashes is more secure than storing reversible encrypted passwords.

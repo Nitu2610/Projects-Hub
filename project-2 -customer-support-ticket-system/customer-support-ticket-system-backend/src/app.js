@@ -4,6 +4,7 @@ const morgan = require("morgan");
 
 const healthRoutes = require("./routes/health.routes");
 const ticketRoutes = require("./routes/ticket.routes");
+const userRoutes = require("./routes/user.routes");
 
 const app = express();
 
@@ -15,5 +16,7 @@ app.use(morgan("dev"));
 app.use("/", healthRoutes);
 
 app.use("/tickets", ticketRoutes);
+
+app.use("/users", userRoutes);
 
 module.exports = app;
