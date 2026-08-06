@@ -108,3 +108,49 @@
 
 - ##### Why do we hash passwords instead of encrypting them?
   - Passwords don't need to be recovered by the server. During login, the server hashes the password entered by the user and compares it with the stored hash. Since hashing is one-way, storing hashes is more secure than storing reversible encrypted passwords.
+
+- ##### Why is JWT called stateless?
+  - Because the server does not store login sessions. Each request contains the information needed to identify the user through the token.
+  - JWT proves that the request comes from an authenticated user. The id tells us who that user is, and the role tells us what they're allowed to do.
+
+- ##### Does JWT encrypt data?
+  - No. This is one of the most common misconceptions. JWT is signed, not encrypted.
+Anyone who has the token can decode its header and payload. The signature ensures the data hasn't been modified. Never put sensitive information like passwords inside a JWT.
+
+- ##### Why don't we store the password inside the JWT?
+  - The password is only used once during login to verify the user's identity. After successful authentication, it has no further purpose. Since JWTs can be decoded by anyone who possesses them (they are signed, not encrypted), storing a password inside a JWT would expose sensitive information. Instead, the token contains only the minimum information needed to identify the user.
+
+- ##### Why do we send JWT in the Authorization header instead of the request body?
+    - Because authentication credentials are metadata about the request, not part of the application data. HTTP defines the Authorization header specifically for sending credentials, and using the standard Bearer <token> format allows clients, servers, proxies, and libraries to work together consistently.
+
+- ##### Why do we store the decoded payload in req.user instead of making every controller call jwt.verify()?
+  - Because authentication should happen once in the middleware. Controllers should focus only on business logic, while middleware provides trusted user information through req.user.
+
+- ##### jwt.verify() working?
+  1. Split the token in Header, Payload, and Signature.
+  2. Decode the Header to know which algorithim was used.
+  3. Decode the Payload
+  4. Recreate the signature, using the same secret key on the server.
+  5. Compare the signatures,
+     - if matched,
+        6. Check expiration,
+          -  if expired, throws a error `TokenExpiredError`.
+          -  if not expired, return the decoded payload. 
+     - if not matched, throw an error(exception)
+  
+  - As its return an exception, we need to use try_catch to handle the error.      
+
+- ##### I understand that Express middleware only receives req, res, and next. So why do we wrap the middleware inside another function like authorize(...roles)? Why can't we pass custom parameters directly to the middleware?
+
+  - After `authMiddleware` runs, Express moves to `authorize("customer", "admin")`.
+  - `authorize` is a **regular function**. It accepts the roles that are allowed to access the route. It then **returns a middleware function**.
+
+  - When a request comes in, Express executes that returned middleware. Inside it, we check `req.user.role` against the allowed roles. If the role is allowed, we call `next()`. Otherwise, we return a `403 Access Denied` response.
+
+  - We cannot pass custom parameters like `"customer"` or `"admin"` directly to a middleware because Express only calls middleware with three arguments: `req`, `res`, and `next`.
+
+  - That's why we use a regular function first. It accepts our custom parameters and returns a middleware that remembers those parameters and performs the role check.
+
+
+  - ##### 
+

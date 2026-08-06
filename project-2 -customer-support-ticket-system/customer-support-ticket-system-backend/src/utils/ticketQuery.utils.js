@@ -1,7 +1,14 @@
-const buildFilter = (query) => {
+const buildFilter = (query,user) => {
+   const userId=user.id;
+   const role=user.role;
+
   const { status, priority, search } = query;
 
   const filter = {};
+
+  if(role=== "customer") filter.createdBy=userId;
+  if(role=== "agent") filter.assignedTo=userId;
+  if(role=== "admin") return filter;
 
   if (status) filter.status = status;
   if (priority) filter.priority = priority;

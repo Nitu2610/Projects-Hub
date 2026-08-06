@@ -3,21 +3,33 @@ const express = require("express");
 const ticketRouter = express.Router();
 
 const ticketController = require("../controllers/ticket.controller");
+const authMiddleware = require("../middleware/auth.middleware");
+const authorizeRoles = require("../middleware/authorizeRoles.middleware");
+
+ticketRouter.use(authMiddleware);
 
 // GET
 ticketRouter.get("/", ticketController.getAllTickets);
 ticketRouter.get("/:ticketId", ticketController.getTicketById); // ensure same variable name is used to to access it from params.
 
 //POST
-ticketRouter.post("/", ticketController.createTicket);
+ticketRouter.post("/", authorizeRoles("customer"), ticketController.createTicket);
 
 // PATCH
-ticketRouter.patch("/:ticketId", ticketController.updateTicket);
+ticketRouter.patch(
+  "/:ticketId",
+  authorizeRoles("admin", "agent"),
+  ticketController.updateTicket,
+);
 
 //PUT
-ticketRouter.put("/:ticketId", ticketController.replaceTicket);
+ticketRouter.put("/:ticketId",authorizeRoles("admin"), ticketController.replaceTicket);
 
 // DELETE
-ticketRouter.delete("/:deleteId", ticketController.deleteTicket);
+ticketRouter.delete(
+  "/:deleteId",
+  authorizeRoles("admin"),
+  ticketController.deleteTicket,
+);
 
 module.exports = ticketRouter;

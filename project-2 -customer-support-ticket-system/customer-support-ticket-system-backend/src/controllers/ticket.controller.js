@@ -2,7 +2,7 @@ const ticketService = require("../services/ticket.service");
 
 const createTicket = async (req, res) => {
   try {
-    const ticket = await ticketService.createTicket(req.body);
+    const ticket = await ticketService.createTicket(req.body,req.user);
     // ensure createTicket is exported as object!!!
 
     res.status(201).json({
@@ -20,7 +20,7 @@ const createTicket = async (req, res) => {
 
 const getAllTickets = async (req, res) => {
   try {
-    const tickets = await ticketService.getAllTickets(req.query);
+    const tickets = await ticketService.getAllTickets(req.query, req.user);
 
     res.status(200).json({
       status: true,
@@ -40,18 +40,24 @@ const getTicketById = async (req, res) => {
   try {
     const { ticketId } = req.params;
 
-    const ticketById = await ticketService.getTicketById(ticketId);
+    const ticket = await ticketService.getTicketById(ticketId, req.user);
 
-    if (!ticketById) {
-      return res.status(404).json({
-        status: false,
-        message: "Ticket Not Found!!",
-      });
+    if (!ticket.success) {
+      if (ticket.reason === "FORBIDDEN")
+        return res.status(403).json({
+          status: false,
+          message: ticket.reason,
+        });
+      if (ticket.reason === "NOT_FOUND")
+        return res.status(404).json({
+          status: false,
+          message: ticket.reason,
+        });
     }
 
     res.status(200).json({
       status: true,
-      data: ticketById,
+      data: ticket.data,
     });
   } catch (error) {
     res.status(500).json({
@@ -65,19 +71,31 @@ const updateTicket = async (req, res) => {
   try {
     const { ticketId } = req.params;
 
-    const updatedTicket = await ticketService.updateTicket(ticketId, req.body);
+    const updatedTicket = await ticketService.updateTicket(
+      ticketId,
+      req.body,
+      req.user,
+    );
 
-    if (!updatedTicket) {
-      return res.status(404).json({
-        status: false,
-        message: "Ticket Not Found",
-      });
+    if (!updatedTicket.success) {
+      if (updatedTicket.reason === "NOT_FOUND") {
+        return res.status(404).json({
+          status: false,
+          message: "Ticket Not Found",
+        });
+      }
+      if (updatedTicket.reason === "FORBIDDEN") {
+        return res.status(403).json({
+          status: false,
+          message: updatedTicket.reason,
+        });
+      }
     }
 
     return res.status(200).json({
       status: true,
       message: "Ticket updated successfully.",
-      data: updatedTicket,
+      data: updatedTicket.data,
     });
   } catch (error) {
     res.status(500).json({
@@ -120,19 +138,27 @@ const deleteTicket = async (req, res) => {
   try {
     const { deleteId } = req.params;
 
-    const deletedTicket = await ticketService.deleteTicket(deleteId);
+    const deletedTicket = await ticketService.deleteTicket(deleteId, req.user);
 
-    if (!deletedTicket) {
-      return res.status(404).json({
-        status: false,
-        message: "Ticket Not Found.",
-      });
+    if (!deletedTicket.success) {
+      if (deletedTicket.reason === "NOT_FOUND") {
+        return res.status(404).json({
+          status: false,
+          message: deletedTicket.reason,
+        });
+      }
+      if (deletedTicket.reason === "FORBIDDEN") {
+        return res.status(403).json({
+          status: false,
+          message: deletedTicket.reason,
+        });
+      }
     }
 
     return res.status(200).json({
       status: true,
       message: "Ticket deleted successfully.",
-      data: deleteTicket,
+      data: deletedTicket.data,
     });
   } catch (error) {
     res.status(500).json({

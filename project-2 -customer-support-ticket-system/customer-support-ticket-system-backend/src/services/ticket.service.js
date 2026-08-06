@@ -6,32 +6,113 @@ const {
   buildPagination,
 } = require("../utils/ticketQuery.utils");
 
-const createTicket = async (ticketData) => {
-  const ticket = await Ticket.create(ticketData);
+const createTicket = async (ticketData, user) => {
+  const ticketDetails = { ...ticketData, createdBy: user.id };
+  const ticket = await Ticket.create(ticketDetails);
 
   return ticket;
 };
 
-const getAllTickets = async (query) => {
-  const filter = buildFilter(query);
+const getAllTickets = async (query, user) => {
+  const filter = buildFilter(query, user);
   const sort = buildSort(query);
   const { skip, limit } = buildPagination(query);
-
   return await Ticket.find(filter).sort(sort).skip(skip).limit(limit);
 };
 
-const getTicketById = async (ticketId) => {
+const getTicketById = async (ticketId, user) => {
   const ticket = await Ticket.findById(ticketId);
 
-  return ticket;
+  if (!ticket)
+    return {
+      success: false,
+      reason: "NOT_FOUND",
+    };
+
+  if (user.role === "customer") {
+    if (ticket.createdBy.toString() === user.id) {
+      return {
+        success: true,
+        data: ticket,
+      };
+    }
+  }
+
+  if (user.role === "agent") {
+    if (ticket.assignedTo.toString() === user.id) {
+      return {
+        success: true,
+        data: ticket,
+      };
+    }
+  }
+
+  if (user.role === "admin") {
+    return {
+      success: true,
+      data: ticket,
+    };
+  }
+
+  return {
+    success: false,
+    reason: "FORBIDDEN",
+  };
 };
 
-const updateTicket = async (ticketId, updateData) => {
-  const updatedTicket = await Ticket.findByIdAndUpdate(ticketId, updateData, {
-    returnDocument: "after", // It return new updated data/ after update data, without it DB will return old data or before value
-    runValidators: true, // ensure only the selected values are updated as set in the mongoose Schma.
-  });
-  return updatedTicket;
+const updateTicket = async (ticketId, updatedData, user) => {
+  const ticket = await Ticket.findById(ticketId);
+
+  if (!ticket) {
+    return {
+      success: false,
+      reason: "NOT_FOUND",
+    };
+  }
+  if (user.role === "admin") {
+    const updatedTicket = await Ticket.findByIdAndUpdate(
+      ticketId,
+      updatedData,
+      {
+        returnDocument: "after", // It return new updated data/ after update data, without it DB will return old data or before value
+        runValidators: true, // ensure only the selected values are updated as set in the mongoose Schma.
+      },
+    );
+    return {
+      success: true,
+      data: updatedTicket,
+    };
+  }
+
+  if (user.role === "agent" && ticket.assignedTo.toString() === user.id) {
+    const allowedFields = ["status", "priority", "resolution"];
+
+    const filteredData = {};
+
+    for (const field of allowedFields) {
+      if (updatedData[field] !== undefined) {
+        filteredData[field] = updatedData[field];
+      }
+    }
+
+    const updatedTicket = await Ticket.findByIdAndUpdate(
+      ticketId,
+      filteredData,
+      {
+        returnDocument: "after", // It return new updated data/ after update data, without it DB will return old data or before value
+        runValidators: true, // ensure only the selected values are updated as set in the mongoose Schma.
+      },
+    );
+    return {
+      success: true,
+      data: updatedTicket,
+    };
+  }
+
+  return {
+    success: false,
+    reason: "FORBIDDEN",
+  };
 };
 
 const replaceTicket = async (ticketid, ticketData) => {
@@ -47,10 +128,26 @@ const replaceTicket = async (ticketid, ticketData) => {
   return replacedTicket;
 };
 
-const deleteTicket = async (ticketId) => {
-  const deletedTicket = await Ticket.findByIdAndDelete(ticketId);
+const deleteTicket = async (deleteId, user) => {
+  const ticket = await Ticket.findById(deleteId);
+  if (!ticket) {
+    return {
+      success: false,
+      reason: "NOT_FOUND",
+    };
+  }
+  if (user.role === "admin") {
+    const deletedTicket = await Ticket.findByIdAndDelete(deleteId);
 
-  return deletedTicket;
+    return {
+      success: true,
+      data: deletedTicket,
+    };
+  }
+  return {
+    success: false,
+    reason: "FORBIDDEN",
+  };
 };
 
 module.exports = {

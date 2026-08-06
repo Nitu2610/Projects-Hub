@@ -2,22 +2,21 @@ const userService = require("../services/user.service");
 
 const getAllUsers = async (req, res) => {
   try {
-    const users = await userService.getAllUsers();
+    const users = await userService.getAllUsers(req.user);
 
-    if (users.length === 0) {
-      return res.status(200).json({
-        status: true,
-        message: "No Users",
-        count: 0,
-        data: users,
-      });
+    if (!users.success) {
+      if (users.reason === "FORBIDDEN") {
+        return res.status(403).json({
+          status: false,
+          message: users.reason,
+        });
+      }
     }
-
     return res.status(200).json({
       status: true,
-      messages: "Users list fetched.",
-      count: users.length,
-      data: users,
+      messages: users.data.length === 0 ? "No Users" : "Users list fetched.",
+      count: users.data.length,
+      data: users.data,
     });
   } catch (error) {
     res.status(500).json({
@@ -59,7 +58,42 @@ const createUser = async (req, res) => {
   }
 };
 
+const userLogin = async (req, res) => {
+  try {
+    const loginStatus = await userService.userLogin(req.body);
+
+    if (loginStatus.reason === "Email_Not_Registered") {
+      return res.status(404).json({
+        status: false,
+        message: "email is not registered!",
+      });
+    } else if (loginStatus.reason === "Incorrect_Password") {
+      return res.status(401).json({
+        status: false,
+        message: "Incorrect password!",
+      });
+    }
+
+    return res.status(200).json({
+      status: true,
+      message: "Login Successfully",
+      token: loginStatus.token,
+      user: {
+        id: loginStatus.user._id,
+        firstName: loginStatus.user.firstName,
+        role: loginStatus.user.role,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   getAllUsers,
   createUser,
+  userLogin,
 };
