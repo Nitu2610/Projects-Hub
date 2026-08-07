@@ -24,7 +24,7 @@ const getAllTickets = async (query, user) => {
 const getTicketById = async (ticketId, user) => {
   const ticket = await Ticket.findById(ticketId)
     .populate("createdBy", "firstName lastName email")
-    .populate("assignedTo", "firstName, lastName");
+    .populate("assignedTo", "firstName lastName");
 
   if (!ticket)
     return {
@@ -167,17 +167,15 @@ const assignTicket = async (ticketId, agentId) => {
       success: false,
       reason: "TICKET_NOT_FOUND",
     };
-  };
+  }
 
   const agent = await User.findById(agentId);
-   console.log(agent)
- 
-   if (!agent) {
+  if (!agent) {
     return {
       success: false,
       reason: "AGENT_NOT_FOUND",
     };
-  };
+  }
 
   if (agent.role !== "agent") {
     return {
@@ -187,8 +185,6 @@ const assignTicket = async (ticketId, agentId) => {
   }
 
   const update = { assignedTo: agentId };
-  console.log(update);
-
   const assignedTicket = await Ticket.findByIdAndUpdate(ticketId, update, {
     returnDocument: "after",
     runValidators: true,

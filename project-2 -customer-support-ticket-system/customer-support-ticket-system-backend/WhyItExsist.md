@@ -152,7 +152,7 @@ Anyone who has the token can decode its header and payload. The signature ensure
   - That's why we use a regular function first. It accepts our custom parameters and returns a middleware that remembers those parameters and performs the role check.
 
 
-  - ##### Can you explain the complete validation workflow for the POST /users/register endpoint? Walk me through what happens from the moment the client sends the request until the final response is returned. Explain the role of the route, validation middleware, validationResult(req), controller, service layer, and how the flow changes when validation fails versus when it succeeds.
+- ##### Can you explain the complete validation workflow for the POST /users/register endpoint? Walk me through what happens from the moment the client sends the request until the final response is returned. Explain the role of the route, validation middleware, validationResult(req), controller, service layer, and how the flow changes when validation fails versus when it succeeds.
     - When the client sends a POST /users/register request, Express matches the route and executes the middleware in order. First, validateRegister validates and sanitizes each input field and stores the results in the request. Then validationMiddleware calls validationResult(req) to collect any validation errors. If errors exist, it returns a 400 Bad Request response and the controller is never executed. If validation passes, next() transfers control to the controller, which calls the service layer. The service performs business logic such as checking duplicate emails, hashing the password, saving the user, and generating a JWT. Finally, the controller sends the HTTP response back to the client.
 
 - ##### While implementing role-based authorization for the GET /tickets/:id endpoint, I encountered an issue where a customer was receiving a FORBIDDEN response even though they were the ticket creator. The problem was caused by the following line:
@@ -182,23 +182,37 @@ Can you explain why this comparison failed and how you fixed it?
 - #####  Does populate() always improve performance?
   - No. While `populate()` makes development easier, it performs additional database lookups. If we populate many fields or large datasets unnecessarily, it can slow down the application. That's why we should populate only the fields required by the client.
 
-- ##### 
-  - 
+- ##### MVC vs MCS
+  - MVC (Model - View - Controller)
+    - Responsibilities
+      - Model ->  Database schema; Database operations
+      - View -> UI (React, HTML, etc.)
+      - Controller -> Receives request; Validates request; Calls Model; Sends response.
+    - Problem with MVC
+      - Business logic starts living inside controllers.
+      - Controllers become difficult to maintain.
+    
+  - MCS (Model - Controller - Service)
+    - Responsibilities
+      - Model -> Schema ; Database collections
+      - Controller -> Only HTTP-related work. Read req, Call Service, Return res. No business logic.
+      - Service-> Contains all business logic.
+    
+- ##### Why did we choose MCS?
+  - I used the MCS architecture because it separates business logic from HTTP handling. Controllers remain small and are responsible only for processing requests and sending responses, while Services contain all the business logic. This improves readability, makes testing easier, and allows the same business logic to be reused from multiple controllers or background jobs.
 
-- ##### 
-  - 
+- ##### Why do we use next(error) instead of return res.status(500)...?
+  - We use `next(error)` to delegate error handling to Express's centralized error middleware. This removes duplicate `try/catch` response logic from every controller, keeps controllers focused on request handling, and ensures all errors are returned in a consistent format. If we later want to add logging, monitoring, or custom error responses, we only need to change one place.
+  - Express doesn't care about the variable name. It only cares that the middleware function has four parameters.
 
-- ##### 
-  - 
+- ##### What is the difference between next() and next(error)?
+  - `next()` tells Express to continue executing the next normal middleware or route handler. `next(error)` tells Express that an error has occurred, so it skips all remaining normal middleware and transfers control directly to the global error-handling middleware.
 
-- ##### 
-  - 
+- ##### Why is the global error middleware registered after all routes? Or its is use at the end of all the routes in app?
+  - Express executes middleware in the order it is registered. When `next(error)` is called, Express looks forward for the next error-handling middleware. If the error middleware is placed before the routes, Express has already passed it and won't go back. Therefore, it must be registered after all routes so it can catch errors from any controller or middleware.
 
-- ##### 
-  - 
-
-- ##### 
-  - 
+- ##### Why next() is not used in the try block of controller?
+  - Middleware usually calls `next()` because it doesn't finish the request. Controllers usually don't call `next()` because they send the final response. The exception is when a controller catches an unexpected error—it should call `next(error)` to hand it off to the global error handler.
 
 - ##### 
   - 

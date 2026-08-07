@@ -1,6 +1,6 @@
 const ticketService = require("../services/ticket.service");
 
-const createTicket = async (req, res) => {
+const createTicket = async (req, res, next) => {
   try {
     const ticket = await ticketService.createTicket(req.body, req.user);
     // ensure createTicket is exported as object!!!
@@ -11,14 +11,11 @@ const createTicket = async (req, res) => {
       data: ticket,
     });
   } catch (error) {
-    res.status(500).json({
-      status: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
-const getAllTickets = async (req, res) => {
+const getAllTickets = async (req, res, next) => {
   try {
     const tickets = await ticketService.getAllTickets(req.query, req.user);
 
@@ -29,14 +26,11 @@ const getAllTickets = async (req, res) => {
       data: tickets,
     });
   } catch (error) {
-    res.status(500).json({
-      status: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
-const getTicketById = async (req, res) => {
+const getTicketById = async (req, res, next) => {
   try {
     const { ticketId } = req.params;
 
@@ -61,14 +55,11 @@ const getTicketById = async (req, res) => {
       data: ticket.data,
     });
   } catch (error) {
-    res.status(500).json({
-      status: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
-const updateTicket = async (req, res) => {
+const updateTicket = async (req, res, next) => {
   try {
     const { ticketId } = req.params;
 
@@ -99,14 +90,11 @@ const updateTicket = async (req, res) => {
       data: updatedTicket.data,
     });
   } catch (error) {
-    res.status(500).json({
-      status: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
-const replaceTicket = async (req, res) => {
+const replaceTicket = async (req, res, next) => {
   try {
     const { ticketId } = req.params;
 
@@ -128,14 +116,11 @@ const replaceTicket = async (req, res) => {
       data: replacedTicket,
     });
   } catch (error) {
-    res.status(500).json({
-      status: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
-const deleteTicket = async (req, res) => {
+const deleteTicket = async (req, res, next) => {
   try {
     const { deleteId } = req.params;
 
@@ -162,16 +147,13 @@ const deleteTicket = async (req, res) => {
       data: deletedTicket.data,
     });
   } catch (error) {
-    res.status(500).json({
-      status: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
 // -------
 
-const assignTicket = async (req, res) => {
+const assignTicket = async (req, res, next) => {
   try {
     const { ticketId } = req.params;
     const { agentId } = req.body;
@@ -202,10 +184,7 @@ const assignTicket = async (req, res) => {
       data: assignedTicket.data,
     });
   } catch (error) {
-    res.status(500).json({
-      status: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 

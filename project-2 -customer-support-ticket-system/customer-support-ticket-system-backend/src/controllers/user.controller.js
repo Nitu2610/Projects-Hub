@@ -1,6 +1,6 @@
 const userService = require("../services/user.service");
 
-const getAllUsers = async (req, res) => {
+const getAllUsers = async (req, res, next) => {
   try {
     const users = await userService.getAllUsers(req.user);
 
@@ -19,14 +19,11 @@ const getAllUsers = async (req, res) => {
       data: users.data,
     });
   } catch (error) {
-    res.status(500).json({
-      status: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
-const createUser = async (req, res) => {
+const createUser = async (req, res, next) => {
   try {
     const user = await userService.createUser(req.body);
 
@@ -51,14 +48,11 @@ const createUser = async (req, res) => {
       data: response,
     });
   } catch (error) {
-    res.status(500).json({
-      status: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
-const userLogin = async (req, res) => {
+const userLogin = async (req, res, next) => {
   try {
     const loginStatus = await userService.userLogin(req.body);
 
@@ -85,10 +79,7 @@ const userLogin = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({
-      status: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
