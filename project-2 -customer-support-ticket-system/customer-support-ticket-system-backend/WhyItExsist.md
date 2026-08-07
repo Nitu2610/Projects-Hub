@@ -152,5 +152,6 @@ Anyone who has the token can decode its header and payload. The signature ensure
   - That's why we use a regular function first. It accepts our custom parameters and returns a middleware that remembers those parameters and performs the role check.
 
 
-  - ##### 
+  - ##### Can you explain the complete validation workflow for the POST /users/register endpoint? Walk me through what happens from the moment the client sends the request until the final response is returned. Explain the role of the route, validation middleware, validationResult(req), controller, service layer, and how the flow changes when validation fails versus when it succeeds.
+    - When the client sends a POST /users/register request, Express matches the route and executes the middleware in order. First, validateRegister validates and sanitizes each input field and stores the results in the request. Then validationMiddleware calls validationResult(req) to collect any validation errors. If errors exist, it returns a 400 Bad Request response and the controller is never executed. If validation passes, next() transfers control to the controller, which calls the service layer. The service performs business logic such as checking duplicate emails, hashing the password, saving the user, and generating a JWT. Finally, the controller sends the HTTP response back to the client.
 

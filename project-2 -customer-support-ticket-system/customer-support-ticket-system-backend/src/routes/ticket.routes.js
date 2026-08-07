@@ -5,6 +5,8 @@ const ticketRouter = express.Router();
 const ticketController = require("../controllers/ticket.controller");
 const authMiddleware = require("../middleware/auth.middleware");
 const authorizeRoles = require("../middleware/authorizeRoles.middleware");
+const {validateTicket}= require("../validators/ticket.validator");
+const validationMiddleware= require("../middleware/validation.middleware")
 
 ticketRouter.use(authMiddleware);
 
@@ -13,7 +15,7 @@ ticketRouter.get("/", ticketController.getAllTickets);
 ticketRouter.get("/:ticketId", ticketController.getTicketById); // ensure same variable name is used to to access it from params.
 
 //POST
-ticketRouter.post("/", authorizeRoles("customer"), ticketController.createTicket);
+ticketRouter.post("/", authorizeRoles("customer"), validateTicket,  ticketController.createTicket);
 
 // PATCH
 ticketRouter.patch(

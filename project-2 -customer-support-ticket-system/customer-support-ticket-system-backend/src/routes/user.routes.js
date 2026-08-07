@@ -2,12 +2,14 @@ const express= require("express");
 const userController= require("../controllers/user.controller");
 const authMiddleware = require("../middleware/auth.middleware");
 const authorizeRoles = require("../middleware/authorizeRoles.middleware");
+const { validateRegister, validateLogin } =require("../validators/user.validator");
+const validationMiddleware=require("../middlewares/validation.middleware")
 
 const userRouter=express.Router();
 
-userRouter.post("/register", userController.createUser);
+userRouter.post("/register", validateRegister , validationMiddleware , userController.createUser);
 
-userRouter.post("/login", userController.userLogin)
+userRouter.post("/login", validateLogin, validationMiddleware, userController.userLogin)
 
 
 // everything below require authentication 
