@@ -155,3 +155,57 @@ Anyone who has the token can decode its header and payload. The signature ensure
   - ##### Can you explain the complete validation workflow for the POST /users/register endpoint? Walk me through what happens from the moment the client sends the request until the final response is returned. Explain the role of the route, validation middleware, validationResult(req), controller, service layer, and how the flow changes when validation fails versus when it succeeds.
     - When the client sends a POST /users/register request, Express matches the route and executes the middleware in order. First, validateRegister validates and sanitizes each input field and stores the results in the request. Then validationMiddleware calls validationResult(req) to collect any validation errors. If errors exist, it returns a 400 Bad Request response and the controller is never executed. If validation passes, next() transfers control to the controller, which calls the service layer. The service performs business logic such as checking duplicate emails, hashing the password, saving the user, and generating a JWT. Finally, the controller sends the HTTP response back to the client.
 
+- ##### While implementing role-based authorization for the GET /tickets/:id endpoint, I encountered an issue where a customer was receiving a FORBIDDEN response even though they were the ticket creator. The problem was caused by the following line:
+`if (ticket.createdBy.toString() === user.id)`
+Can you explain why this comparison failed and how you fixed it?
+
+  -  The issue occurred because I was using `populate()`. After population, `createdBy` became a complete User document instead of an `ObjectId`. I was comparing `ticket.createdBy.toString()` with `user.id`, which always failed. The fix was to compare the populated document's `_id ` using either `ticket.createdBy._id.toString() === user.id` or, preferably, `ticket.createdBy._id.equals(user.id)`. This allowed the authorization check to work correctly.
+
+- ##### What is populate() in Mongoose?
+  - `populate()` is a Mongoose method used to fetch related documents referenced by an `ObjectId`. Instead of returning only the `ObjectId`, it replaces that ObjectId with the corresponding document from the referenced collection. It works based on the `ref` property defined in the schema.
+
+- ##### How does populate() work internally?
+  - First, Mongoose executes the main query, for example `Ticket.findById(id)`. The returned document contains `ObjectIds` for fields like `createdBy` and `assignedTo`. Mongoose then checks the schema and sees that these fields have a `ref: "User"`. Using that information, it queries the `User` collection for the matching `ObjectIds`. Finally, it replaces the `ObjectIds` with the fetched user documents before returning the final result.
+
+- ##### Is populate() a MongoDB feature?
+  - No. `populate()` is a Mongoose feature, not a MongoDB feature. MongoDB stores only the `ObjectId` references. Mongoose performs the additional queries and combines the data before returning it to the application.
+
+- ##### Why do we use ObjectId references instead of storing the complete user information inside every ticket?
+  - Using ObjectId references avoids data duplication. User information is stored only once in the User collection. If a user updates their email or name, we update only one document instead of every ticket. This keeps the database consistent and reduces storage usage.
+
+- ##### Why didn't you store firstName, lastName, and email in your Ticket collection?
+  - I initially did, but after introducing relationships, I removed them. The ticket now stores only `createdBy` and `assignedTo` as `ObjectId` references. Whenever user information is needed, I use `populate()` to fetch it. This avoids duplication and follows a normalized database design.
+
+- ##### Can we limit the fields returned by populate()?
+  - Yes. The second argument of populate() lets us select specific fields. For example: `.populate("createdBy", "firstName lastName email")`. This returns only the selected fields instead of the complete user document, which is both more secure and more efficient.
+
+- #####  Does populate() always improve performance?
+  - No. While `populate()` makes development easier, it performs additional database lookups. If we populate many fields or large datasets unnecessarily, it can slow down the application. That's why we should populate only the fields required by the client.
+
+- ##### 
+  - 
+
+- ##### 
+  - 
+
+- ##### 
+  - 
+
+- ##### 
+  - 
+
+- ##### 
+  - 
+
+- ##### 
+  - 
+
+- ##### 
+  - 
+
+- ##### 
+  - 
+
+- ##### 
+  - 
+

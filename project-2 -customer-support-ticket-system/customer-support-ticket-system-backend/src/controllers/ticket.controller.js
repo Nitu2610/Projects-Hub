@@ -2,7 +2,7 @@ const ticketService = require("../services/ticket.service");
 
 const createTicket = async (req, res) => {
   try {
-    const ticket = await ticketService.createTicket(req.body,req.user);
+    const ticket = await ticketService.createTicket(req.body, req.user);
     // ensure createTicket is exported as object!!!
 
     res.status(201).json({
@@ -47,6 +47,7 @@ const getTicketById = async (req, res) => {
         return res.status(403).json({
           status: false,
           message: ticket.reason,
+          role: ticket.role,
         });
       if (ticket.reason === "NOT_FOUND")
         return res.status(404).json({
@@ -168,6 +169,46 @@ const deleteTicket = async (req, res) => {
   }
 };
 
+// -------
+
+const assignTicket = async (req, res) => {
+  try {
+    const { ticketId } = req.params;
+    const { agentId } = req.body;
+
+    const assignedTicket = await ticketService.assignTicket(ticketId, agentId);
+
+    if (!assignedTicket.success) {
+      if (
+        assignedTicket.reason === "AGENT_NOT_FOUND" ||
+        assignedTicket.reason === "TICKET_NOT_FOUND"
+      ) {
+        return res.status(404).json({
+          status: false,
+          message: assignedTicket.reason,
+        });
+      }
+      if (assignedTicket.reason === "NOT_AN_AGENT") {
+        return res.status(400).json({
+          status: false,
+          message: assignedTicket.reason,
+        });
+      }
+    }
+
+    return res.status(200).json({
+      status: true,
+      message: "Ticket assigned successfully",
+      data: assignedTicket.data,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   createTicket,
   getAllTickets,
@@ -175,4 +216,5 @@ module.exports = {
   updateTicket,
   replaceTicket,
   deleteTicket,
+  assignTicket,
 };

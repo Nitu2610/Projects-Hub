@@ -12,6 +12,7 @@ ticketRouter.use(authMiddleware);
 
 // GET
 ticketRouter.get("/", ticketController.getAllTickets);
+
 ticketRouter.get("/:ticketId", ticketController.getTicketById); // ensure same variable name is used to to access it from params.
 
 //POST
@@ -23,6 +24,13 @@ ticketRouter.patch(
   authorizeRoles("admin", "agent"),
   ticketController.updateTicket,
 );
+
+ticketRouter.patch(
+  "/:ticketId/assign",
+  authorizeRoles("admin"),
+  ticketController.assignTicket,
+);
+
 
 //PUT
 ticketRouter.put("/:ticketId",authorizeRoles("admin"), ticketController.replaceTicket);

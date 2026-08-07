@@ -3,7 +3,7 @@ const userController= require("../controllers/user.controller");
 const authMiddleware = require("../middleware/auth.middleware");
 const authorizeRoles = require("../middleware/authorizeRoles.middleware");
 const { validateRegister, validateLogin } =require("../validators/user.validator");
-const validationMiddleware=require("../middlewares/validation.middleware")
+const validationMiddleware=require("../middleware/validation.middleware")
 
 const userRouter=express.Router();
 

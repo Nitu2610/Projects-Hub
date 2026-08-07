@@ -1,4 +1,5 @@
 const Ticket = require("../models/ticket.model");
+const User = require("../models/user.model");
 
 const {
   buildFilter,
@@ -21,7 +22,9 @@ const getAllTickets = async (query, user) => {
 };
 
 const getTicketById = async (ticketId, user) => {
-  const ticket = await Ticket.findById(ticketId);
+  const ticket = await Ticket.findById(ticketId)
+    .populate("createdBy", "firstName lastName email")
+    .populate("assignedTo", "firstName, lastName");
 
   if (!ticket)
     return {
@@ -30,7 +33,10 @@ const getTicketById = async (ticketId, user) => {
     };
 
   if (user.role === "customer") {
-    if (ticket.createdBy.toString() === user.id) {
+    //  console.log("----------------- Debugging --------------")
+    //  console.log("Inside Customer")
+    //     console.log(ticket.createdBy._id.toString())
+    if (ticket.createdBy._id.toString() === user.id) {
       return {
         success: true,
         data: ticket,
@@ -39,7 +45,7 @@ const getTicketById = async (ticketId, user) => {
   }
 
   if (user.role === "agent") {
-    if (ticket.assignedTo.toString() === user.id) {
+    if (ticket.assignedTo._id.toString() === user.id) {
       return {
         success: true,
         data: ticket,
@@ -57,6 +63,7 @@ const getTicketById = async (ticketId, user) => {
   return {
     success: false,
     reason: "FORBIDDEN",
+    role: user.role,
   };
 };
 
@@ -150,6 +157,49 @@ const deleteTicket = async (deleteId, user) => {
   };
 };
 
+// ------------------------------
+
+const assignTicket = async (ticketId, agentId) => {
+  const ticket = await Ticket.findById(ticketId);
+
+  if (!ticket) {
+    return {
+      success: false,
+      reason: "TICKET_NOT_FOUND",
+    };
+  };
+
+  const agent = await User.findById(agentId);
+   console.log(agent)
+ 
+   if (!agent) {
+    return {
+      success: false,
+      reason: "AGENT_NOT_FOUND",
+    };
+  };
+
+  if (agent.role !== "agent") {
+    return {
+      success: false,
+      reason: "NOT_AN_AGENT",
+    };
+  }
+
+  const update = { assignedTo: agentId };
+  console.log(update);
+
+  const assignedTicket = await Ticket.findByIdAndUpdate(ticketId, update, {
+    returnDocument: "after",
+    runValidators: true,
+  }).populate("assignedTo", " firstName");
+
+  return {
+    success: true,
+    data: assignedTicket,
+  };
+};
+
 module.exports = {
   createTicket,
   getAllTickets,
@@ -157,96 +207,5 @@ module.exports = {
   updateTicket,
   replaceTicket,
   deleteTicket,
+  assignTicket,
 };
-
-/**
- * 
- * {
-  "_id": {
-    "$oid": "6a5b882e924c385fc9628ca1"
-  },
-  "id": 1002,
-  "title": "Unable to use the system",
-  "decription": "Customer unable to utilize the system as it keeps on crashing.",
-  "status": "In Progress",
-  "priority": 3,
-  "category": "System",
-  "source": "Portal",
-  "createdBy": "Bharu",
-  "createdAt": "2026-07-012T10:30 00Z",
-  "customer": {
-    "id": " CUS201",
-    "name": "Sharma Ji",
-    "email": "sharma.ji@gmail.com",
-    "company": "ZXC Techno Pvt. Ltm",
-    "city": "Bengaluru"
-  },
-  "assignedTo": {
-    "id": "EMP202",
-    "name": "Bharath Kumar",
-    "department": "Technical Support",
-    "experience": 3
-  },
-  "tags": [
-    "system crashes",
-    "hangging",
-    "urgent"
-  ],
-  "comments": [
-    {
-      "user": "Bharath Kumar",
-      "message": "Requested customer to restat the system.",
-      "createdAt": "2026-07-01T11:20 00Z"
-    },
-    {
-      "user": "Solanki ",
-      "message": " Issue reappeared.",
-      "createdAt": " 2026-07-02T11:30:00Z"
-    }
-  ],
-  "attachments": [
-    {
-      "fileName": "error- screenshot.jpg",
-      "type": "image"
-    },
-    {
-      "fileName": "browser-console-logs.text",
-      "type": " text"
-    },
-    {
-      "fileName": "console-logs.text",
-      "type": " text"
-    }
-  ],
-  "sla": {
-    "targetHour": 48,
-    "breached": false
-  },
-  "resolution": {
-    "resolved": false,
-    "resolvedBy": null,
-    "resolvedAt": null,
-    "resolutionTimeHours": null
-  },
-  "feedback": {
-    "rating": null,
-    "review": null
-  },
-  "history": [
-    {
-      "status": "Open",
-      "changedAt": " 2026-07-01T10:40:00Z"
-    },
-    {
-      "status": "In Progress",
-      "changedAt": "2026-07-01T10:55:00Z"
-    }
-  ],
-  "device": {
-    "os": "Windows 11",
-    "browser": "Chrome",
-    "version": "138.01"
-  },
-  "estimatedCost": 350
-}
- */
