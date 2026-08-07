@@ -214,8 +214,8 @@ Can you explain why this comparison failed and how you fixed it?
 - ##### Why next() is not used in the try block of controller?
   - Middleware usually calls `next()` because it doesn't finish the request. Controllers usually don't call `next()` because they send the final response. The exception is when a controller catches an unexpected error—it should call `next(error)` to hand it off to the global error handler.
 
-- ##### 
-  - 
+- ##### What is asyncHandler and why do we use it?
+  - asyncHandler is a higher-order function that accepts an async controller and returns a wrapper middleware. The wrapper executes the controller inside a try/catch and forwards any rejected promise or thrown error to Express using next(error). This removes repetitive try/catch blocks from individual controllers and allows centralized error handling.
 
 - ##### 
   - 
