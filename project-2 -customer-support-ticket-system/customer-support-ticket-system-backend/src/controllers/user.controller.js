@@ -19,8 +19,8 @@ const getAllUsers = async (req, res, next) => {
   });
 };
 
-const createUser = async (req, res, next) => {
-  const user = await userService.createUser(req.body);
+const createCustomer = async (req, res, next) => {
+  const user = await userService.createUser(req.body, "customer");
 
   if (!user) {
     return res.status(409).json({
@@ -39,7 +39,32 @@ const createUser = async (req, res, next) => {
 
   return res.status(201).json({
     status: true,
-    message: "User is created successfully.",
+    message: "Customer is created successfully.",
+    data: response,
+  });
+};
+
+const createAgent = async (req, res, next) => {
+  const user = await userService.createUser(req.body, "agent");
+
+  if (!user) {
+    return res.status(409).json({
+      status: false,
+      message: "Email address already used.",
+    });
+  }
+
+  const response = {
+    id: user._id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
+    role: user.role,
+  };
+
+  return res.status(201).json({
+    status: true,
+    message: "Agent is created successfully.",
     data: response,
   });
 };
@@ -73,6 +98,7 @@ const userLogin = async (req, res, next) => {
 
 module.exports = {
   getAllUsers,
-  createUser,
+  createCustomer,
+  createAgent,
   userLogin,
 };

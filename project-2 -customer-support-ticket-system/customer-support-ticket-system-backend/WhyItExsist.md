@@ -217,9 +217,20 @@ Can you explain why this comparison failed and how you fixed it?
 - ##### What is asyncHandler and why do we use it?
   - asyncHandler is a higher-order function that accepts an async controller and returns a wrapper middleware. The wrapper executes the controller inside a try/catch and forwards any rejected promise or thrown error to Express using next(error). This removes repetitive try/catch blocks from individual controllers and allows centralized error handling.
 
+- ##### Why would you use select: false on the password field if you need the password during login?
+  - `select: false` prevents the password hash from being included in normal Mongoose queries by default. During login, we explicitly include it using `.select('+password')` because bcrypt needs the stored hash to verify the supplied password. This creates a secure-by-default approach and reduces the chance of accidentally exposing password hashes.
+
+- ##### Why did you create separate createCustomer and createAgent controllers when both ultimately create a user?
+  - Although both operations create a user, they represent different API operations with different authorization rules. Customer registration is public, whereas agent creation is restricted to administrators. I separated the controllers so each operation has a clear responsibility and security boundary, while keeping the common user-creation logic in a shared service to avoid duplicating business logic.
+
+- ##### 
+  - 
+
 - ##### 
   - 
 
 - ##### 
   - 
 
+- ##### 
+  - 

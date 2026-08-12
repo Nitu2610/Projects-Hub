@@ -196,6 +196,75 @@ const assignTicket = async (ticketId, agentId) => {
   };
 };
 
+const getDashboardStats = async () => {
+  const ticketByStatus = await Ticket.aggregate([
+    {
+      $group: {
+        _id: "$status",
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+
+  const ticketByPriority = await Ticket.aggregate([
+    {
+      $group: {
+        _id: "$priority",
+        count: { $sum: 1 },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        priority: "$_id",
+        count: 1,
+      },
+    },
+    {
+      $sort: {
+        count: -1,
+      },
+    },
+  ]);
+
+  const ticketByAgent = await Ticket.aggregate([
+    {
+      $group: {
+        _id: "$assignedTo",
+        count: { $sum: 1 },
+      },
+    },
+    {
+      $lookup: {
+        from: "users", // which collection to search
+        localField: "_id", // field in the current collection
+        foreignField: "_id", // field in the other collection
+        as: "agent", // name of the new field MongoDB creates
+      },
+    }, // Till now, we got unassigned ticket data,
+    {
+      $unwind: {
+        path: "$agent", // it expands an array into individual documents(object format).
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        agentName: {
+          $cond: [
+            { $eq: ["$_id", null] }, // if _id(agent) is  equal to null ? true: false
+            "Unassigned",
+            { $concat: ["$agent.firstName", " ", "$agent.lastName"] },
+          ],
+        },
+        ticketCount: "$count",
+      },
+    },
+  ]);
+  return { ticketByAgent };
+};
+
 module.exports = {
   createTicket,
   getAllTickets,
@@ -204,4 +273,5 @@ module.exports = {
   replaceTicket,
   deleteTicket,
   assignTicket,
+  getDashboardStats,
 };

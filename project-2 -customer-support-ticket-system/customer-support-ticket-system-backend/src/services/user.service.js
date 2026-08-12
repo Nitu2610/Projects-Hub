@@ -10,7 +10,7 @@ const getAllUsers = async () => {
     }
 };
 
-const createUser = async (userData) => {
+const createUser = async (userData, role) => {
   const checkEmail = await User.findOne({ email: userData.email });
 
   if (checkEmail) return null;
@@ -25,6 +25,7 @@ const createUser = async (userData) => {
     lastName,
     email,
     password: hashedPassword,
+    role,
   };
   // allowlisting (or whitelisting)-  ensures only the fields backend expects are written to the database.
 
@@ -35,7 +36,7 @@ const createUser = async (userData) => {
 const userLogin = async (userData) => {
   const { email, password: clientPassword } = userData;
 
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email }).select("+password");
 
   if (!user) {
     return {

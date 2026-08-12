@@ -9,6 +9,9 @@ const { validateTicket } = require("../validators/ticket.validator");
 const validationMiddleware = require("../middleware/validation.middleware");
 const asyncHandler = require("../utils/asyncHandler");
 
+ticketRouter.get("/dashboard",  asyncHandler(ticketController.getDashboardStats) )
+
+
 ticketRouter.use(authMiddleware);
 
 // GET
@@ -50,5 +53,13 @@ ticketRouter.delete(
   authorizeRoles("admin"),
   asyncHandler(ticketController.deleteTicket),
 );
+
+// --------- Dashboard endpoints --------------
+
+
+
+
+
+
 
 module.exports = ticketRouter;

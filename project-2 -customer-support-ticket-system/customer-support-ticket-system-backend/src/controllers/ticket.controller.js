@@ -164,6 +164,15 @@ const assignTicket = async (req, res, next) => {
   });
 };
 
+const getDashboardStats = async( req, res)=>{
+  const dashboard= await ticketService.getDashboardStats();
+
+  return res.status(200).json({
+    status:true,
+    data:dashboard,
+  })
+}
+
 module.exports = {
   createTicket,
   getAllTickets,
@@ -172,4 +181,5 @@ module.exports = {
   replaceTicket,
   deleteTicket,
   assignTicket,
+  getDashboardStats,
 };
