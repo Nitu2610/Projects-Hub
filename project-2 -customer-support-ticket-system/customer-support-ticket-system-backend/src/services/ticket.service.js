@@ -197,11 +197,25 @@ const assignTicket = async (ticketId, agentId) => {
 };
 
 const getDashboardStats = async () => {
+  const allTickets = await Ticket.countDocuments();
+
   const ticketByStatus = await Ticket.aggregate([
     {
       $group: {
         _id: "$status",
         count: { $sum: 1 },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        status: "$_id",
+        ticketCount: "$count",
+      },
+    },
+    {
+      $sort: {
+        status: -1,
       },
     },
   ]);
@@ -217,12 +231,12 @@ const getDashboardStats = async () => {
       $project: {
         _id: 0,
         priority: "$_id",
-        count: 1,
+        ticketCount: "$count",
       },
     },
     {
       $sort: {
-        count: -1,
+        ticketCount: 1,
       },
     },
   ]);
@@ -262,7 +276,7 @@ const getDashboardStats = async () => {
       },
     },
   ]);
-  return { ticketByAgent };
+  return { totalTicketCount:allTickets, ticketByStatus, ticketByPriority, ticketByAgent };
 };
 
 module.exports = {
