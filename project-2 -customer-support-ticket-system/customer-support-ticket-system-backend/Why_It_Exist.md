@@ -223,10 +223,10 @@ Can you explain why this comparison failed and how you fixed it?
 - ##### Why did you create separate createCustomer and createAgent controllers when both ultimately create a user?
   - Although both operations create a user, they represent different API operations with different authorization rules. Customer registration is public, whereas agent creation is restricted to administrators. I separated the controllers so each operation has a clear responsibility and security boundary, while keeping the common user-creation logic in a shared service to avoid duplicating business logic.
 
-- ##### 
+- ##### Why is createdBy determined by req.user.id instead of accepting it from the client?
   - 
 
-- ##### 
+- ##### JWT authentication is stateless; if immediate revocation is required, additional mechanisms are needed.
   - 
 
 - ##### 

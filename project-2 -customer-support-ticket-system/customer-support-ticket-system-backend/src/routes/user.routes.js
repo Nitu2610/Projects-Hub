@@ -9,7 +9,7 @@ const asyncHandler = require("../utils/asyncHandler");
 const userRouter=express.Router();
 
 // POST
-//Custer registration
+//Customer registration
 userRouter.post("/register", validateRegister , validationMiddleware , asyncHandler(userController.createCustomer));
 
 
@@ -26,6 +26,6 @@ authorizeRoles("admin"),
 
 
   // Admin register agents
-userRouter.post("/register/agents", authorizeRoles("admin"),  validateRegister , validationMiddleware , asyncHandler(userController.createAgent));
+userRouter.post("/register/agents", authorizeRoles("admin") , validationMiddleware , asyncHandler(userController.createAgent));
   
 module.exports=userRouter;

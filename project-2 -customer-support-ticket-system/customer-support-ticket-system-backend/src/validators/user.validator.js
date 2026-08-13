@@ -13,7 +13,7 @@ const validateRegister=[
   .notEmpty()
   .withMessage("Last name is required")
   .isLength({min:2, max:30})
-  .withMessage("Last name must be between 3 and 30 characters")
+  .withMessage("Last name must be between 2 and 30 characters")
   ,
   body("email")
   .trim()

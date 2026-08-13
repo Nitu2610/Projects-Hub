@@ -240,6 +240,7 @@ const assignTicket = async (ticketId, agentId) => {
 
 const getDashboardStats = async () => {
   const totalTicketCount = await Ticket.countDocuments();
+   const totalTickets = await Ticket.find();
 
   const ticketByStatus = await Ticket.aggregate([
     {
@@ -318,7 +319,8 @@ const getDashboardStats = async () => {
       },
     },
   ]);
-  return { totalTicketCount, ticketByStatus, ticketByPriority, ticketByAgent };
+
+  return { totalTicketCount, totalTickets, ticketByStatus, ticketByPriority, ticketByAgent };
 };
 
 module.exports = {

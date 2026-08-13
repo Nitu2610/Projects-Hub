@@ -11,6 +11,15 @@ const asyncHandler = require("../utils/asyncHandler");
 
 ticketRouter.use(authMiddleware);
 
+// --------- Dashboard endpoints --------------
+
+ticketRouter.get(
+  "/dashboard",
+  authorizeRoles("admin"),
+  asyncHandler(ticketController.getDashboardStats),
+);
+
+
 // GET
 ticketRouter.get("/", asyncHandler(ticketController.getAllTickets));
 
@@ -51,12 +60,6 @@ ticketRouter.delete(
   asyncHandler(ticketController.deleteTicket),
 );
 
-// --------- Dashboard endpoints --------------
 
-ticketRouter.get(
-  "/dashboard",
-  authorizeRoles("admin"),
-  asyncHandler(ticketController.getDashboardStats),
-);
 
 module.exports = ticketRouter;
