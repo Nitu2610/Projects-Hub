@@ -9,13 +9,10 @@ const { validateTicket } = require("../validators/ticket.validator");
 const validationMiddleware = require("../middleware/validation.middleware");
 const asyncHandler = require("../utils/asyncHandler");
 
-ticketRouter.get("/dashboard",  asyncHandler(ticketController.getDashboardStats) )
-
-
 ticketRouter.use(authMiddleware);
 
 // GET
-ticketRouter.get("/", asyncHandler(ticketController.getAllTickets) );
+ticketRouter.get("/", asyncHandler(ticketController.getAllTickets));
 
 ticketRouter.get("/:ticketId", asyncHandler(ticketController.getTicketById)); // ensure same variable name is used to to access it from params.
 
@@ -56,10 +53,10 @@ ticketRouter.delete(
 
 // --------- Dashboard endpoints --------------
 
-
-
-
-
-
+ticketRouter.get(
+  "/dashboard",
+  authorizeRoles("admin"),
+  asyncHandler(ticketController.getDashboardStats),
+);
 
 module.exports = ticketRouter;

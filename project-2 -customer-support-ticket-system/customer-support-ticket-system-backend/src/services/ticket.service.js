@@ -6,6 +6,7 @@ const {
   buildSort,
   buildPagination,
 } = require("../utils/ticketQuery.utils");
+const isValidStatusTransition = require("../utils/ticketWorkflow.utils");
 
 const createTicket = async (ticketData, user) => {
   const ticketDetails = { ...ticketData, createdBy: user.id };
@@ -76,6 +77,11 @@ const updateTicket = async (ticketId, updatedData, user) => {
       reason: "NOT_FOUND",
     };
   }
+
+  const currentStatus = ticket.status;
+  const requestedStatus = updatedData.status;
+  const checkClientResolution = updatedData.resolution;
+
   if (user.role === "admin") {
     const updatedTicket = await Ticket.findByIdAndUpdate(
       ticketId,
@@ -91,8 +97,36 @@ const updateTicket = async (ticketId, updatedData, user) => {
     };
   }
 
-  if (user.role === "agent" && ticket.assignedTo.toString() === user.id) {
+  if (
+    user.role === "agent" &&
+    ticket.assignedTo &&
+    ticket.assignedTo.toString() === user.id
+  ) {
     const allowedFields = ["status", "priority", "resolution"];
+
+    if (
+      requestedStatus &&
+      !isValidStatusTransition(currentStatus, requestedStatus)
+    ) {
+      return {
+        success: false,
+        reason: "INVALID_STATUS_TRANSITION",
+      };
+    }
+
+    const resolution =
+      checkClientResolution !== undefined
+        ? checkClientResolution
+        : ticket.resolution;
+
+    if (requestedStatus === "Resolved") {
+      if (!resolution || !resolution.trim()) {
+        return {
+          success: false,
+          reason: "RESOLUTION_REQUIRED",
+        };
+      }
+    }
 
     const filteredData = {};
 
@@ -100,6 +134,13 @@ const updateTicket = async (ticketId, updatedData, user) => {
       if (updatedData[field] !== undefined) {
         filteredData[field] = updatedData[field];
       }
+    }
+
+    if (Object.keys(filteredData).length === 0) {
+      return {
+        success: false,
+        reason: "NO_VALID_FIELDS",
+      };
     }
 
     const updatedTicket = await Ticket.findByIdAndUpdate(
@@ -197,7 +238,7 @@ const assignTicket = async (ticketId, agentId) => {
 };
 
 const getDashboardStats = async () => {
-  const allTickets = await Ticket.countDocuments();
+  const totalTicketCount = await Ticket.countDocuments();
 
   const ticketByStatus = await Ticket.aggregate([
     {
@@ -276,7 +317,7 @@ const getDashboardStats = async () => {
       },
     },
   ]);
-  return { totalTicketCount:allTickets, ticketByStatus, ticketByPriority, ticketByAgent };
+  return { totalTicketCount, ticketByStatus, ticketByPriority, ticketByAgent };
 };
 
 module.exports = {
