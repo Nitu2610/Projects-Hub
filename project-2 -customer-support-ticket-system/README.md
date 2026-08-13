@@ -869,20 +869,29 @@ Potential future improvements include:
 
 # Deployment
 
-Backend deployment is the next major step.
+### Backend
 
-The deployment process will include:
+The backend is deployed using Render.
 
-Configure production environment variables.
-Deploy the Node.js/Express backend.
-Connect the deployed application to MongoDB.
-Verify the health endpoint.
-Test authentication.
-Test protected APIs.
-Verify ticket workflow.
-Verify dashboard APIs.
-Store the deployed API base URL.
-Connect the frontend to the deployed backend.
+**Live API:**
+https://customer-support-ticket-api.onrender.com
+
+### Database
+
+MongoDB Atlas is used as the production database.
+
+### Environment Variables
+
+The application uses environment variables for sensitive configuration.
+
+Required variables:
+
+- `MONGO_URL`
+- `BCRYPT_SALT_ROUNDS`
+- `JWT_SECRET`
+- `JWT_EXPIRES_IN`
+
+Sensitive values are not committed to the repository.
 
 # Learning & Interview Documentation
 
