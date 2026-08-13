@@ -24,8 +24,3 @@ const validateTicket=[
 
 
 module.exports={validateTicket,}
-
-
-// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNzM3M2QzMTg2OTc5ZTliZWFlNmVmOSIsInJvbGUiOiJjdXN0b21lciIsImlhdCI6MTc4NjA5ODgzNiwiZXhwIjoxNzg2MTg1MjM2fQ.8fxyAyX4tglwcnX2GJTFf-Y-5LXiIS50tAaxQZu3t-8
-
-// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNzM3M2QzMTg2OTc5ZTliZWFlNmVmOSIsInJvbGUiOiJjdXN0b21lciIsImlhdCI6MTc4NjA5ODkxOSwiZXhwIjoxNzg2MTg1MzE5fQ.DWJoxwIe8M8KQmXQfe37urtFdzbFthWdNjniGxco1N8

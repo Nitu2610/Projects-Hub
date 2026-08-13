@@ -13,7 +13,7 @@ const userRouter=express.Router();
 userRouter.post("/register", validateRegister , validationMiddleware , asyncHandler(userController.createCustomer));
 
 
-userRouter.post("/login", validateLogin, asyncHandler(validationMiddleware, userController.userLogin) );
+userRouter.post("/login", validateLogin, asyncHandler( userController.userLogin) );
 
 
 // everything below require authentication 

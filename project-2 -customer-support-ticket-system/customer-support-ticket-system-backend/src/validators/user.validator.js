@@ -54,3 +54,5 @@ body("email")
 ]
 
 module.exports= {validateRegister, validateLogin };
+
+

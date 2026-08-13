@@ -1,6 +1,6 @@
 const ticketService = require("../services/ticket.service");
 
-const createTicket = async (req, res, next) => {
+const createTicket = async (req, res) => {
   const ticket = await ticketService.createTicket(req.body, req.user);
   // ensure createTicket is exported as object!!!
 
@@ -11,7 +11,7 @@ const createTicket = async (req, res, next) => {
   });
 };
 
-const getAllTickets = async (req, res, next) => {
+const getAllTickets = async (req, res) => {
   const tickets = await ticketService.getAllTickets(req.query, req.user);
 
   res.status(200).json({
@@ -22,7 +22,7 @@ const getAllTickets = async (req, res, next) => {
   });
 };
 
-const getTicketById = async (req, res, next) => {
+const getTicketById = async (req, res) => {
   const { ticketId } = req.params;
 
   const ticket = await ticketService.getTicketById(ticketId, req.user);
@@ -32,7 +32,6 @@ const getTicketById = async (req, res, next) => {
       return res.status(403).json({
         status: false,
         message: ticket.reason,
-        role: ticket.role,
       });
     if (ticket.reason === "NOT_FOUND")
       return res.status(404).json({
@@ -47,7 +46,7 @@ const getTicketById = async (req, res, next) => {
   });
 };
 
-const updateTicket = async (req, res, next) => {
+const updateTicket = async (req, res) => {
   const { ticketId } = req.params;
 
   const updatedTicket = await ticketService.updateTicket(
@@ -69,6 +68,24 @@ const updateTicket = async (req, res, next) => {
         message: updatedTicket.reason,
       });
     }
+    if (updatedTicket.reason === "INVALID_STATUS_TRANSITION") {
+      return res.status(400).json({
+        status: false,
+        message: updatedTicket.reason,
+      });
+    }
+    if (updatedTicket.reason === "RESOLUTION_REQUIRED") {
+      return res.status(422).json({
+        status: false,
+        message: updatedTicket.reason,
+      });
+    }
+    if (updatedTicket.reason === "NO_VALID_FIELDS") {
+      return res.status(400).json({
+        status: false,
+        message: updatedTicket.reason,
+      });
+    }
   }
 
   return res.status(200).json({
@@ -78,36 +95,29 @@ const updateTicket = async (req, res, next) => {
   });
 };
 
-const replaceTicket = async (req, res, next) => {
-  try {
-    const { ticketId } = req.params;
+const replaceTicket = async (req, res) => {
+  const { ticketId } = req.params;
 
-    const replacedTicket = await ticketService.replaceTicket(
-      ticketId,
-      req.body,
-    );
+  const replacedTicket = await ticketService.replaceTicket(ticketId, req.body);
 
-    if (!replacedTicket) {
-      return res.status(404).json({
-        status: false,
-        message: "Ticket Not Found.",
-      });
-    }
-
-    return res.status(200).json({
-      status: true,
-      message: "Ticket Details Replaced Successfully.",
-      data: replacedTicket,
+  if (!replacedTicket) {
+    return res.status(404).json({
+      status: false,
+      message: "Ticket Not Found.",
     });
-  } catch (error) {
-    next(error);
   }
+
+  return res.status(200).json({
+    status: true,
+    message: "Ticket Details Replaced Successfully.",
+    data: replacedTicket,
+  });
 };
 
-const deleteTicket = async (req, res, next) => {
-  const { deleteId } = req.params;
+const deleteTicket = async (req, res) => {
+  const { ticketId } = req.params;
 
-  const deletedTicket = await ticketService.deleteTicket(deleteId, req.user);
+  const deletedTicket = await ticketService.deleteTicket(ticketId, req.user);
 
   if (!deletedTicket.success) {
     if (deletedTicket.reason === "NOT_FOUND") {
@@ -133,7 +143,7 @@ const deleteTicket = async (req, res, next) => {
 
 // -------
 
-const assignTicket = async (req, res, next) => {
+const assignTicket = async (req, res) => {
   const { ticketId } = req.params;
   const { agentId } = req.body;
 
@@ -164,14 +174,14 @@ const assignTicket = async (req, res, next) => {
   });
 };
 
-const getDashboardStats = async( req, res)=>{
-  const dashboard= await ticketService.getDashboardStats();
+const getDashboardStats = async (req, res) => {
+  const dashboard = await ticketService.getDashboardStats();
 
   return res.status(200).json({
-    status:true,
-    data:dashboard,
-  })
-}
+    status: true,
+    data: dashboard,
+  });
+};
 
 module.exports = {
   createTicket,

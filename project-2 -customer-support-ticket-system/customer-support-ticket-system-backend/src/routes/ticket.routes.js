@@ -41,12 +41,12 @@ ticketRouter.patch(
 ticketRouter.put(
   "/:ticketId",
   authorizeRoles("admin"),
-  ticketController.replaceTicket,
+  asyncHandler(ticketController.replaceTicket),
 );
 
 // DELETE
 ticketRouter.delete(
-  "/:deleteId",
+  "/:ticketId",
   authorizeRoles("admin"),
   asyncHandler(ticketController.deleteTicket),
 );

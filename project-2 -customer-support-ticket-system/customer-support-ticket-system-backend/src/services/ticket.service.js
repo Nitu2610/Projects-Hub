@@ -46,7 +46,7 @@ const getTicketById = async (ticketId, user) => {
   }
 
   if (user.role === "agent") {
-    if (ticket.assignedTo._id.toString() === user.id) {
+    if (ticket.assignedTo && ticket.assignedTo._id.toString() === user.id) {
       return {
         success: true,
         data: ticket,
@@ -64,7 +64,6 @@ const getTicketById = async (ticketId, user) => {
   return {
     success: false,
     reason: "FORBIDDEN",
-    role: user.role,
   };
 };
 
@@ -103,7 +102,8 @@ const updateTicket = async (ticketId, updatedData, user) => {
     ticket.assignedTo.toString() === user.id
   ) {
     const allowedFields = ["status", "priority", "resolution"];
-
+    
+    
     if (
       requestedStatus &&
       !isValidStatusTransition(currentStatus, requestedStatus)
@@ -112,13 +112,14 @@ const updateTicket = async (ticketId, updatedData, user) => {
         success: false,
         reason: "INVALID_STATUS_TRANSITION",
       };
-    }
-
+    };
+    
     const resolution =
-      checkClientResolution !== undefined
-        ? checkClientResolution
-        : ticket.resolution;
-
+    checkClientResolution !== undefined
+    ? checkClientResolution
+    : ticket.resolution;
+    
+    
     if (requestedStatus === "Resolved") {
       if (!resolution || !resolution.trim()) {
         return {
@@ -163,9 +164,9 @@ const updateTicket = async (ticketId, updatedData, user) => {
   };
 };
 
-const replaceTicket = async (ticketid, ticketData) => {
+const replaceTicket = async (ticketId, ticketData) => {
   const replacedTicket = await Ticket.findOneAndReplace(
-    { _id: ticketid },
+    { _id: ticketId },
     ticketData,
     {
       returnDocument: "after",
@@ -176,8 +177,8 @@ const replaceTicket = async (ticketid, ticketData) => {
   return replacedTicket;
 };
 
-const deleteTicket = async (deleteId, user) => {
-  const ticket = await Ticket.findById(deleteId);
+const deleteTicket = async (ticketId, user) => {
+  const ticket = await Ticket.findById(ticketId);
   if (!ticket) {
     return {
       success: false,
@@ -185,7 +186,7 @@ const deleteTicket = async (deleteId, user) => {
     };
   }
   if (user.role === "admin") {
-    const deletedTicket = await Ticket.findByIdAndDelete(deleteId);
+    const deletedTicket = await Ticket.findByIdAndDelete(ticketId);
 
     return {
       success: true,
@@ -229,7 +230,7 @@ const assignTicket = async (ticketId, agentId) => {
   const assignedTicket = await Ticket.findByIdAndUpdate(ticketId, update, {
     returnDocument: "after",
     runValidators: true,
-  }).populate("assignedTo", " firstName");
+  }).populate("assignedTo", "firstName");
 
   return {
     success: true,
