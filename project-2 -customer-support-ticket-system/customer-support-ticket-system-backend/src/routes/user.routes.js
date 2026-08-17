@@ -12,8 +12,17 @@ const userRouter=express.Router();
 //Customer registration
 userRouter.post("/register", validateRegister , validationMiddleware , asyncHandler(userController.createCustomer));
 
+userRouter.post("/login", (req, res) => {
+  console.log("🔥 LOGIN ROUTE HIT");
+  console.log("BODY:", req.body);
 
-userRouter.post("/login", validateLogin, asyncHandler( userController.userLogin) );
+  res.json({
+    message: "Login route is working",
+    body: req.body,
+  });
+});
+
+// userRouter.post("/login", validateLogin, asyncHandler( userController.userLogin) );
 
 
 // everything below require authentication 
