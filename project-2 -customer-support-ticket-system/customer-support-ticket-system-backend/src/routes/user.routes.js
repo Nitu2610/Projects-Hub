@@ -1,40 +1,48 @@
-const express= require("express");
-const userController= require("../controllers/user.controller");
+const express = require("express");
+const userController = require("../controllers/user.controller");
 const authMiddleware = require("../middleware/auth.middleware");
 const authorizeRoles = require("../middleware/authorizeRoles.middleware");
-const { validateRegister, validateLogin } =require("../validators/user.validator");
-const validationMiddleware=require("../middleware/validation.middleware");
+const {
+  validateRegister,
+  validateLogin,
+} = require("../validators/user.validator");
+const validationMiddleware = require("../middleware/validation.middleware");
 const asyncHandler = require("../utils/asyncHandler");
 
-const userRouter=express.Router();
+const userRouter = express.Router();
 
 // POST
 //Customer registration
-userRouter.post("/register", validateRegister , validationMiddleware , asyncHandler(userController.createCustomer));
+userRouter.post(
+  "/register",
+  validateRegister,
+  validationMiddleware,
+  asyncHandler(userController.createCustomer),
+);
 
-userRouter.post("/login", (req, res) => {
-  console.log("🔥 LOGIN ROUTE HIT");
-  console.log("BODY:", req.body);
+userRouter.post(
+  "/login",
+  validateLogin,
+  validationMiddleware,
+  asyncHandler(userController.userLogin),
+);
 
-  res.json({
-    message: "Login route is working",
-    body: req.body,
-  });
-});
+// everything below require authentication
 
-// userRouter.post("/login", validateLogin, asyncHandler( userController.userLogin) );
+userRouter.use(authMiddleware);
 
+userRouter.get(
+  "/",
+  authorizeRoles("admin"),
+  asyncHandler(userController.getAllUsers),
+);
 
-// everything below require authentication 
+// Admin register agents
+userRouter.post(
+  "/register/agents",
+  authorizeRoles("admin"),
+  validationMiddleware,
+  asyncHandler(userController.createAgent),
+);
 
-userRouter.use(authMiddleware)
-
-userRouter.get("/", 
-authorizeRoles("admin"),
-  asyncHandler(userController.getAllUsers)) ;
-
-
-  // Admin register agents
-userRouter.post("/register/agents", authorizeRoles("admin") , validationMiddleware , asyncHandler(userController.createAgent));
-  
-module.exports=userRouter;
+module.exports = userRouter;
