@@ -229,8 +229,15 @@ Can you explain why this comparison failed and how you fixed it?
 - ##### JWT authentication is stateless; if immediate revocation is required, additional mechanisms are needed.
   - 
 
-- ##### 
-  - 
+- ##### Decode MongoDB Atlas DB url to connect with frontend.
+  - URL
+    - `mongodb+srv://USERNAME:PASSWORD@CLUSTER/DATABASE?OPTIONS`
+    - `mongodb+srv://USERNAME:PASSWORD@customer-support-ticket.psiq2sv.mongodb.net/customer_support?appName=customer-support-ticket`
+      - `mongodb+srv://` Use MongoDB's SRV conneciton protocol.
+      - `USERNAME:PASSWORD` User's username and password of atlas.
+      - `@customer-support-ticket.psiq2sv.mongodb.net` This is the MongoDB Atlas cluster address.
+      - `customer_support` Connect to this MongoDB cluster and use customer_support as the default database for this connection.
+      - If no database name is provided manually, then default vaule is .net/, and it will be connected to **test** database of MongoDB Atlas.
 
 - ##### 
   - 

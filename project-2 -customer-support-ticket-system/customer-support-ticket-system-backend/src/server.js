@@ -15,6 +15,8 @@ const PORT = process.env.PORT || 7000;
 // The server is started only after the database connection succeeds,
 // preventing the API from accepting requests when the database is unavailable.
 
+const User = require("./models/user.model");
+
 const startServer = async () => {
   await connectDB();
 

@@ -70,7 +70,7 @@ const userLogin = async (userData) => {
   // Explicitly select it here because bcrypt needs the stored hash
   // to verify the password supplied during login.
   const user = await User.findOne({ email }).select("+password");
-
+  console.log(user)
   if (!user) {
     return {
       success: false,
