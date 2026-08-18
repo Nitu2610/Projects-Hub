@@ -1,12 +1,10 @@
 const authorizeRoles = (...allowedRoles) => {
   return (req, res, next) => {
-    const clientRole = req.user.role;
+    const userRole = req.user.role;
 
-    const checkRole = allowedRoles.includes(clientRole);
-
-    if (!checkRole) {
+    if (!allowedRoles.includes(userRole)) {
       return res.status(403).json({
-        status: false,
+        success: false,
         message: "Access denied",
       });
     }
@@ -15,5 +13,4 @@ const authorizeRoles = (...allowedRoles) => {
   };
 };
 
-
-module.exports=authorizeRoles;
+module.exports = authorizeRoles;

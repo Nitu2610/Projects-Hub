@@ -1,97 +1,113 @@
 const userService = require("../services/user.service");
 
-const getAllUsers = async (req, res, next) => {
-  const users = await userService.getAllUsers(req.user);
+// Controller responsibility:
+// Handle the HTTP request/ response for fetching users.
+// Business rules and database operations remain inside the service layer.
+const getAllUsers = async (req, res) => {
+  const usersResult = await userService.getAllUsers();
+  return res.status(200).json({
+    success: usersResult.success,
+    message:
+      usersResult.data.length === 0
+        ? "No users found."
+        : "Users retrieved successfully.",
+    count: usersResult.data.length,
+    data: usersResult.data,
+  });
+};
 
-  if (!users.success) {
-    if (users.reason === "FORBIDDEN") {
-      return res.status(403).json({
-        status: false,
-        message: users.reason,
+// Customer registration controller.
+// The controller determines the role because this endpoint is specifically
+// designed for public customer registration.
+const createCustomer = async (req, res) => {
+  const userResult = await userService.createUser(req.body, "customer");
+
+  if (!userResult.success) {
+    if (userResult.code === "EMAIL_ALREADY_REGISTERED") {
+      return res.status(409).json({
+        success: userResult.success,
+        message: userResult.message,
       });
     }
   }
-  return res.status(200).json({
-    status: true,
-    messages: users.data.length === 0 ? "No Users" : "Users list fetched.",
-    count: users.data.length,
-    data: users.data,
-  });
-};
 
-const createCustomer = async (req, res, next) => {
-  const user = await userService.createUser(req.body, "customer");
-
-  if (!user) {
-    return res.status(409).json({
-      status: false,
-      message: "Email address already used.",
-    });
-  }
-
+  // Return only fields that are safe and necessary for the client.
+  // The password is intentionaly excluded from teh response.
   const response = {
-    id: user._id,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    email: user.email,
-    role: user.role,
+    id: userResult.data._id,
+    firstName: userResult.data.firstName,
+    lastName: userResult.data.lastName,
+    email: userResult.data.email,
+    role: userResult.data.role,
   };
 
   return res.status(201).json({
-    status: true,
-    message: "Customer is created successfully.",
+    success: userResult.success,
+    message: userResult.message,
     data: response,
   });
 };
 
-const createAgent = async (req, res, next) => {
-  const user = await userService.createUser(req.body, "agent");
+// Admin-only agent creation controller.
+// The route/middleware ensures that only an authenticated admin
+// can reach this controller.
+const createAgent = async (req, res) => {
+  const userResult = await userService.createUser(req.body, "agent");
 
-  if (!user) {
-    return res.status(409).json({
-      status: false,
-      message: "Email address already used.",
-    });
+  if (!userResult.success) {
+    if (userResult.code === "EMAIL_ALREADY_REGISTERED") {
+      return res.status(409).json({
+        success: userResult.success,
+        message: userResult.message,
+      });
+    }
   }
 
   const response = {
-    id: user._id,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    email: user.email,
-    role: user.role,
+    id: userResult.data._id,
+    firstName: userResult.data.firstName,
+    lastName: userResult.data.lastName,
+    email: userResult.data.email,
+    role: userResult.data.role,
   };
 
   return res.status(201).json({
-    status: true,
-    message: "Agent is created successfully.",
+    success: userResult.success,
+    message: userResult.message,
     data: response,
   });
 };
 
-const userLogin = async (req, res, next) => {
-  const loginStatus = await userService.userLogin(req.body);
+// Login controller.
+// Responsible for translating authentication results from the service
+// into appropriate HTTP status codes and the response sent to the client.
+const userLogin = async (req, res) => {
+  const loginResult = await userService.userLogin(req.body);
 
-  if (loginStatus.reason === "Email_Not_Registered") {
-    return res.status(404).json({
-      status: false,
-      message: "email is not registered!",
-    });
-  } else if (loginStatus.reason === "Incorrect_Password") {
-    return res.status(401).json({
-      status: false,
-      message: "Incorrect password!",
-    });
+  if (!loginResult.success) {
+    if (loginResult.code === "EMAIL_NOT_REGISTERED") {
+      return res.status(404).json({
+        success: loginResult.success,
+        message: loginResult.message,
+      });
+    }
+
+    if (loginResult.code === "INCORRECT_PASSWORD") {
+      return res.status(401).json({
+        success: loginResult.success,
+        message: loginResult.message,
+      });
+    }
   }
 
   return res.status(200).json({
-    status: true,
-    message: "Login Successfully",
-    token: loginStatus.token,
-    user: {
-      id: loginStatus.user._id,
-      firstName: loginStatus.user.firstName,
-      role: loginStatus.user.role,
+    success: loginResult.success,
+    message: loginResult.message,
+    data: {
+      token: loginResult.data.token,
+      id: loginResult.data.user._id,
+      firstName: loginResult.data.user.firstName,
+      role: loginResult.data.user.role,
     },
   });
 };

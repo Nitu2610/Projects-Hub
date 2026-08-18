@@ -16,9 +16,9 @@ const validateTicket=[
   .isLength({min: 50, max: 200})
   .withMessage("Description must be within 50-200 characters.")
   ,
-  body("issueOccuredAt")
+  body("issueOccurredAt")
   .isDate()
-  .withMessage("Issue occured date is incorrect.")
+  .withMessage("Issue occurred date is invalid.")
   ,
 ]
 

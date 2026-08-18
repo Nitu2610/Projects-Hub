@@ -12,7 +12,7 @@ const ticketSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    issueOccuredAt: {
+    issueOccurredAt: {
       type: Date,
     },
     status: {

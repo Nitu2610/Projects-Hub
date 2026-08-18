@@ -5,34 +5,34 @@ const authMiddleware = (req, res, next) => {
 
   if (!authHeader) {
     return res.status(401).json({
-      status: false,
+      success: false,
       message: "Authorization header missing",
     });
   }
 
-  const authParts = authHeader.split(" ");
+  const authHeaderParts = authHeader.split(" ");
 
   if (
-    authParts.length !== 2 ||
-    authParts[0] !== "Bearer" ||
-    authParts[1].length === 0
+    authHeaderParts.length !== 2 ||
+    authHeaderParts[0] !== "Bearer" ||
+    authHeaderParts[1].length === 0
   ) {
     return res.status(401).json({
-      status: false,
+      success: false,
       message: "Invalid authorization format",
     });
   }
 
-  const clientToken = authParts[1];
+  const token = authHeaderParts[1];
 
   try {
-    const decodedToken = jwt.verify(clientToken, process.env.JWT_SECRET);
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
 
     req.user = decodedToken;
     next();
   } catch (error) {
     res.status(401).json({
-      status: false,
+      success: false,
       message: "Invalid or expired token.",
     });
   }

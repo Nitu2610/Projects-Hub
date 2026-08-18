@@ -1,14 +1,14 @@
-const allowedAgentTransitions = {
-  "Open": ["In Progress"],
+const agentStatusTransitions = {
+  Open: ["In Progress"],
   "In Progress": ["Resolved"],
-  "Resolved": ["Closed"],
-  "Closed": [],
+  Resolved: ["Closed"],
+  Closed: [],
 };
 
 const isValidStatusTransition = (currentStatus, requestedStatus) => {
-  if (!allowedAgentTransitions[currentStatus]) return false;
+  if (!agentStatusTransitions[currentStatus]) return false;
 
-  return allowedAgentTransitions[currentStatus].includes(requestedStatus);
+  return agentStatusTransitions[currentStatus].includes(requestedStatus);
 };
 
 module.exports = isValidStatusTransition;

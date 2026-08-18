@@ -1,5 +1,7 @@
 const {body} = require("express-validator");
 
+// Request validation rules for user authentication and registration.
+// These rules validate client input before it reaches the controller/ service layer.
 const validateRegister=[
   body("firstName")
   .trim()

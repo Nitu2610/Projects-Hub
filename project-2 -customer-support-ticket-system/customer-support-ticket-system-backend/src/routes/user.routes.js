@@ -11,8 +11,11 @@ const asyncHandler = require("../utils/asyncHandler");
 
 const userRouter = express.Router();
 
-// POST
+// Public user endpoints.
+// These routes do not require authentication.
+
 //Customer registration
+// Request -> validation -> controller -> service -> database
 userRouter.post(
   "/register",
   validateRegister,
@@ -20,6 +23,8 @@ userRouter.post(
   asyncHandler(userController.createCustomer),
 );
 
+// User login:
+// Request -> validation -> controller -> service -> password verification -> JWT
 userRouter.post(
   "/login",
   validateLogin,
@@ -27,20 +32,22 @@ userRouter.post(
   asyncHandler(userController.userLogin),
 );
 
-// everything below require authentication
-
+// All routes registered below this middleware require
+// a valid authenticated user.
 userRouter.use(authMiddleware);
 
+// Only administrators can view the complete user list.
 userRouter.get(
   "/",
   authorizeRoles("admin"),
   asyncHandler(userController.getAllUsers),
 );
 
-// Admin register agents
+// Only administrator can create agent accounts.
 userRouter.post(
   "/register/agents",
   authorizeRoles("admin"),
+  validateRegister,
   validationMiddleware,
   asyncHandler(userController.createAgent),
 );

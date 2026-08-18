@@ -1,191 +1,219 @@
 const ticketService = require("../services/ticket.service");
 
+// Controller responsibility:
+// Handle HTTP request/response concerns for the ticket domain.
+// Business rules and database operations remain inside the ticket service.
 const createTicket = async (req, res) => {
-  const ticket = await ticketService.createTicket(req.body, req.user);
-  // ensure createTicket is exported as object!!!
+  const createdTicket = await ticketService.createTicket(req.body, req.user);
 
   res.status(201).json({
-    status: true,
-    message: "Ticket Created Successfully.",
-    data: ticket,
+    success: createdTicket.success,
+    message: createdTicket.message,
+    data: createdTicket.data,
   });
 };
 
-const getAllTickets = async (req, res) => {
+// Retrieve tickets based on the authenticated user's role and
+// query parameters such as filtering, sorting, and pagination.
+
+const getTickets = async (req, res) => {
   const tickets = await ticketService.getAllTickets(req.query, req.user);
 
   res.status(200).json({
-    status: true,
-    message: "Fetched all the tickets details.",
-    count: tickets.length,
-    data: tickets,
+    success: tickets.success,
+    message: tickets.message,
+    count: tickets.data.length,
+    data: tickets.data,
   });
 };
+
+// Retrieve a single ticket.
+// The service layer verifies whether the authenticated user is
+// allowed to access the requested ticket.
 
 const getTicketById = async (req, res) => {
   const { ticketId } = req.params;
 
-  const ticket = await ticketService.getTicketById(ticketId, req.user);
+  const ticketResult = await ticketService.getTicketById(ticketId, req.user);
 
-  if (!ticket.success) {
-    if (ticket.reason === "FORBIDDEN")
+  if (!ticketResult.success) {
+    if (ticketResult.code === "FORBIDDEN") {
       return res.status(403).json({
-        status: false,
-        message: ticket.reason,
+        success: ticketResult.success,
+        message: ticketResult.message,
       });
-    if (ticket.reason === "NOT_FOUND")
+    }
+    if (ticketResult.code === "NOT_FOUND") {
       return res.status(404).json({
-        status: false,
-        message: ticket.reason,
+        success: ticketResult.success,
+        message: ticketResult.message,
       });
+    }
   }
 
   res.status(200).json({
-    status: true,
-    data: ticket.data,
+    success: ticketResult.success,
+    message: ticketResult.message,
+    data: ticketResult.data,
   });
 };
+
+// Update selected ticket fields.
+// The service applies different update rules depending on whether
+// the authenticated user is an administrator or an assigned agent.
 
 const updateTicket = async (req, res) => {
   const { ticketId } = req.params;
 
-  const updatedTicket = await ticketService.updateTicket(
+  const updateResult = await ticketService.updateTicket(
     ticketId,
     req.body,
     req.user,
   );
 
-  if (!updatedTicket.success) {
-    if (updatedTicket.reason === "NOT_FOUND") {
+  if (!updateResult.success) {
+    if (updateResult.code === "NOT_FOUND") {
       return res.status(404).json({
-        status: false,
-        message: "Ticket Not Found",
+        success: updateResult.success,
+        message: updateResult.message,
       });
     }
-    if (updatedTicket.reason === "FORBIDDEN") {
+    if (updateResult.code === "FORBIDDEN") {
       return res.status(403).json({
-        status: false,
-        message: updatedTicket.reason,
+        success: updateResult.success,
+        message: updateResult.message,
       });
     }
-    if (updatedTicket.reason === "INVALID_STATUS_TRANSITION") {
+    if (updateResult.code === "INVALID_STATUS_TRANSITION") {
       return res.status(400).json({
-        status: false,
-        message: updatedTicket.reason,
+        success: updateResult.success,
+        message: updateResult.message,
       });
     }
-    if (updatedTicket.reason === "RESOLUTION_REQUIRED") {
+    if (updateResult.code === "RESOLUTION_REQUIRED") {
       return res.status(422).json({
-        status: false,
-        message: updatedTicket.reason,
+        success: updateResult.success,
+        message: updateResult.message,
       });
     }
-    if (updatedTicket.reason === "NO_VALID_FIELDS") {
+    if (updateResult.code === "NO_VALID_FIELDS") {
       return res.status(400).json({
-        status: false,
-        message: updatedTicket.reason,
+        success: updateResult.success,
+        message: updateResult.message,
       });
     }
   }
 
   return res.status(200).json({
-    status: true,
-    message: "Ticket updated successfully.",
-    data: updatedTicket.data,
+    success: updateResult.success,
+    message: updateResult.message,
+    data: updateResult.data,
   });
 };
+
+// Replace the complete ticket resource.
+// This operation is restricted to administrators at the route level.
 
 const replaceTicket = async (req, res) => {
   const { ticketId } = req.params;
 
-  const replacedTicket = await ticketService.replaceTicket(ticketId, req.body);
+  const replaceResult = await ticketService.replaceTicket(ticketId, req.body);
 
-  if (!replacedTicket) {
+  if (!replaceResult.success) {
     return res.status(404).json({
-      status: false,
-      message: "Ticket Not Found.",
+      success: replaceResult.success,
+      message: replaceResult.message,
     });
   }
 
   return res.status(200).json({
-    status: true,
-    message: "Ticket Details Replaced Successfully.",
-    data: replacedTicket,
+    success: replaceResult.success,
+    message: replaceResult.message,
+    data: replaceResult.data,
   });
 };
+
+// Delete a ticket.
+// The service verifies the ticket's existence and applies the
+// authorization rule before performing the deletion.
 
 const deleteTicket = async (req, res) => {
   const { ticketId } = req.params;
 
-  const deletedTicket = await ticketService.deleteTicket(ticketId, req.user);
+  const deleteResult = await ticketService.deleteTicket(ticketId, req.user);
 
-  if (!deletedTicket.success) {
-    if (deletedTicket.reason === "NOT_FOUND") {
+  if (!deleteResult.success) {
+    if (deleteResult.code === "NOT_FOUND") {
       return res.status(404).json({
-        status: false,
-        message: deletedTicket.reason,
+        success: deleteResult.success,
+        message: deleteResult.message,
       });
     }
-    if (deletedTicket.reason === "FORBIDDEN") {
+    if (deleteResult.code === "FORBIDDEN") {
       return res.status(403).json({
-        status: false,
-        message: deletedTicket.reason,
+        success: deleteResult.success,
+        message: deleteResult.message,
       });
     }
   }
 
   return res.status(200).json({
-    status: true,
-    message: "Ticket deleted successfully.",
-    data: deletedTicket.data,
+    success: deleteResult.success,
+    message: deleteResult.message,
+    data: deleteResult.data,
   });
 };
 
-// -------
+// Assign a ticket to an agent.
+// The service verifies that the ticket exists and that the selected
+// user is a valid agent before updating the assignment.
 
 const assignTicket = async (req, res) => {
   const { ticketId } = req.params;
   const { agentId } = req.body;
 
-  const assignedTicket = await ticketService.assignTicket(ticketId, agentId);
+  const assignmentResult = await ticketService.assignTicket(ticketId, agentId);
 
-  if (!assignedTicket.success) {
+  if (!assignmentResult.success) {
     if (
-      assignedTicket.reason === "AGENT_NOT_FOUND" ||
-      assignedTicket.reason === "TICKET_NOT_FOUND"
+      assignmentResult.code === "AGENT_NOT_FOUND" ||
+      assignmentResult.code === "TICKET_NOT_FOUND"
     ) {
       return res.status(404).json({
-        status: false,
-        message: assignedTicket.reason,
+        success: assignmentResult.success,
+        message: assignmentResult.message,
       });
     }
-    if (assignedTicket.reason === "NOT_AN_AGENT") {
+    if (assignmentResult.code === "NOT_AN_AGENT") {
       return res.status(400).json({
-        status: false,
-        message: assignedTicket.reason,
+        success: assignmentResult.success,
+        message: assignmentResult.message,
       });
     }
   }
 
   return res.status(200).json({
-    status: true,
-    message: "Ticket assigned successfully",
-    data: assignedTicket.data,
+    success: assignmentResult.success,
+    message: assignmentResult.message,
+    data: assignmentResult.data,
   });
 };
 
+// Retrieve aggregated ticket statistics for the administrator dashboard.
+
 const getDashboardStats = async (req, res) => {
-  const dashboard = await ticketService.getDashboardStats();
+  const dashboardStats = await ticketService.getDashboardStats();
 
   return res.status(200).json({
-    status: true,
-    data: dashboard,
+    success: dashboardStats.success,
+    message: dashboardStats.message,
+    data: dashboardStats.data,
   });
 };
 
 module.exports = {
   createTicket,
-  getAllTickets,
+  getTickets,
   getTicketById,
   updateTicket,
   replaceTicket,

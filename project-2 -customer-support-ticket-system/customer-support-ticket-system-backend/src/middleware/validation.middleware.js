@@ -1,18 +1,25 @@
-const {validationResult} = require("express-validator");
+const { validationResult } = require("express-validator");
 
-const validationMiddleware=(req , res , next)=>{
-  const errors= validationResult(req);
+// Converts validation errors produced by express-validator
+// into a consistent API response.
+//
+// Route flow:
+// validation rules -> validationMiddleware -> controller
 
-  if(!errors.isEmpty()){
-   const errorsList= errors.array();
-   return res.status(400).json({
-    status:false,
-    message:"Validation failed",
-    errors: errorsList
-   })
+const validationMiddleware = (req, res, next) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      message: "Validation failed",
+      data: {
+        errors: errors.array(),
+      },
+    });
   }
 
   next();
-}
+};
 
-module.exports= validationMiddleware;
+module.exports = validationMiddleware;
