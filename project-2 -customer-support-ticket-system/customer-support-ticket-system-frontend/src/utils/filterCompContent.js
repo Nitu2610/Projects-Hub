@@ -1,5 +1,5 @@
 
-
+// Filter and sort options used by the ticket list.
 export const filterCompContent = {
   filterStatusContent: [
     { label: "All", value: "all" },

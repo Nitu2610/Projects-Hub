@@ -11,7 +11,9 @@ export const EditTicket = () => {
   const { urlId, ticketDetailsWithId } = useTicketById();
     let navigate = useNavigate();
   if (!ticketDetailsWithId) return <Heading>Ticket not found</Heading>;
+  
   // Now update the data, if there is no data present.
+  // Keep the selected ticket data seperate while the user edits the form.
   const [editedData, setEditedData] = useState(ticketDetailsWithId);
 
   const handleChange = (e) => {
@@ -26,6 +28,7 @@ export const EditTicket = () => {
     }));
   };
 
+  // Update the matching ticket and return to its details page.
   const handleSubmit = (e) => {
     e.preventDefault();
     const editedTicket = {

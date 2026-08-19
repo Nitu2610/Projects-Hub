@@ -8,7 +8,8 @@ export const TicketCard = ({ ticket }) => {
   const navigate = useNavigate();
   const { id, title, description, status, priority, createdBy, createdAt } =
     ticket;
-  //console.log('incoming data' , prop)
+  
+  // Open the tickets details page when the card is selected.  
   const handleClick = () => navigate(`/tickets/${id}`);
 
   return (

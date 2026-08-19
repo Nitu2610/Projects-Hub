@@ -1,8 +1,10 @@
 
 
+// Sort the ticket list based on the selected sort option.
 export const getSortedTicket = (dataSet, sortValue) => {
   if (sortValue === "all") return dataSet;
 
+  // Copy the array so the original ticket list is not modified.
   const sortedData = [...dataSet];
 
   switch (sortValue) {

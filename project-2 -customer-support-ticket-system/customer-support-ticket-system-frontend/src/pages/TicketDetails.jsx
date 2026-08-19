@@ -8,7 +8,8 @@ export const TicketDetails = () => {
   const { ticketsData, setTicketsData } = useTickets();
   const { urlId, ticketDetailsWithId } = useTicketById();
     let navigate = useNavigate();
-
+  
+  // Check that the ticket exists before using its details.
   if (ticketDetailsWithId === undefined) {
     return <Heading> Ticket ID {urlId} not found. </Heading>;
   } // first check the condition then only destructure!!!
@@ -23,6 +24,7 @@ export const TicketDetails = () => {
     createdAt,
   } = ticketDetailsWithId;
 
+  // Remove the selected ticket and return to the ticket list.
   const handleDelete = () => {
     let dataAfterDelete = ticketsData.filter(({ id }) => id !== +urlId);
     setTicketsData(dataAfterDelete);

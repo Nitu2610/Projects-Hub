@@ -12,10 +12,12 @@ export const FilterComp = ({ value, onChange, content, heading }) => {
         mt="10px"
       >
         <Text color="black">{heading} </Text>
-
+        
+        {/*  // typeof (e.target.value) is string */}
+        {/* // Native select valures are returned as strings. */}
         <select
           value={value}
-          onChange={(e) => onChange(e.target.value)} // typeof (e.target.value) is string
+          onChange={(e) => onChange(e.target.value)}
           style={{ marginLeft: "5px", padding: "1px" }}
         >
           {content.map(({ label, value }) => {

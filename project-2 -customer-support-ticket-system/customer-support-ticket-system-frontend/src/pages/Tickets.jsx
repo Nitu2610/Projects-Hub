@@ -16,6 +16,7 @@ export const Tickets = () => {
   const [sortBy, setSortBy] = useState("all");
   const { ticketsData, setTicketsData, context } = useTickets();
   // Calling the function twice gives you two independent pieces of state.
+  // Debounce the search term so filtering does not run on every keystroke.
   const { debouncedValue } = useDebounce(searchTerm); // thats why we need to pass the state.
 
   const handleSearch = (e) => {
@@ -23,6 +24,7 @@ export const Tickets = () => {
   };
 
   // Derived State- If data can be calculated from existing state, don't store it as separate state.
+  // Search, filter, and sort are derived from the current ticket data.
   const searchKeyWord = debouncedValue;
   //  console.log(debouncedValue)
   const filteredTickets = (

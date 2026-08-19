@@ -11,6 +11,7 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 
+// Reusable ticket form used for creating and editing ticket details. 
 export const TicketForm = ({
   heading,
   formData,

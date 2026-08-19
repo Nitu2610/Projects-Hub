@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { TicketForm } from "../components/TicketForm";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "../customHooks/useForm";
@@ -11,7 +11,8 @@ export const INITIAL_FORM_STATE = {
   createdBy: "",
 };
 
-export const CreateTickets = () => {
+// Create a new ticket and return to the ticket list after submission.
+export const CreateTicket = () => {
   const navigate=useNavigate();
 
   const handleCreateTicket = (updatedData) => {
