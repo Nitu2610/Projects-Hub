@@ -5,7 +5,7 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   // Store the logged-in user and authentication status.
-  const [user, setUser] = useState();
+  const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(null);
 
   // Check local storage and when the app starts.
@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
       setUser( false);
       setIsAuthenticated( false);
     } else {
-      setUser(storedUser);
+      setUser(JSON.parse(storedUser));
       setIsAuthenticated(true);
     }
   }, []);
@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
     const {token,user}=backendRes.data;
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(user));
-
+    
     setUser(user);
     setIsAuthenticated(true);
   };
@@ -39,6 +39,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
   };
+
 
   return (
     <AuthContext.Provider value={{ user, isAuthenticated, login, logout }}>

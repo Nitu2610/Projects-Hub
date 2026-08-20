@@ -11,10 +11,20 @@ import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 
+// Login page:
+// Responsible for collecting user credentails and starting the 
+// authentication flow through AuthContext.
+//
+// Data flow:
+// Login form ➡️ AuthContext.login() ➡️ authApi ➡️ Backend API
+// 
+// AuthContext is responsible for authentication state.
+// This component is responsible for form state, UI feedback, navigation.
+
 export const Login = () => {
   const [userCred, setUserCred] = useState({ email: "", password: "" });
   const { login, user, isAuthenticated } = useContext(AuthContext);
-  const navTo = useNavigate();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -29,9 +39,7 @@ export const Login = () => {
     setLoading(true);
     try {
       await login(userCred);
-      if (isAuthenticated) {
-        navTo("/");
-      }
+      navigate('/');
     } catch (err) {
       // Show an error message when login request fails.
       setError(

@@ -52,14 +52,17 @@
               ↓
       12. Login.jsx navigates the user to "/"
   ```
-  
+
 - #####  What happens when login fails? & What is the difference between 401 and 403?
   - Axios receives the HTTP error response and throws an error. The error propagates through the API layer and AuthContext to the catch block in the Login component, where an appropriate message is displayed.
   - 401 Unauthorized: Authentication is missing or invalid.
   - 403 Forbidden: User is authenticated but doesn't have permission to perform the requested action.
 
-- ##### 
-  - 
+- ##### ** When an Axios request fails, start with:
+  - console.log("ERROR:", error);
+  - console.log("STATUS:", error.response?.status);
+  - console.log("DATA:", error.response?.data);
+    - Then inspect deeper based on the backend response structure.
 
 - ##### 
   - 

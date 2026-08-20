@@ -1,30 +1,37 @@
-import React from "react";
 import { Box, Container } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { formatPriority, formatStatus } from "../utils/formatFieldLables";
 
+// TicketCard:
+// Responsible for displaying a shor summary of a single ticket.
+//
+// Data floe:
+// Tickets ➡️ TicketCard ➡️ Ticket Details page.
 
 export const TicketCard = ({ ticket }) => {
   const navigate = useNavigate();
-  const { id, title, description, status, priority, createdBy, createdAt } =
-    ticket;
-  
-  // Open the tickets details page when the card is selected.  
-  const handleClick = () => navigate(`/tickets/${id}`);
+
+  const { _id, title, status, priority, assignedTo } = ticket;
+
+  // Open the tickets details page when the card is selected.
+  const handleClick = () => navigate(`/tickets/${_id}`);
 
   return (
     <Container>
-      <Box onClick={handleClick} > 
+      <Box onClick={handleClick}>
         {" "}
-        {id}. {title}{" "}
+        {"✔️"}
+        {title}{" "}
       </Box>
-      <Box> Status: {" "}
-        {formatStatus(status)}{" "}
-      </Box> 
-      <Box> Priority :{" "} {formatPriority(priority)} </Box>
+      <Box> Status: {status} </Box>
+      <Box> Priority : {priority} </Box>
+
       <Box>
         {" "}
-       By, {createdBy} <hr />
+        Assigned To,{" "}
+        {assignedTo
+          ? `${assignedTo.firstName} ${assignedTo.lastName}`
+          : "Not assigned"}{" "}
+        <hr />
       </Box>
     </Container>
   );

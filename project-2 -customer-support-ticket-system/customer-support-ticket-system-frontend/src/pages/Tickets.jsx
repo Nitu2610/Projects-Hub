@@ -9,12 +9,26 @@ import { useTickets } from "../customHooks/useTickets";
 import { useDebounce } from "../customHooks/useDebounce";
 import { useState } from "react";
 
+// Tickets page:
+// Responsible for displaying the user's tickets and providing
+// search, filtering, and sorting functionality.
+// 
+// Data flow:
+// TicketsContext ➡️ useTickets ➡️ Tickets ➡️ search/filter/sort ➡️ TicketCard
+//
+// Search, filters, and sorting are kept as local UI state because
+// they only affect howo the tickets are displayed.
+
 export const Tickets = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
   const [sortBy, setSortBy] = useState("all");
-  const { ticketsData, setTicketsData, context } = useTickets();
+  // Get the tickets managed by the TicketsContext.
+  const { ticketsData } = useTickets();
+
+  // Delay the search value before applying the filter.
+  // This prevents filtering from running on every keystroke.
   // Calling the function twice gives you two independent pieces of state.
   // Debounce the search term so filtering does not run on every keystroke.
   const { debouncedValue } = useDebounce(searchTerm); // thats why we need to pass the state.
@@ -25,8 +39,13 @@ export const Tickets = () => {
 
   // Derived State- If data can be calculated from existing state, don't store it as separate state.
   // Search, filter, and sort are derived from the current ticket data.
+  //
+  // Processing oder:
+  // 1. Search by title
+  // 2. Filter by status
+  // 3. Filter by priority
+  // 4. Sort the remaining tickets
   const searchKeyWord = debouncedValue;
-  //  console.log(debouncedValue)
   const filteredTickets = (
     searchKeyWord.length === 0
       ? ticketsData
@@ -81,7 +100,7 @@ export const Tickets = () => {
 
       {sortedTickets &&
         sortedTickets.map((ticket) => (
-          <TicketCard key={ticket.id} ticket={ticket} />
+          <TicketCard key={ticket._id} ticket={ticket} />
         ))}
     </>
   );

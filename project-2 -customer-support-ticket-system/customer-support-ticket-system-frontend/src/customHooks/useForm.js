@@ -18,7 +18,6 @@ export const useForm = (INITIAL_FORM_STATE, onSubmit) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(formData);
-    console.log(formData);
     setFormData(INITIAL_FORM_STATE);
   };
 
