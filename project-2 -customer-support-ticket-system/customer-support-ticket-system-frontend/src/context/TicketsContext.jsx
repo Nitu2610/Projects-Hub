@@ -5,7 +5,7 @@ import { ticketApi } from "../api/ticketApi";
 // Context layer:
 // Responsible for managing ticket-related state and sharing it
 // with components across the application.
-// 
+//
 // Architecture:
 // Components ➡️ TicketsContext ➡️ ticketApi ➡️ Backend API
 
@@ -28,33 +28,35 @@ export const TicketProvider = ({ children }) => {
 
   // Fetch the current user's tickets from the backend
   // and update the context state.
-   const fetchTickets = async () => {
-      try {
-        setLoading(true);
+  const fetchTickets = async () => {
+    try {
+      setLoading(true);
 
-        const response = await ticketApi.getTickets();
-        
-        setTicketsData(response.data);
-        setError("");
-      } catch (err) {
-        // Prefer the backend's error message when available.
-        // Fall back to a general message if the backend does not provide one. 
-        setError(err.response?.data?.message || " Unable to fetch tickets.");
-      } finally {
-        setLoading(false);
-      }
-    };
+      const response = await ticketApi.getTickets();
+
+      setTicketsData(response.data);
+      setError("");
+    } catch (err) {
+      // Prefer the backend's error message when available.
+      // Fall back to a general message if the backend does not provide one.
+      setError(err.response?.data?.message || " Unable to fetch tickets.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     // Fetch tickets only after the user has been authenticated.
     // This prevents an unnecessary or unauthorized API request.
     if (!isAuthenticated) return;
-   
+
     fetchTickets();
   }, [isAuthenticated]);
 
   return (
-    <TicketsContext.Provider value={{ ticketsData, loading, error, fetchTickets }}>
+    <TicketsContext.Provider
+      value={{ ticketsData, loading, error, fetchTickets }}
+    >
       {children}
     </TicketsContext.Provider>
   );

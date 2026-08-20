@@ -8,10 +8,11 @@
   - `AuthContext.jsx` - To provide authentication **state** to the React application.
 
 - ##### Why VITE_BASE_URL and not BASE_URL in .env file?
-  - For a Vite frontend, variables that you want to access through frontend JavaScript must start with VITE_.
-  - Because Vite intentionally exposes only variables with the VITE_ prefix to the browser.
+  - For a Vite frontend, variables that you want to access through frontend JavaScript must start with VITE\_.
+  - Because Vite intentionally exposes only variables with the VITE\_ prefix to the browser.
 
 - ##### AuthProvider complete mounting flow
+
   ```text
     App starts
     ↓
@@ -51,107 +52,121 @@
       11. login() completes successfully
               ↓
       12. Login.jsx navigates the user to "/"
-  ```
+    ```
 
-- #####  What happens when login fails? & What is the difference between 401 and 403?
+- ##### What happens when login fails? & What is the difference between 401 and 403?
   - Axios receives the HTTP error response and throws an error. The error propagates through the API layer and AuthContext to the catch block in the Login component, where an appropriate message is displayed.
   - 401 Unauthorized: Authentication is missing or invalid.
   - 403 Forbidden: User is authenticated but doesn't have permission to perform the requested action.
 
-- ##### ** When an Axios request fails, start with:
+- ##### \*\* When an Axios request fails, start with:
   - console.log("ERROR:", error);
   - console.log("STATUS:", error.response?.status);
   - console.log("DATA:", error.response?.data);
     - Then inspect deeper based on the backend response structure.
 
-- ##### 
-  - 
+- ##### Why did you use useCallback here? Is it necessary?
+  - useCallback memoizes the handleChange function so React doesn't create a new function reference on every render. However, in this particular case, it may not provide any meaningful performance benefit because the function is simple and there is no evidence that its changing reference is causing unnecessary re-renders.
 
-- ##### 
-  - 
+  If I'm using handleChange only within the same component, I would generally write it without useCallback:
+  ``` text
+     const handleChange = (e) => {
+        const { name, value, type } = e.target;
 
-- ##### 
-  - 
+        setFormData((prev) => ({
+          ...prev,
+          [name]: type === "number" ? Number(value) : value,
+        }));
+      };
+  text```
 
-- ##### 
-  - 
+- ##### When would useCallback actually make sense?
+  - useCallback isn't automatically a performance improvement. It is useful when referential equality matters, such as when passing callbacks to memoized child components.
 
-- ##### 
-  - 
+- #####
+  -
 
-- ##### 
-  - 
+- #####
+  -
 
-- ##### 
-  - 
+- #####
+  -
 
-- ##### 
+- #####
+  -
 
-- ##### 
-  - 
+- #####
+  -
 
-- ##### 
-  - 
+- #####
 
-- ##### 
-  - 
+- #####
+  -
 
-- ##### 
-  - 
+- #####
+  -
 
-- ##### 
-  - 
+- #####
+  -
 
-- ##### 
-  - 
+- #####
+  -
 
-- ##### 
-  - 
+- #####
+  -
 
-- ##### 
-  - 
+- #####
+  -
 
-- ##### 
-  - 
+- #####
+  -
 
-- ##### 
-  - 
+- #####
+  -
 
-- ##### 
-  - 
+- #####
+  -
 
-- ##### 
-  - 
+- #####
+  -
 
-- ##### 
-  - 
+- #####
+  -
 
-- ##### 
-  - 
+- #####
+  -
 
-- ##### 
-  - 
+- #####
+  -
 
-- ##### 
-  - 
+- #####
+  -
 
-- ##### 
-  - 
+- #####
+  -
 
-- ##### 
+- #####
+  -
 
-- ##### 
-  - 
+- #####
+  -
 
-- ##### 
-  - 
+- #####
 
-- ##### 
-  - 
+- #####
+  -
 
-- ##### 
-  - 
+- #####
+  -
+
+- #####
+  -
+
+- #####
+  -
+
 #### Current frontend architecture
+
 ```
 customer-support-ticket-system-frontend/
 │
@@ -205,6 +220,7 @@ customer-support-ticket-system-frontend/
 ```
 
 ### The important part: how the pieces connect
+
 ```
                          App
                           │
@@ -235,6 +251,7 @@ customer-support-ticket-system-frontend/
 ```
 
 ### Authentication flow
+
 ```
 Login.jsx
    │
@@ -260,7 +277,9 @@ AuthContext
    ├── user
    └── isAuthenticated
 ```
+
 And your application starts with:
+
 ```
 main.jsx
    │
@@ -279,6 +298,7 @@ Chakra Provider
    ▼
 App
 ```
+
 That is an important architectural relationship.
 
 ---
@@ -319,6 +339,7 @@ TicketCard
 ```
 
 ### Ticket details flow
+
 ```
 /tickets/:id
       │
@@ -338,9 +359,10 @@ ticketDetailsWithId
       ├── display
       ├── edit
       └── delete
-``` 
+```
 
 ### Create ticket flow
+
 ```
 CreateTicket
       │
@@ -359,12 +381,11 @@ useForm
               │
               ▼
         navigate("/tickets")
-``` 
-
+```
 
 ### Edit ticket flow
 
-``` 
+```
 TicketDetails
       │
       ▼
@@ -394,5 +415,3 @@ setTicketsData()
       ▼
 navigate()
 ```
-
-

@@ -10,6 +10,7 @@ import {
   Stack,
   Textarea,
 } from "@chakra-ui/react";
+import { AssignAgent } from "./AssignAgent";
 
 // Reusable ticket form
 // Responsibility only for rendering the ticket form and collecting user input.
@@ -29,6 +30,9 @@ export const TicketForm = ({
   handleSubmit,
   mode = "create",
   role,
+  agents,
+  seletedAgent,
+  setSelectedAgent,
 }) => {
   return (
     <Container maxW="lg" py={8}>
@@ -138,6 +142,36 @@ export const TicketForm = ({
                   />
                 </Field.Root>
               )}
+
+              {/* Only authorized admin has access to assign the agent. Capture the agent id and send to backedn to complete the ticket assign. */}
+              {role === "admin" && (
+                <Field.Root>
+                  <Field.Label>
+                    Assigned Agent : {formData.assignedTo.firstName}{" "}
+                    {formData.assignedTo.lastName}{" "}
+                  </Field.Label>
+                  <NativeSelect.Root>
+                    <NativeSelect.Field
+                      value={seletedAgent}
+                      onChange={(e) => setSelectedAgent(e.target.value)}
+                    >
+                      <option value="">
+                        {formData.assignedTo
+                          ? "Reassign Agent"
+                          : "Assign Agent"}
+                      </option>
+                      {agents.map((agent) => (
+                        <option key={agent._id} value={agent._id}>
+                          {agent.firstName} {agent.lastName}
+                        </option>
+                      ))}
+                      ;
+                    </NativeSelect.Field>
+                    <NativeSelect.Indicator />
+                  </NativeSelect.Root>
+                </Field.Root>
+              )}
+
               <Button type="submit" colorPalette="blue" size="lg">
                 Submit
               </Button>

@@ -1,9 +1,15 @@
+
+
 import { useCallback, useState } from "react";
+
+// Reusable form hook for managing field values and form submission.
+// The component provides the initial form state and submit callback.
 
 export const useForm = (INITIAL_FORM_STATE, onSubmit) => {
   const [formData, setFormData] = useState(INITIAL_FORM_STATE);
 
-  // Update the matching form field while keeping the other fields unchanged.
+  // Updates the changed field while keeping the other fields unchanged.
+  // Number inputs are converted from strings to numbers before storing them. 
   const handleChange = useCallback((e) => {
     // This is called cargo-cult optimization.
     let { name, value, type } = e.target;
@@ -13,8 +19,8 @@ export const useForm = (INITIAL_FORM_STATE, onSubmit) => {
     }));
   }, []);
 
-  // Prevent the browser's default form submission and pass the form data
-  // to the callback provided by the component using this hook.
+  // Prevents the default browser submission and passes the current
+  // form data to the callback provided by the component.
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(formData);

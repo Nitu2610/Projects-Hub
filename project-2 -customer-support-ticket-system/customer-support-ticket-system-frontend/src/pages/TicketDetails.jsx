@@ -37,8 +37,10 @@ export const TicketDetails = () => {
         setLoading(false);
       }
     };
+
     fetchTicket();
   }, [ticketId]);
+
 
   if (loading) return <Heading> Loading... </Heading>;
   if (error) return <Heading> {error} </Heading>;
@@ -105,6 +107,7 @@ export const TicketDetails = () => {
             ? `${assignedTo.firstName} ${assignedTo.lastName}`
             : "Not assigned"}
         </Box>
+
         <Box>
           {" "}
           <strong> Resolution: </strong> {resolution || "Working on ticket"}

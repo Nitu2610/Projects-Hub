@@ -1,9 +1,11 @@
 import { TicketForm } from "../components/TicketForm";
 import { useNavigate, useParams } from "react-router-dom";
-import { Heading } from "@chakra-ui/react";
+import { Button, Heading } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import { ticketApi } from "../api/ticketApi";
 import { AuthContext } from "../context/AuthContext";
+import { userApi } from "../api/userApi";
+import { useTickets } from "../customHooks/useTickets";
 
 // EditTicket page:
 // Responsibility for loading an existing ticket, managing its edited state,
@@ -25,10 +27,15 @@ export const EditTicket = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const [agents, setAgents] = useState([]);
+  const [selectedAgent, setSelectedAgent] = useState("");
+
   // Get the current user's role to determine which fields
   // can be included in the update request.
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  // Refreshes shared ticket data after an assignment changes.
+  const { fetchTickets } = useTickets();
 
   useEffect(() => {
     const fetchTicket = async () => {
@@ -45,8 +52,37 @@ export const EditTicket = () => {
     fetchTicket();
   }, [ticketId]);
 
+  useEffect(() => {
+    if (user?.role !== "admin") return;
+
+    const fetchAgents = async () => {
+      try {
+        const response = await userApi.getUsers();
+
+        const agentUsers = response.data.filter(
+          (user) => user.role === "agent",
+        );
+        setAgents(agentUsers);
+      } catch (err) {
+        setError(err.response?.data?.message || "Unable to fetch agents.");
+        console.log(err.response);
+      }
+    };
+    fetchAgents();
+  }, [user]);
+
   if (loading) return <Heading>Loading...</Heading>;
-  if (error) return <Heading>{error}</Heading>;
+
+  if (error) {
+    return (
+      <>
+        <Heading>{error} </Heading>
+        <Button onClick={() => navigate(`/tickets/${ticketId}`)}>
+          Back to Ticket
+        </Button>
+      </>
+    );
+  }
   if (!ticket) return <Heading>Ticket not found.</Heading>;
 
   const handleChange = (e) => {
@@ -85,6 +121,18 @@ export const EditTicket = () => {
     try {
       const response = await ticketApi.updateTicket(ticketId, updateData);
 
+      // Assignment is handled separately because it is a separate
+      // backend operation from updating the ticket fields.
+
+      if (user.role === "admin" && selectedAgent) {
+        await ticketApi.assignTicket(ticketId, selectedAgent);
+
+        // Refresh shared ticket data so other ticket views have
+        // the latest assignment information.
+        await fetchTickets();
+      }
+
+      alert("Ticket updated successfully.");
       navigate(`/tickets/${ticketId}`);
     } catch (err) {
       setError(err.response?.data?.message || "Unable to update ticket.");
@@ -102,6 +150,9 @@ export const EditTicket = () => {
         handleChange={handleChange}
         mode="edit"
         role={user.role}
+        agents={agents}
+        selectedAgent={selectedAgent}
+        setSelectedAgent={setSelectedAgent}
       />
     </>
   );

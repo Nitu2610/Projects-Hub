@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import {authApi} from "../api/authApi";
+import { authApi } from "../api/authApi";
 
 export const AuthContext = createContext();
 
@@ -13,9 +13,9 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
-    if (!storedUser  || !storedToken ) {
-      setUser( false);
-      setIsAuthenticated( false);
+    if (!storedUser || !storedToken) {
+      setUser(false);
+      setIsAuthenticated(false);
     } else {
       setUser(JSON.parse(storedUser));
       setIsAuthenticated(true);
@@ -25,10 +25,10 @@ export const AuthProvider = ({ children }) => {
   // Save the login details and update the authentication state.
   const login = async (creds) => {
     const backendRes = await authApi.login(creds); // return data.
-    const {token,user}=backendRes.data;
+    const { token, user } = backendRes.data;
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(user));
-    
+
     setUser(user);
     setIsAuthenticated(true);
   };
@@ -39,7 +39,6 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
   };
-
 
   return (
     <AuthContext.Provider value={{ user, isAuthenticated, login, logout }}>

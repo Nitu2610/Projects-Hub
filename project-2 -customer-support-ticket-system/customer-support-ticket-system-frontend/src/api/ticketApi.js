@@ -1,5 +1,5 @@
 // API layer:
-// Responsible only for communicationg with the backend ticket endpoints.
+// Responsible only for communicating with the backend ticket endpoints.
 // It keeps HTTP/request logic separate from React components and context.
 
 import { axiosInstance } from "./axiosInstance";
@@ -37,10 +37,25 @@ export const ticketApi = {
     return response.data;
   },
 
-  // Delete ticket:
+  // Delete a ticket:
   // Backend allows this operations only for authorized admin users.
   deleteTicket: async (ticketId) => {
     const response = await axiosInstance.delete(`/tickets/${ticketId}`);
+    return response.data;
+  },
+
+  // Assign a ticket to an agent.
+  // The backend verifies that the selected user is a valid agent.
+  assignTicket: async (ticketId, agentId) => {
+    const response = await axiosInstance.patch(`/tickets/${ticketId}/assign`, {
+      agentId,
+    });
+    return response.data;
+  },
+
+  // Fetch aggregated statics for the admin dashboard.
+  getDashboardStats: async () => {
+    const response = await axiosInstance.get("/tickets/dashboard");
     return response.data;
   },
 };
