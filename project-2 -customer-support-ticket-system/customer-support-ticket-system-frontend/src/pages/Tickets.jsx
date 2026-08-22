@@ -1,18 +1,18 @@
 import { TicketCard } from "../components/TicketCard";
 import { FilterComp } from "../components/FilterComp";
 import { filterCompContent } from "../utils/filterCompContent";
-import { filterFieldResult } from "../utils/filterFieldResult";
-import { getSortedTicket } from "../utils/getSortedTickets";
-import { Input, Container, Heading } from "@chakra-ui/react";
-import { TicketsContext } from "../context/TicketsContext";
+import { Input, Container, Heading, Button, Text } from "@chakra-ui/react";
 import { useTickets } from "../customHooks/useTickets";
 import { useDebounce } from "../customHooks/useDebounce";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { LogoutButton } from "../components/LogoutButton";
 
 // Tickets page:
 // Responsible for displaying the user's tickets and providing
 // search, filtering, and sorting functionality.
-// 
+//
 // Data flow:
 // TicketsContext ➡️ useTickets ➡️ Tickets ➡️ search/filter/sort ➡️ TicketCard
 //
@@ -24,8 +24,16 @@ export const Tickets = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
   const [sortBy, setSortBy] = useState("all");
+  const [page, setPage] = useState(1);
+  const limit = 5;
+
+  const navigate = useNavigate();
+
   // Get the tickets managed by the TicketsContext.
-  const { ticketsData } = useTickets();
+  const { ticketsData, loading, error, pagination, fetchTickets } =
+    useTickets();
+
+  const { isAuthenticated } = useContext(AuthContext);
 
   // Delay the search value before applying the filter.
   // This prevents filtering from running on every keystroke.
@@ -33,75 +41,135 @@ export const Tickets = () => {
   // Debounce the search term so filtering does not run on every keystroke.
   const { debouncedValue } = useDebounce(searchTerm); // thats why we need to pass the state.
 
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const params = { page, limit };
+
+    if (debouncedValue.trim()) {
+      params.search = debouncedValue.trim();
+    }
+    if (statusFilter !== "all") {
+      params.status = statusFilter;
+    }
+    if (priorityFilter !== "all") {
+      params.priority = priorityFilter;
+    }
+    if (sortBy !== "all") {
+      const [ sortField, sortOrder ] = sortBy.split("-");
+      params.sortBy = sortField;
+      params.order = sortOrder;
+    }
+    fetchTickets(params);
+  }, [page, debouncedValue, statusFilter, priorityFilter, sortBy]);
+
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
+    setPage(1);
   };
 
-  // Derived State- If data can be calculated from existing state, don't store it as separate state.
-  // Search, filter, and sort are derived from the current ticket data.
-  //
-  // Processing oder:
-  // 1. Search by title
-  // 2. Filter by status
-  // 3. Filter by priority
-  // 4. Sort the remaining tickets
-  const searchKeyWord = debouncedValue;
-  const filteredTickets = (
-    searchKeyWord.length === 0
-      ? ticketsData
-      : ticketsData.filter(
-          ({ title }) => title.toLowerCase().includes(searchKeyWord),
-          // Think about condition and its outcome then and how it will work.
-        )
-  )
-    .filter(filterFieldResult(statusFilter, "status"))
-    .filter(filterFieldResult(priorityFilter, "priority", "number"));
+  const handleStatusChange = (value) => {
+    setStatusFilter(value);
+    setPage(1);
+  };
 
-  const sortedTickets = getSortedTicket(filteredTickets, sortBy);
+  const handlePriorityChange = (value) => {
+    setPriorityFilter(value);
+    setPage(1);
+  };
 
+  const handleSortChange = (value) => {
+    setSortBy(value);
+    setPage(1);
+  };
+
+  if (isAuthenticated === null)
+    return <Heading>Ticket comp Checking authentication...</Heading>;
+  if (isAuthenticated === false)
+    return <Heading>Ticket comp Please login.</Heading>;
+  if (error)
+    return (
+      <>
+        <Heading>Ticket component {error}</Heading>;
+      </>
+    );
   if (ticketsData.length === 0)
-    return <Heading>No Tickets Availiable.</Heading>;
+    return (
+      <>
+        <Heading>Ticket comp No Tickets Availiable.</Heading>
+        <Button onClick={() => {
+          navigate('/home')
+        }}>Back to Ticket</Button>
+      </>
+    );
 
   return (
     <>
       <div>Tickets</div>
-      <Input
-        placeholder="Search via title"
-        value={searchTerm}
-        onChange={handleSearch}
-      />
-      <Container
-        display="flex"
-        justifyContent="center"
-        alignContent="center"
-        flexWrap="wrap"
-      >
-        <FilterComp
-          heading={"Filter by Status: "}
-          value={statusFilter}
-          onChange={setStatusFilter}
-          content={filterCompContent.filterStatusContent}
-        />
 
-        <FilterComp
-          heading={"Filter by Priority: "}
-          value={priorityFilter}
-          onChange={setPriorityFilter}
-          content={filterCompContent.filterPriorityContent}
+      <div>
+        <Input
+          placeholder="Search via title"
+          value={searchTerm}
+          onChange={handleSearch}
         />
+        {loading && <Text>Loading tickets...</Text>}
+        <Container
+          display="flex"
+          justifyContent="center"
+          alignContent="center"
+          flexWrap="wrap"
+        >
+          <FilterComp
+            heading={"Filter by Status: "}
+            value={statusFilter}
+            onChange={handleStatusChange}
+            content={filterCompContent.filterStatusContent}
+          />
 
-        <FilterComp
-          heading={"Sort Tickets: "}
-          value={sortBy}
-          onChange={setSortBy}
-          content={filterCompContent.filterSortContent}
-        />
+          <FilterComp
+            heading={"Filter by Priority: "}
+            value={priorityFilter}
+            onChange={handlePriorityChange}
+            content={filterCompContent.filterPriorityContent}
+          />
+
+          <FilterComp
+            heading={"Sort Tickets: "}
+            value={sortBy}
+            onChange={handleSortChange}
+            content={filterCompContent.filterSortContent}
+          />
+        </Container>
+
+        {ticketsData &&
+          ticketsData.map((ticket) => (
+            <TicketCard key={ticket._id} ticket={ticket} />
+          ))}
+      </div>
+
+      <Container display="flex" justifyContent="center" gap={3} mt={6}>
+        <Button
+          disabled={page === 1}
+          onClick={() => setPage((prev) => prev - 1)}
+        >
+          {" "}
+          Previous{" "}
+        </Button>
+
+        <Text>
+          {" "}
+          Page {page} of {pagination?.totalPages}{" "}
+        </Text>
+
+        <Button
+          disabled={page === pagination?.totalPages}
+          onClick={() => setPage((prev) => prev + 1)}
+        >
+          {" "}
+          Next{" "}
+        </Button>
       </Container>
-
-      {sortedTickets &&
-        sortedTickets.map((ticket) => (
-          <TicketCard key={ticket._id} ticket={ticket} />
-        ))}
     </>
   );
 };

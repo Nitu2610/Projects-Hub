@@ -6,4 +6,14 @@ export const authApi = {
     const response = await axiosInstance.post("/users/login", credentials);
     return response.data;
   },
+
+  register: async ( userData) =>{
+    const response = await axiosInstance.post("/users/register", userData);
+    return response.data;
+  }, 
+
+  createAgent: async ( userData) =>{
+    const response = await axiosInstance.post("/users/register", userData);
+    return response.data;
+  }, 
 };

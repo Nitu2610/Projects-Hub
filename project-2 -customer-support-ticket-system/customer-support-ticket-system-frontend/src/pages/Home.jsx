@@ -17,26 +17,27 @@ import { AdminDashboard } from "./AdminDashboard";
 
 export const Home = () => {
   // Get ticket data and request status from the ticket context.
-  const { ticketsData, loading, error } = useTickets();
+  const { loading, error } = useTickets();
   const navigate = useNavigate();
 
   // User role determines which version of the home page is displayed.
-  const { isAuthenticated, user } = useContext(AuthContext);
-
-  if (loading) return <Heading>Loading</Heading>;
-  if (error) return <Heading>{error}</Heading>;
-
+  const { user } = useContext(AuthContext);
   return (
     <>
       {user.role !== "admin" ? (
         <>
-          <Heading>Home Page</Heading>
-          <Text>
-            {" "}
-            Welcome back, {user.firstName} as {user.role}{" "}
-          </Text>
-          <LogoutButton />
-          <Button onClick={() => navigate("/create")}>Create Ticket</Button>
+          <div>
+            <Heading>Home Page</Heading>
+            <Text>
+              {" "}
+              Welcome back, {user.firstName} as {user.role}{" "}
+            </Text>
+            <LogoutButton />
+            {user.role === "customer" && (
+              <Button onClick={() => navigate("/create")}>Create Ticket</Button>
+            )}
+          </div>
+
           <Tickets />
         </>
       ) : (

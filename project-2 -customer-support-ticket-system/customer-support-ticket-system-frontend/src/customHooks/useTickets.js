@@ -7,6 +7,8 @@ import { TicketsContext } from "../context/TicketsContext";
 // Architecture:
 // Components ➡️ useTickets ➡️ TicketsContext
 
+
+// Instead of importing useContext and TicketsContext in very file we use this helper fn.
 export const useTickets = () => {
   return useContext(TicketsContext);
 };

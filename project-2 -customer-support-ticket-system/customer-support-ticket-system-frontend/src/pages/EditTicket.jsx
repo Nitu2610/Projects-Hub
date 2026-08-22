@@ -65,7 +65,6 @@ export const EditTicket = () => {
         setAgents(agentUsers);
       } catch (err) {
         setError(err.response?.data?.message || "Unable to fetch agents.");
-        console.log(err.response);
       }
     };
     fetchAgents();
@@ -93,6 +92,7 @@ export const EditTicket = () => {
     }));
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -100,13 +100,18 @@ export const EditTicket = () => {
 
     // Agents can update ticket workflow fields,
     // but cannot change the original ticket or description.
+
     if (user.role === "agent") {
-      updateData = {
-        status: editedData.status,
-        priority: editedData.priority,
-        resolution: editedData.resolution,
-      };
+
+      updateData = {};
+
+      for(let [key,value] of Object.entries(editedData)){
+        if(ticket[key] !== value){
+          updateData[key]=value;
+        }
+      }
     }
+
     // Agent have permission to update both ticket details
     // and workflow-related fields.
     if (user.role === "admin") {
@@ -127,8 +132,6 @@ export const EditTicket = () => {
       if (user.role === "admin" && selectedAgent) {
         await ticketApi.assignTicket(ticketId, selectedAgent);
 
-        // Refresh shared ticket data so other ticket views have
-        // the latest assignment information.
         await fetchTickets();
       }
 

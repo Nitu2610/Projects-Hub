@@ -7,8 +7,10 @@ import { axiosInstance } from "./axiosInstance";
 export const ticketApi = {
   // Fetch tickets available to the current authenticated user.
   // axiosInstance handles the common API configuration and authentication.
-  getTickets: async () => {
-    const response = await axiosInstance.get("/tickets");
+  getTickets: async (query={}) => {
+    const response = await axiosInstance.get("/tickets",{
+      params: query,
+    });
     return response.data;
   },
 

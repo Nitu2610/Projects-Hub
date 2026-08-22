@@ -16,12 +16,12 @@ export const getSortedTicket = (dataSet, sortValue) => {
 
     case "newestDate":
       return sortedData.sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+        (a, b) => new Date(b.issueOccurredAt) - new Date(a.issueOccurredAt),
       );
 
     case "oldestDate":
       return sortedData.sort(
-        (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
+        (a, b) => new Date(a.issueOccurredAt) - new Date(b.issueOccurredAt),
       );
       default : return sortedData;
   }

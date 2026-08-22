@@ -3,21 +3,57 @@
 export const filterCompContent = {
   filterStatusContent: [
     { label: "All", value: "all" },
-    { label: "Open", value: "open" },
-    { label: "In Progress", value: "inprogress" },
-    { label: "Closed", value: "closed" },
+    { label: "Open", value: "Open" },
+    { label: "In Progress", value: "In Progress" },
+    { label: "Closed", value: "Closed" },
   ],
   filterPriorityContent: [
     { label: "All", value: "all" },
-    { label: "Low", value: 1 },
-    { label: "Medium", value: 2 },
-    { label: "High", value: 3 },
+    { label: "Low", value: "Low" },
+    { label: "Medium", value: "Medium" },
+    { label: "High", value: "High" },
+    { label: "Critical", value: "Critical" },
   ],
    filterSortContent: [
     { label: "All", value: "all" },
-    { label: "Priority Low -> High", value: 'pl2h' },
-    { label: "Priority High -> Low", value: 'ph2l' },
-    { label: "Newest First", value: 'newestDate' },
-     { label: "Oldest First", value: 'oldestDate' },
+    { label: "Priority: Low -> High", value: 'priority-asc' },
+    { label: "Priority: High -> Low", value: 'priority-desc' },
+    { label: "Newest First", value: 'issueOccurredAt-desc' },
+    { label: "Oldest First", value: 'issueOccurredAt-asc' },
   ],
 };
+
+/**
+
+{
+        $skip: skip,
+      },
+
+      {
+        $limit: limit,
+      },
+
+      {
+        $lookup: {
+          from: "users",
+          localField: "assignedTo",
+          foreignField: "_id",
+          as: "assignedTo",
+        },
+      },
+
+      {
+        $unwind: {
+          path: "$assignedTo",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
+      {
+        $project: {
+          priorityOrder: 0,
+          "assignedTo.password": 0,
+        },
+      },
+
+ */

@@ -4,6 +4,8 @@ import { ticketApi } from "../api/ticketApi";
 import { DashboardCard } from "../components/DashboardCard";
 import { AgentTicketSummary } from "../components/AgentTicketSummary";
 import { TicketByAgentChart } from "../components/TicketByAgentChart";
+import { LogoutButton } from "../components/LogoutButton";
+import { useNavigate } from "react-router-dom";
 
 // AdminDashboard:
 // Loads aggregated ticket statistics and passess the data to
@@ -13,6 +15,8 @@ export const AdminDashboard = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const navigate=useNavigate();
 
   // Fetched all dashboard statistics from the backend.
   // The API layer keeps request logic outside the dashboard component.
@@ -51,10 +55,11 @@ export const AdminDashboard = () => {
 
   return (
     <>
+    <LogoutButton/>
       <Container maxW="container.xl" py={8}>
         <Heading mb={6}> Admin Dashboard </Heading>
 
-        <DashboardCard label="Total Tickets" value={stats.totalTickets} />
+        <DashboardCard label="Total Tickets" value={stats.totalTickets} onClick={()=> navigate('/tickets')} />
 
         <Box borderWidth="1px" borderRadius="md" p={5} mt={6}>
           <Heading size="md" mb={4}>

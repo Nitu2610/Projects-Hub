@@ -1,5 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { AuthContext } from "./AuthContext";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { ticketApi } from "../api/ticketApi";
 
 // Context layer:
@@ -17,25 +16,23 @@ export const TicketProvider = ({ children }) => {
   const [ticketsData, setTicketsData] = useState([]);
 
   // Tracks whether a ticket API request is currently in progress.
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // Stores a user-friendly error message when a ticket request fails.
   const [error, setError] = useState("");
 
-  // Get the authentication state from AuthContext.
-  // Tickets should only be requested after the user is authenticated.
-  const { isAuthenticated } = useContext(AuthContext);
+  const [pagination, setPagination] = useState(null);
+
 
   // Fetch the current user's tickets from the backend
   // and update the context state.
-  const fetchTickets = async () => {
+  const fetchTickets = useCallback( async (query = {}) => {
     try {
-      setLoading(true);
-
-      const response = await ticketApi.getTickets();
+      setLoading(true)
+      const response = await ticketApi.getTickets(query);
 
       setTicketsData(response.data);
-      setError("");
+      setPagination(response.pagination);
     } catch (err) {
       // Prefer the backend's error message when available.
       // Fall back to a general message if the backend does not provide one.
@@ -43,19 +40,11 @@ export const TicketProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    // Fetch tickets only after the user has been authenticated.
-    // This prevents an unnecessary or unauthorized API request.
-    if (!isAuthenticated) return;
-
-    fetchTickets();
-  }, [isAuthenticated]);
+  },[]);
 
   return (
     <TicketsContext.Provider
-      value={{ ticketsData, loading, error, fetchTickets }}
+      value={{ ticketsData, loading, error, pagination,  fetchTickets, }}
     >
       {children}
     </TicketsContext.Provider>
