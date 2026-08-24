@@ -6,6 +6,8 @@ import { AgentTicketSummary } from "../components/AgentTicketSummary";
 import { TicketByAgentChart } from "../components/TicketByAgentChart";
 import { LogoutButton } from "../components/LogoutButton";
 import { useNavigate } from "react-router-dom";
+import { Loading } from "../components/Loading";
+import { ErrorMessage } from "../components/ErrorMessage";
 
 // AdminDashboard:
 // Loads aggregated ticket statistics and passess the data to
@@ -34,8 +36,8 @@ export const AdminDashboard = () => {
     fetchDashboardStats();
   }, []);
 
-  if (loading) return <Heading>Loading...</Heading>;
-  if (error) return <Heading>{error} </Heading>;
+  if (loading) return <Loading/>
+  if (error) return <ErrorMessage message={error} />
 
   // Helper function to count the ticket count with respective to status.
   const getStatusCount = (status) => {
@@ -55,7 +57,6 @@ export const AdminDashboard = () => {
 
   return (
     <>
-    <LogoutButton/>
       <Container maxW="container.xl" py={8}>
         <Heading mb={6}> Admin Dashboard </Heading>
 

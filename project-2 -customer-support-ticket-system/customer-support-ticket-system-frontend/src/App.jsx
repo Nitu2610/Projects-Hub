@@ -1,3 +1,4 @@
+import { Toaster } from "./components/ui/toaster";
 import { AppRoutes } from "./routes/AppRoutes";
 import { Heading } from "@chakra-ui/react";
 
@@ -8,6 +9,8 @@ function App() {
     <>
       <Heading> The react app</Heading>
       <AppRoutes />
+
+      <Toaster />
     </>
   );
 }

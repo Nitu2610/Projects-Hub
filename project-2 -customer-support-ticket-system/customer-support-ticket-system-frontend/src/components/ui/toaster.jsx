@@ -1,5 +1,10 @@
 'use client'
 
+// Centralized toast notification system.
+// The toaster instance is exported so components can trigger
+// success, error, or informational feedback.
+// The Toaster component is rendered once at the application root.
+
 import {
   Toaster as ChakraToaster,
   Portal,

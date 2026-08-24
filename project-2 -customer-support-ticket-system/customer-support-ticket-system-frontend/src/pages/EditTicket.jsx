@@ -1,48 +1,75 @@
 import { TicketForm } from "../components/TicketForm";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, Heading } from "@chakra-ui/react";
+import { Button } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import { ticketApi } from "../api/ticketApi";
 import { AuthContext } from "../context/AuthContext";
 import { userApi } from "../api/userApi";
-import { useTickets } from "../customHooks/useTickets";
+import { Loading } from "../components/Loading";
+import { ErrorMessage } from "../components/ErrorMessage";
+import { EmptyState } from "../components/EmptyState";
+import { useForm } from "../customHooks/useForm";
+import { toaster } from "../components/ui/toaster";
 
-// EditTicket page:
-// Responsibility for loading an existing ticket, managing its edited state,
-// preparing the update payload, and submitting the changes to the backend.
-//
-// Data flow:
-// Route parameter ➡️ EditTicket ➡️ ticketApi ➡️ Backend
-//                        ⬇️
-//                    TicketForm
-//
-// TicketForm is responsible for the form UI.
-// This page is responsible for the editing workflow and API communication.
+/*
+EditTicket, useForm, and TicketForm work together:
+EditTicket owns ticket-specific data and business logic.
+useForm owns reusable form state and submit/change handling.
+TicketForm owns only the form UI and input fields.
+
+Data flow:
+API ticket data
+     ↓
+EditTicket → setFormData()
+     ↓
+useForm → formData
+     ↓
+TicketForm → displays formData
+     ↓
+User changes fields
+     ↓
+TicketForm → handleChange()
+     ↓
+useForm → updates formData
+     ↓
+TicketForm → handleSubmit()
+     ↓
+useForm → handleUpdateTicket(formData)
+     ↓
+EditTicket → compares data and calls PATCH API
+ */
 
 export const EditTicket = () => {
   const { ticketId } = useParams();
-
+  // Keep the original ticket to compare with the edited form data.
   const [ticket, setTicket] = useState(null);
-  const [editedData, setEditedData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
+  // Loading state for fetching the ticket.
+  const [loading, setLoading] = useState(true);
+  // Stores API or page errors.
+  const [error, setError] = useState("");
+  // Loading state while updating the ticket.
+  const [updating, setUpdating] = useState(false);
+  // Agent are needed only for admin assignment.
   const [agents, setAgents] = useState([]);
   const [selectedAgent, setSelectedAgent] = useState("");
 
-  // Get the current user's role to determine which fields
-  // can be included in the update request.
-  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
-  // Refreshes shared ticket data after an assignment changes.
-  const { fetchTickets } = useTickets();
+  // Get the logged-in user and their role.
+  const { user } = useContext(AuthContext);
 
+  // Fetch the ticket when the page loads.
   useEffect(() => {
     const fetchTicket = async () => {
       try {
         const response = await ticketApi.getTicketById(ticketId);
+        // Keep the original server response unchanged.
+        // This is later used to detect which fields were modified.
         setTicket(response.data);
-        setEditedData(response.data);
+
+        // Load the same server data into useForm so TicketForm
+        // can display it as the initial editable form state.
+        setFormData(response.data);
       } catch (err) {
         setError(err.response?.data?.message || "Unable to fetch ticket.");
       } finally {
@@ -52,13 +79,12 @@ export const EditTicket = () => {
     fetchTicket();
   }, [ticketId]);
 
+  // Fetch agents only when the logged-in user is an admin.
   useEffect(() => {
-    if (user?.role !== "admin") return;
-
     const fetchAgents = async () => {
       try {
         const response = await userApi.getUsers();
-
+        // Only agents can be assigned to a ticket.
         const agentUsers = response.data.filter(
           (user) => user.role === "agent",
         );
@@ -67,88 +93,119 @@ export const EditTicket = () => {
         setError(err.response?.data?.message || "Unable to fetch agents.");
       }
     };
-    fetchAgents();
+
+    if (user?.role === "admin") {
+      fetchAgents();
+    }
   }, [user]);
 
-  if (loading) return <Heading>Loading...</Heading>;
+  /*
+Receives the latest form data from useForm,
+compares it with the original ticket,
+builds a minimal PATCH payload,
+and sends the update to the backend.
+ */
+  const handleUpdateTicket = async (updatedFormData) => {
+    // Send only fields that were actually changed.
+    let ticketUpdatePayload = {};
 
+    for (let [key, value] of Object.entries(updatedFormData)) {
+      if (ticket[key] !== value) {
+        ticketUpdatePayload[key] = value;
+      }
+    }
+    // Admins can also assign or reassign the ticket.
+    if (user.role === "admin" && selectedAgent) {
+      ticketUpdatePayload.assignedTo = selectedAgent;
+    }
+
+    // Do not call the API if nothing was changed.
+
+    if (Object.keys(ticketUpdatePayload).length === 0) {
+      setError("No changes were made.");
+      return;
+    }
+
+    setError("");
+
+    setUpdating(true);
+    try {
+      // Update only the changed ticket fields.
+      await ticketApi.updateTicket(ticketId, ticketUpdatePayload);
+
+      // Notify the user after the ticket is successfully updated.
+      toaster.create({
+        title: "Ticket updated",
+        description: "Ticket updated successfully.",
+        type: "success",
+      });
+
+      // Go back to the ticket details after a successful update.
+      navigate(`/tickets/${ticketId}`);
+    } catch (err) {
+      setError(err.response?.data?.message || "Unable to update ticket.");
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  /**
+useForm is responsible only for generic form behavior:
+- storing formData
+- updating fields through handleChange
+- preventing default form submission
+- passing the final formData to submitFn
+
+The parent component remains responsible for business logic,
+such as deciding which ticket fields changed and calling the API.
+ */
+  const { handleChange, handleSubmit, setFormData, formData } = useForm(
+    {},
+    handleUpdateTicket,
+  );
+
+  // Show loading while the ticket is being fetched.
+  if (loading) return <Loading />;
+
+  // Show the error and allow the user to go back.
   if (error) {
     return (
       <>
-        <Heading>{error} </Heading>
+        <ErrorMessage message={error} />
         <Button onClick={() => navigate(`/tickets/${ticketId}`)}>
           Back to Ticket
         </Button>
       </>
     );
   }
-  if (!ticket) return <Heading>Ticket not found.</Heading>;
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setEditedData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  // Do not show the form if no ticket was returned.
+  if (!ticket) return <EmptyState />;
 
+  /**
+TicketForm is a reusable presentation component.
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+It does not fetch data or call APIs.
+It receives formData and handlers from the parent,
+displays fields based on mode and role,
+and sends user input back through handleChange/handleSubmit.
 
-    let updateData;
+EditTicket + useForm + TicketForm work together like this:
 
-    // Agents can update ticket workflow fields,
-    // but cannot change the original ticket or description.
+EditTicket
+  → owns ticket data, role, API calls, update logic
 
-    if (user.role === "agent") {
+useForm
+  → owns generic form state and form events
 
-      updateData = {};
-
-      for(let [key,value] of Object.entries(editedData)){
-        if(ticket[key] !== value){
-          updateData[key]=value;
-        }
-      }
-    }
-
-    // Agent have permission to update both ticket details
-    // and workflow-related fields.
-    if (user.role === "admin") {
-      updateData = {
-        title: editedData.title,
-        description: editedData.description,
-        status: editedData.status,
-        priority: editedData.priority,
-        resolution: editedData.resolution,
-      };
-    }
-    try {
-      const response = await ticketApi.updateTicket(ticketId, updateData);
-
-      // Assignment is handled separately because it is a separate
-      // backend operation from updating the ticket fields.
-
-      if (user.role === "admin" && selectedAgent) {
-        await ticketApi.assignTicket(ticketId, selectedAgent);
-
-        await fetchTickets();
-      }
-
-      alert("Ticket updated successfully.");
-      navigate(`/tickets/${ticketId}`);
-    } catch (err) {
-      setError(err.response?.data?.message || "Unable to update ticket.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
+TicketForm
+  → renders the UI and collects user input
+   */
   return (
     <>
       <TicketForm
         heading="Edit Ticket"
-        formData={editedData}
+        formData={formData}
         handleSubmit={handleSubmit}
         handleChange={handleChange}
         mode="edit"
@@ -156,6 +213,7 @@ export const EditTicket = () => {
         agents={agents}
         selectedAgent={selectedAgent}
         setSelectedAgent={setSelectedAgent}
+        loading={updating}
       />
     </>
   );

@@ -1,13 +1,23 @@
 import { TicketCard } from "../components/TicketCard";
 import { FilterComp } from "../components/FilterComp";
 import { filterCompContent } from "../utils/filterCompContent";
-import { Input, Container, Heading, Button, Text } from "@chakra-ui/react";
+import {
+  Input,
+  Container,
+  Heading,
+  Button,
+  Text,
+} from "@chakra-ui/react";
 import { useTickets } from "../customHooks/useTickets";
 import { useDebounce } from "../customHooks/useDebounce";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { LogoutButton } from "../components/LogoutButton";
+import { BackToHome } from "../components/BackToHome";
+import { ErrorMessage } from "../components/ErrorMessage";
+import { Loading } from "../components/Loading";
+import { EmptyState } from "../components/EmptyState";
 
 // Tickets page:
 // Responsible for displaying the user's tickets and providing
@@ -33,7 +43,7 @@ export const Tickets = () => {
   const { ticketsData, loading, error, pagination, fetchTickets } =
     useTickets();
 
-  const { isAuthenticated } = useContext(AuthContext);
+  const { isAuthenticated, user } = useContext(AuthContext);
 
   // Delay the search value before applying the filter.
   // This prevents filtering from running on every keystroke.
@@ -56,7 +66,7 @@ export const Tickets = () => {
       params.priority = priorityFilter;
     }
     if (sortBy !== "all") {
-      const [ sortField, sortOrder ] = sortBy.split("-");
+      const [sortField, sortOrder] = sortBy.split("-");
       params.sortBy = sortField;
       params.order = sortOrder;
     }
@@ -83,25 +93,19 @@ export const Tickets = () => {
     setPage(1);
   };
 
+  const handleClearFilters = () => {
+    setSearchTerm("");
+    setStatusFilter("all");
+    setPriorityFilter("all");
+    setSortBy("all");
+    setPage(1);
+  };
+
   if (isAuthenticated === null)
     return <Heading>Ticket comp Checking authentication...</Heading>;
   if (isAuthenticated === false)
     return <Heading>Ticket comp Please login.</Heading>;
-  if (error)
-    return (
-      <>
-        <Heading>Ticket component {error}</Heading>;
-      </>
-    );
-  if (ticketsData.length === 0)
-    return (
-      <>
-        <Heading>Ticket comp No Tickets Availiable.</Heading>
-        <Button onClick={() => {
-          navigate('/home')
-        }}>Back to Ticket</Button>
-      </>
-    );
+  if (error) return <ErrorMessage message={error} />;
 
   return (
     <>
@@ -113,7 +117,7 @@ export const Tickets = () => {
           value={searchTerm}
           onChange={handleSearch}
         />
-        {loading && <Text>Loading tickets...</Text>}
+        {loading && <Loading />}
         <Container
           display="flex"
           justifyContent="center"
@@ -142,10 +146,19 @@ export const Tickets = () => {
           />
         </Container>
 
-        {ticketsData &&
+        {ticketsData.length === 0 ? (
+          <>
+            <EmptyState
+              title="No tickets found"
+              message="Try changing  your search on filters."
+            />
+            <Button onClick={handleClearFilters}>Clear Filters</Button>
+          </>
+        ) : (
           ticketsData.map((ticket) => (
             <TicketCard key={ticket._id} ticket={ticket} />
-          ))}
+          ))
+        )}
       </div>
 
       <Container display="flex" justifyContent="center" gap={3} mt={6}>
@@ -170,6 +183,7 @@ export const Tickets = () => {
           Next{" "}
         </Button>
       </Container>
+      {user.role=== "admin" && <BackToHome />}
     </>
   );
 };

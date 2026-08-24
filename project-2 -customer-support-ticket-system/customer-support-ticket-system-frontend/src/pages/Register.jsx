@@ -7,8 +7,9 @@ import {
   Input,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { authApi } from "../api/authApi";
+import { toaster } from "../components/ui/toaster";
 
 const initialState = {
   firstName: "",
@@ -22,10 +23,34 @@ const initialState = {
 // Only customer needs to register, agent registration will be done only via authorized admin.
 export const Register = () => {
   const [userData, setUserData] = useState(initialState);
-  const [loading, setLoading] = useState(false);
+  const [registering, setRegistering] = useState(false);
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
+
+  const validateForm = () => {
+    if (!userData.firstName.trim()) {
+      return "First name is required.";
+    }
+
+    if (!userData.lastName.trim()) {
+      return "Last name is required.";
+    }
+
+    if (!userData.email.trim()) {
+      return "Email is required.";
+    }
+
+    if (!userData.password) {
+      return "Password is required.";
+    }
+
+    if (userData.password !== userData.confirmPassword) {
+      return "Passwords do not match.";
+    }
+
+    return "";
+  };
 
   // Updates the corresponding form field without replacing other user data.
   const handleChange = (e) => {
@@ -36,24 +61,39 @@ export const Register = () => {
   // Validates the form, submits, registration data, and redirects to login on success.
   const handleRegister = async (e) => {
     e.preventDefault();
-    setLoading(true);
+
+    const validationError = validateForm();
+
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    setRegistering(true);
     if (userData.password !== userData.confirmPassword) {
       // Confirm passoword is used only for client-side validation.
       setError("Passwords do no match.");
-      setLoading(false);
+      setRegistering(false);
       return;
     }
     try {
       // Remove the confirmPassword before sending the registration data to the API.
       let { confirmPassword, ...registrationData } = userData;
       await authApi.register(registrationData);
+
+      toaster.create({
+        title: "Registration successful",
+        description: "Please login to continue.",
+        type: "success",
+      });
+
       // After successful registration of data on server, redirect to login page.
       navigate("/login");
     } catch (err) {
       // Display API error when avaliable, otherwise use a fallback message.
       setError(err.response?.data?.message || "Unable to register the some.");
     } finally {
-      setLoading(false);
+      setRegistering(false);
     }
   };
 
@@ -118,11 +158,15 @@ export const Register = () => {
           />
         </Field.Root>
 
-        <Button type="submit" disabled={loading}>
-          {" "}
-          {loading ? "Registering..." : "Register "}{" "}
+        <Button
+          type="submit"
+          loading={registering}
+          loadingText="Registering..."
+        >
+          Register
         </Button>
       </form>
+      <Link to="/login">Log in</Link>
     </Container>
   );
 };

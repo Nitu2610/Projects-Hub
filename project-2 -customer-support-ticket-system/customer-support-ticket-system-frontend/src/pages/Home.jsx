@@ -24,15 +24,16 @@ export const Home = () => {
   const { user } = useContext(AuthContext);
   return (
     <>
-      {user.role !== "admin" ? (
-        <>
-          <div>
+
             <Heading>Home Page</Heading>
             <Text>
               {" "}
               Welcome back, {user.firstName} as {user.role}{" "}
             </Text>
             <LogoutButton />
+      {user.role !== "admin" ? (
+        <>
+            <div>
             {user.role === "customer" && (
               <Button onClick={() => navigate("/create")}>Create Ticket</Button>
             )}

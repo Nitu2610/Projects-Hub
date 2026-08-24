@@ -3,6 +3,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { ticketApi } from "../api/ticketApi";
 import { AuthContext } from "../context/AuthContext";
+import { Loading } from "../components/Loading";
+import { ErrorMessage } from "../components/ErrorMessage";
+import { toaster } from "../components/ui/toaster";
 
 // TicketDetails Page:
 // Loads and displays one ticket based on the ID from the URL.
@@ -19,7 +22,7 @@ export const TicketDetails = () => {
   const { ticketId } = useParams();
 
   const [ticket, setTicket] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(true);
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
@@ -29,21 +32,21 @@ export const TicketDetails = () => {
     // Fetch the ticket whenever the ticket ID in the URL changes.
     const fetchTicket = async () => {
       try {
+        setDeleting(true);
         const response = await ticketApi.getTicketById(ticketId);
         setTicket(response.data);
       } catch (err) {
         setError(err.response?.data?.message || "Unable to fetch ticket.");
       } finally {
-        setLoading(false);
+        setDeleting(false);
       }
     };
 
     fetchTicket();
   }, [ticketId]);
 
-
-  if (loading) return <Heading> Loading... </Heading>;
-  if (error) return <Heading> {error} </Heading>;
+  if (deleting) return <Loading />;
+  if (error) return <ErrorMessage message={error} />;
   if (!ticket) return <Heading> Ticket not found. </Heading>;
 
   const {
@@ -67,6 +70,12 @@ export const TicketDetails = () => {
     if (!confirmed) return;
     try {
       await ticketApi.deleteTicket(ticketId);
+      // Notify the user after the ticket is successfully deleted.
+      toaster.create({
+        title: "Ticket deleted",
+        description: "Ticket deleted successfully.",
+        type: "success",
+      });
       navigate("/");
     } catch (err) {
       setError(err.response?.data?.message || "Unable to delete ticket.");

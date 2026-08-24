@@ -10,23 +10,25 @@ import {
 import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
+import { Loading } from "../components/Loading";
 
 // Login page:
-// Responsible for collecting user credentails and starting the 
+// Responsible for collecting user credentails and starting the
 // authentication flow through AuthContext.
 //
 // Data flow:
 // Login form ➡️ AuthContext.login() ➡️ authApi ➡️ Backend API
-// 
+//
 // AuthContext is responsible for authentication state.
 // This component is responsible for form state, UI feedback, navigation.
 
 export const Login = () => {
   const [userCred, setUserCred] = useState({ email: "", password: "" });
-  const { login, user, isAuthenticated } = useContext(AuthContext);
+  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const [loggingIn, setLoggingIn] = useState(false);
   const [error, setError] = useState("");
+  const [submitted, setSubmitted] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,21 +38,30 @@ export const Login = () => {
   // Submit the login details and redirect the user after successful login.
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    if (loggingIn) return;
+
+    setSubmitted(true);
+    setError("");
+
+    if (!userCred.email.trim() || !userCred.password) {
+      return;
+    }
+
+    setLoggingIn(true);
+
     try {
       await login(userCred);
-      navigate('/');
+      navigate("/");
     } catch (err) {
       // Show an error message when login request fails.
       setError(
         err.response?.data?.message || "Unable to login. Please try again.",
       );
     } finally {
-      setLoading(false);
+      setLoggingIn(false);
     }
   };
 
-  if (loading) return <Heading> Loading ...</Heading>;
   return (
     <>
       <Container
@@ -67,7 +78,7 @@ export const Login = () => {
         <form onSubmit={handleSubmit} style={{ margin: "auto" }}>
           <VStack border="1px solid" gap="4" maxW="sm" p="10px">
             {error && <Text color="red.500">{error}</Text>}
-            <Field.Root invalid>
+            <Field.Root>
               <Field.Label>Email</Field.Label>
               <Input
                 placeholder="Enter your email"
@@ -79,7 +90,7 @@ export const Login = () => {
               <Field.ErrorText>This field is required</Field.ErrorText>
             </Field.Root>
 
-            <Field.Root invalid>
+            <Field.Root invalid={submitted && !userCred.password}>
               <Field.Label>Password</Field.Label>
               <Input
                 placeholder="Enterpassword"
@@ -91,13 +102,19 @@ export const Login = () => {
               <Field.ErrorText>This field is required</Field.ErrorText>
             </Field.Root>
 
-            <Button bg="bg.subtle" variant="outline" type="submit">
+            <Button
+              bg="bg.subtle"
+              variant="outline"
+              type="submit"
+              loading={loggingIn}
+              loadingText="Logging in..."
+            >
               Login
             </Button>
           </VStack>
         </form>
         <Text>Don't have an account?</Text>
-        <Link onClick={() => navTo("/")}>Register</Link>
+        <Link to="/register">Register</Link>
       </Container>
     </>
   );

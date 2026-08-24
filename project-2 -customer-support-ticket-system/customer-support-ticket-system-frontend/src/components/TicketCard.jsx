@@ -13,12 +13,9 @@ export const TicketCard = ({ ticket }) => {
 
   const { _id, title, status, priority, assignedTo, issueOccurredAt } = ticket;
 
-  // Open the tickets details page when the card is selected.
-  const handleClick = () => navigate(`/tickets/${_id}`);
-
   return (
     <Container>
-      <Box onClick={handleClick}>
+      <Box onClick={() => navigate(`/tickets/${_id}`)}>
         {" "}
         {"✔️"}
         {title}{" "}

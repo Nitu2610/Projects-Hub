@@ -1,39 +1,35 @@
 import {
-  Box,
   Button,
   Card,
   Container,
   Field,
+  Stack,
   Heading,
   Input,
   NativeSelect,
-  Stack,
   Textarea,
 } from "@chakra-ui/react";
-import { AssignAgent } from "./AssignAgent";
+import { BackToHome } from "./BackToHome";
 
-// Reusable ticket form
-// Responsibility only for rendering the ticket form and collecting user input.
-//
-// The form supports both creating and editing tickets.
-// Availiable fields are controlled by the current mode and user role.
-//
-// Data flow:
-// Parent page ➡️ TicketForm ➡️ form input ➡️ handleChange/ handleSubmit
-//
-// Business logic and API comminication remian outside this components.
+// Reusable form for creating and editing tickets.
+// Visible fields depend on the current mode and user role.
+// Business logic and API calls are handled by the parent.
 
 export const TicketForm = ({
   heading,
   formData,
   handleChange,
   handleSubmit,
+  loading,
+  isFormValid,
   mode = "create",
   role,
   agents,
-  seletedAgent,
+  selectedAgent,
   setSelectedAgent,
 }) => {
+ 
+
   return (
     <Container maxW="lg" py={8}>
       <Card.Root>
@@ -44,8 +40,7 @@ export const TicketForm = ({
 
           <form onSubmit={handleSubmit}>
             <Stack gap={5}>
-              {/* Customers can provide the ticket title when creating
-                  a ticket. Admins can also edit the title. */}
+              {/* Customers create titles; admins can edit them. */}
               {(mode === "create" || role === "admin") && (
                 <Field.Root required>
                   <Field.Label>Title</Field.Label>
@@ -57,8 +52,7 @@ export const TicketForm = ({
                   />
                 </Field.Root>
               )}
-              {/* Customers can provide the issue description when
-                  creating a ticket. Admins can edit the description. */}
+              {/* Customers provide descriptions; admins can edit them. */}
               {(mode === "create" || role === "admin") && (
                 <Field.Root required>
                   <Field.Label>Description</Field.Label>
@@ -72,8 +66,7 @@ export const TicketForm = ({
                 </Field.Root>
               )}
 
-              {/* Agents and admins can update the ticket status
-                  while editing an existing ticket. */}
+              {/* Agents and admins can update ticket status. */}
               {mode === "edit" && (role === "admin" || role === "agent") && (
                 <Field.Root>
                   <Field.Label>Status</Field.Label>
@@ -94,31 +87,28 @@ export const TicketForm = ({
                   </NativeSelect.Root>
                 </Field.Root>
               )}
-              {/* Agents and admins can change the ticket priority. */}
+
+              <Field.Root>
+                <Field.Label>Priority</Field.Label>
+                <NativeSelect.Root>
+                  <NativeSelect.Field
+                    name="priority"
+                    value={formData.priority}
+                    onChange={handleChange}
+                  >
+                    <option value="">Select priority</option>
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                    <option value="Critical">Critical</option>
+                  </NativeSelect.Field>
+                  <NativeSelect.Indicator />
+                </NativeSelect.Root>
+              </Field.Root>
+
+              {/* Agents and admins can add or update resolution details. */}
               {mode === "edit" && (role === "admin" || role === "agent") && (
                 <Field.Root>
-                  <Field.Label>Priority</Field.Label>
-                  <NativeSelect.Root>
-                    <NativeSelect.Field
-                      name="priority"
-                      value={formData.priority}
-                      onChange={handleChange}
-                    >
-                      <option value="">Select priority</option>
-                      <option value="Low">Low</option>
-                      <option value="Medium">Medium</option>
-                      <option value="High">High</option>
-                      <option value="Critical">Critical</option>
-                    </NativeSelect.Field>
-                    <NativeSelect.Indicator />
-                  </NativeSelect.Root>
-                </Field.Root>
-              )}
-
-              {/* Resolution details are entered by agents or admins
-                  when working on an existing ticket. */}
-              {mode === "edit" && (role === "admin" || role === "agent") && (
-                <Field.Root required>
                   <Field.Label>Resolution</Field.Label>
                   <Textarea
                     name="resolution"
@@ -129,8 +119,7 @@ export const TicketForm = ({
                 </Field.Root>
               )}
 
-              {/* Issue time is provided by the customer when creating
-                  the ticket and is not edited as part of ticket updates. */}
+              {/* Customers provide the issue date when creating a ticket. */}
               {mode === "create" && (
                 <Field.Root required>
                   <Field.Label>Issue Occurred At</Field.Label>
@@ -143,16 +132,18 @@ export const TicketForm = ({
                 </Field.Root>
               )}
 
-              {/* Only authorized admin has access to assign the agent. Capture the agent id and send to backedn to complete the ticket assign. */}
+              {/* Only admins can assign or reassign tickets. */}
               {role === "admin" && (
                 <Field.Root>
                   <Field.Label>
-                    Assigned Agent : {formData.assignedTo.firstName}{" "}
-                    {formData.assignedTo.lastName}{" "}
+                    Assigned Agent :{" "}
+                    {formData.assignedTo
+                      ? `${formData.assignedTo.firstName} ${formData.assignedTo.lastName}`
+                      : "Not assigned"}
                   </Field.Label>
                   <NativeSelect.Root>
                     <NativeSelect.Field
-                      value={seletedAgent}
+                      value={selectedAgent}
                       onChange={(e) => setSelectedAgent(e.target.value)}
                     >
                       <option value="">
@@ -165,16 +156,23 @@ export const TicketForm = ({
                           {agent.firstName} {agent.lastName}
                         </option>
                       ))}
-                      ;
                     </NativeSelect.Field>
                     <NativeSelect.Indicator />
                   </NativeSelect.Root>
                 </Field.Root>
               )}
 
-              <Button type="submit" colorPalette="blue" size="lg">
+              <Button
+                loading={loading}
+                loadingText="Submitting..."
+                type="submit"
+                colorPalette="blue"
+                size="lg"
+                disabled={!isFormValid}
+              >
                 Submit
               </Button>
+              <BackToHome />
             </Stack>
           </form>
         </Card.Body>
