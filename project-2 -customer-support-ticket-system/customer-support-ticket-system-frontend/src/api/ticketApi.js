@@ -46,15 +46,6 @@ export const ticketApi = {
     return response.data;
   },
 
-  // Assign a ticket to an agent.
-  // The backend verifies that the selected user is a valid agent.
-  assignTicket: async (ticketId, agentId) => {
-    const response = await axiosInstance.patch(`/tickets/${ticketId}/assign`, {
-      agentId,
-    });
-    return response.data;
-  },
-
   // Fetch aggregated statics for the admin dashboard.
   getDashboardStats: async () => {
     const response = await axiosInstance.get("/tickets/dashboard");

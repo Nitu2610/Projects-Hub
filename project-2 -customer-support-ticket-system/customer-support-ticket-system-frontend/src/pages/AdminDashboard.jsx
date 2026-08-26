@@ -1,10 +1,9 @@
-import { Box, Container, Heading } from "@chakra-ui/react";
+import { Box, Heading, Text, Container } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { ticketApi } from "../api/ticketApi";
 import { DashboardCard } from "../components/DashboardCard";
 import { AgentTicketSummary } from "../components/AgentTicketSummary";
 import { TicketByAgentChart } from "../components/TicketByAgentChart";
-import { LogoutButton } from "../components/LogoutButton";
 import { useNavigate } from "react-router-dom";
 import { Loading } from "../components/Loading";
 import { ErrorMessage } from "../components/ErrorMessage";
@@ -18,7 +17,7 @@ export const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const navigate=useNavigate();
+  const navigate = useNavigate();
 
   // Fetched all dashboard statistics from the backend.
   // The API layer keeps request logic outside the dashboard component.
@@ -36,8 +35,8 @@ export const AdminDashboard = () => {
     fetchDashboardStats();
   }, []);
 
-  if (loading) return <Loading/>
-  if (error) return <ErrorMessage message={error} />
+  if (loading) return <Loading />;
+  if (error) return <ErrorMessage message={error} />;
 
   // Helper function to count the ticket count with respective to status.
   const getStatusCount = (status) => {
@@ -56,70 +55,139 @@ export const AdminDashboard = () => {
   };
 
   return (
-    <>
-      <Container maxW="container.xl" py={8}>
-        <Heading mb={6}> Admin Dashboard </Heading>
+    <Box
+      minH="calc(100vh - 64px)"
+      bg="support.background"
+      py={{ base: 6, md: 10 }}
+    >
+      <Container maxW="1200px">
+        {/* Header */}
+        <Box mb={{ base: 6, md: 8 }}>
+          <Heading size={{ base: "xl", md: "2xl" }} color="support.text">
+            Admin Dashboard
+          </Heading>
 
-        <DashboardCard label="Total Tickets" value={stats.totalTickets} onClick={()=> navigate('/tickets')} />
+          <Text
+            mt={2}
+            color="support.muted"
+            fontSize={{ base: "sm", md: "md" }}
+          >
+            Monitor support activity and ticket performance.
+          </Text>
+        </Box>
 
-        <Box borderWidth="1px" borderRadius="md" p={5} mt={6}>
-          <Heading size="md" mb={4}>
+        {/* Total tickets */}
+        <Box mb={{ base: 6, md: 8 }} maxW={{ base: "100%", md: "280px" }}>
+          <DashboardCard
+            label="Total Tickets"
+            value={stats.totalTickets}
+            onClick={() => navigate("/tickets")}
+            colorPalette="blue"
+          />
+        </Box>
+
+        {/* Status */}
+        <Box mb={{ base: 8, md: 10 }}>
+          <Heading size={{ base: "md", md: "lg" }} color="support.text" mb={4}>
             Tickets by Status
           </Heading>
 
-          <DashboardCard
-            label=" Open Tickets "
-            value={getStatusCount("Open")}
-          />
+          <Box
+            display="grid"
+            gridTemplateColumns={{
+              base: "1fr",
+              sm: "repeat(2, 1fr)",
+              lg: "repeat(4, 1fr)",
+            }}
+            gap={4}
+          >
+            <DashboardCard
+              label="Open Tickets"
+              value={getStatusCount("Open")}
+              colorPalette="blue"
+            />
 
-          <DashboardCard
-            label=" In Progress Tickets "
-            value={getStatusCount("In Progress")}
-          />
+            <DashboardCard
+              label="In Progress Tickets"
+              value={getStatusCount("In Progress")}
+              colorPalette="orange"
+            />
 
-          <DashboardCard
-            label=" Resolved Tickets "
-            value={getStatusCount("Resolved")}
-          />
+            <DashboardCard
+              label="Resolved Tickets"
+              value={getStatusCount("Resolved")}
+              colorPalette="green"
+            />
 
-          <DashboardCard
-            label=" Closed Tickets "
-            value={getStatusCount("Closed")}
-          />
+            <DashboardCard
+              label="Closed Tickets"
+              value={getStatusCount("Closed")}
+              colorPalette="gray"
+            />
+          </Box>
         </Box>
 
-        <Box borderWidth="1px" borderRadius="md" p={5} mt={6}>
-          <Heading size="md" mb={4}>
+        {/* Priority */}
+        <Box mb={{ base: 8, md: 10 }}>
+          <Heading size={{ base: "md", md: "lg" }} color="support.text" mb={4}>
             Tickets by Priority
           </Heading>
 
-          <DashboardCard
-            label=" Low Priority "
-            value={getPriorityCount("Low")}
-          />
+          <Box
+            display="grid"
+            gridTemplateColumns={{
+              base: "1fr",
+              sm: "repeat(2, 1fr)",
+              lg: "repeat(4, 1fr)",
+            }}
+            gap={4}
+          >
+            <DashboardCard
+              label="Low Priority"
+              value={getPriorityCount("Low")}
+              colorPalette="green"
+            />
 
-          <DashboardCard
-            label=" Medium Priority "
-            value={getPriorityCount("Medium")}
-          />
+            <DashboardCard
+              label="Medium Priority"
+              value={getPriorityCount("Medium")}
+              colorPalette="yellow"
+            />
 
-          <DashboardCard
-            label=" High Priority "
-            value={getPriorityCount("High")}
-          />
+            <DashboardCard
+              label="High Priority"
+              value={getPriorityCount("High")}
+              colorPalette="orange"
+            />
 
-          <DashboardCard
-            label=" Critical Priority "
-            value={getPriorityCount("Critical")}
-          />
+            <DashboardCard
+              label="Critical Priority"
+              value={getPriorityCount("Critical")}
+              colorPalette="red"
+            />
+          </Box>
         </Box>
 
-        <AgentTicketSummary agents={stats.ticketsByAgent} />
-      </Container>
+        {/* Agent summary */}
+        <Box mb={{ base: 8, md: 10 }}>
+          <AgentTicketSummary agents={stats.ticketsByAgent} />
+        </Box>
 
-      <Container>
-        <TicketByAgentChart data={stats.ticketsByAgent} />
+        {/* Chart */}
+        <Box
+          bg="support.surface"
+          border="1px solid"
+          borderColor="support.border"
+          borderRadius="xl"
+          p={{ base: 4, md: 6 }}
+        >
+          <Heading size={{ base: "md", md: "lg" }} color="support.text" mb={5}>
+            Ticket Distribution by Agent
+          </Heading>
+
+          <TicketByAgentChart data={stats.ticketsByAgent} />
+        </Box>
       </Container>
-    </>
+    </Box>
   );
 };

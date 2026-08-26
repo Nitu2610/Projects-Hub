@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "../customHooks/useForm";
 import { ticketApi } from "../api/ticketApi";
 import { Text } from "@chakra-ui/react";
-
 import { useTickets } from "../customHooks/useTickets";
 import { toaster } from "../components/ui/toaster";
 import { Loading } from "../components/Loading";
@@ -31,16 +30,18 @@ import { Loading } from "../components/Loading";
 export const CreateTicket = () => {
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState("");
+
   const navigate = useNavigate();
   const { fetchTickets } = useTickets();
 
   const INITIAL_FORM_STATE = {
-  title: "",
-  description: "",
-  priority: "",
-  issueOccurredAt: "",
-};
+    title: "",
+    description: "",
+    priority: "",
+    issueOccurredAt: "",
+  };
 
+  // Form submit business logic and flow.
   const handleCreateTicket = async (updatedData) => {
     // Receives the current form data from useForm.
     // Handles ticket-specific validation and API communication.
@@ -72,22 +73,12 @@ export const CreateTicket = () => {
 
       navigate("/");
     } catch (err) {
-      // Extract field-level validation errors returned by Express-validator.
-      const backendErrors = err.response?.data?.data?.errors;
-
-      if (backendErrors) {
-        setError(backendErrors.map((err) => err.msg).join("\n"));
-      } else {
-        // Use the server message or a generic fallback.
-        setError(err.response?.data?.message || "Unable to create ticket.");
-      }
+      setError(err.response?.data?.message || "Unable to create ticket.");
     } finally {
       // Always stop the loading state whether the request succeeds or fails.
       setCreating(false);
     }
   };
-
-
 
   // useForm:
   // Reusable hook for managing form state and submission.
@@ -107,13 +98,16 @@ export const CreateTicket = () => {
   //
   // This allows CreateTicket and EditTicket to reuse the same form logic.
 
-  const { formData, handleChange, handleSubmit } = useForm(INITIAL_FORM_STATE, handleCreateTicket);
+  const { formData, handleChange, handleSubmit } = useForm(
+    INITIAL_FORM_STATE,
+    handleCreateTicket,
+  );
 
-   const isFormValid =
-      formData.title.trim() &&
-      formData.description.trim() &&
-      formData.priority &&
-      formData.issueOccurredAt;
+  const isFormValid =
+    formData.title.trim() !== "" &&
+    formData.description.trim() !== "" &&
+    formData.priority !== "" &&
+    formData.issueOccurredAt !== "";
 
   if (creating) return <Loading />;
 

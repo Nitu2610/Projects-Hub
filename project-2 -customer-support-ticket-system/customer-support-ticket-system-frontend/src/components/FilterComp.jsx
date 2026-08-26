@@ -1,34 +1,47 @@
-import { Text, Box } from "@chakra-ui/react";
+import { Box, Text } from "@chakra-ui/react";
 
 export const FilterComp = ({ value, onChange, content, heading }) => {
   return (
-    <>
+    <Box>
+      <Text mb={1} fontSize="sm" fontWeight="medium" color="support.text">
+        {heading}
+      </Text>
+
       <Box
-        border="1px"
-        borderColor="white"
-        bg="white"
-        p="8px 10px"
-        display="flex"
-        mt="10px"
+        bg="support.surface"
+        color="support.text"
+        border="1px solid"
+        borderColor="support.border"
+        borderRadius="md"
+        px={2}
       >
-        <Text color="black">{heading} </Text>
-        
-        {/*  // typeof (e.target.value) is string */}
-        {/* // Native select valures are returned as strings. */}
         <select
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          style={{ marginLeft: "5px", padding: "1px" }}
+          style={{
+            width: "100%",
+            border: "none",
+            outline: "none",
+            background: "transparent",
+            color: "inherit",
+            fontSize: "14px",
+            cursor: "pointer",
+          }}
         >
-          {content.map(({ label, value }) => {
-            return (
-              <option key={value} value={value} style={{ textAlign: "center" }}>
-                {label}
-              </option>
-            );
-          })}
+          {content.map(({ label, value }) => (
+            <option
+              key={value}
+              value={value}
+              style={{
+                backgroundColor: "white",
+                color: "#0F172A",
+              }}
+            >
+              {label}
+            </option>
+          ))}
         </select>
       </Box>
-    </>
+    </Box>
   );
 };

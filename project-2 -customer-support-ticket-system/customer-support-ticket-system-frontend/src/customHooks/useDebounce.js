@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useTickets } from "./useTickets";
 
 export const useDebounce = (value, delay = 500) => {
   const [debouncedValue, setDeboundedValue] = useState("");

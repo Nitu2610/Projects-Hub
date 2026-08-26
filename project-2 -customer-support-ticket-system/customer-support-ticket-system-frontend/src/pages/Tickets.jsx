@@ -1,23 +1,16 @@
 import { TicketCard } from "../components/TicketCard";
 import { FilterComp } from "../components/FilterComp";
 import { filterCompContent } from "../utils/filterCompContent";
-import {
-  Input,
-  Container,
-  Heading,
-  Button,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Button, Container, Heading, Input, Text } from "@chakra-ui/react";
 import { useTickets } from "../customHooks/useTickets";
 import { useDebounce } from "../customHooks/useDebounce";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
-import { LogoutButton } from "../components/LogoutButton";
 import { BackToHome } from "../components/BackToHome";
 import { ErrorMessage } from "../components/ErrorMessage";
 import { Loading } from "../components/Loading";
 import { EmptyState } from "../components/EmptyState";
+import { Pagination } from "../components/Pagination";
 
 // Tickets page:
 // Responsible for displaying the user's tickets and providing
@@ -35,12 +28,10 @@ export const Tickets = () => {
   const [priorityFilter, setPriorityFilter] = useState("all");
   const [sortBy, setSortBy] = useState("all");
   const [page, setPage] = useState(1);
-  const limit = 5;
-
-  const navigate = useNavigate();
+  const limit = 6;
 
   // Get the tickets managed by the TicketsContext.
-  const { ticketsData, loading, error, pagination, fetchTickets } =
+  const { ticketsData, loading, error, paginationData, fetchTickets } =
     useTickets();
 
   const { isAuthenticated, user } = useContext(AuthContext);
@@ -108,82 +99,142 @@ export const Tickets = () => {
   if (error) return <ErrorMessage message={error} />;
 
   return (
-    <>
-      <div>Tickets</div>
+    <Box minH="100vh" bg="support.background" py={{ base: 6, md: 10 }}>
+      <Container maxW="1100px">
+        {/* Page header */}
+        <Box mb={{ base: 6, md: 8 }}>
+          <Heading size={{ base: "xl", md: "2xl" }} color="support.text">
+            Tickets
+          </Heading>
 
-      <div>
-        <Input
-          placeholder="Search via title"
-          value={searchTerm}
-          onChange={handleSearch}
-        />
-        {loading && <Loading />}
-        <Container
-          display="flex"
-          justifyContent="center"
-          alignContent="center"
-          flexWrap="wrap"
+          <Text
+            mt={2}
+            color="support.muted"
+            fontSize={{ base: "sm", md: "md" }}
+          >
+            Search, filter and manage your support tickets.
+          </Text>
+        </Box>
+
+        {/* Search and filters */}
+        <Box
+          bg="support.surface"
+          border="1px solid"
+          borderColor="support.border"
+          borderRadius="xl"
+          p={{ base: 4, md: 5 }}
+          mb={6}
         >
-          <FilterComp
-            heading={"Filter by Status: "}
-            value={statusFilter}
-            onChange={handleStatusChange}
-            content={filterCompContent.filterStatusContent}
+          <Input
+            placeholder="Search tickets by title..."
+            value={searchTerm}
+            onChange={handleSearch}
+            bg="support.surface"
+            color="support.text"
+            _placeholder={{
+              color: "support.muted",
+            }}
+            _focusVisible={{
+              borderColor: "blue.500",
+              boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
+            }}
           />
 
-          <FilterComp
-            heading={"Filter by Priority: "}
-            value={priorityFilter}
-            onChange={handlePriorityChange}
-            content={filterCompContent.filterPriorityContent}
-          />
+          <Box
+            display="grid"
+            gridTemplateColumns={{
+              base: "1fr",
+              sm: "repeat(2, 1fr)",
+              md: "repeat(3, 1fr)",
+            }}
+            gap={3}
+            mt={4}
+          >
+            <FilterComp
+              heading="Status"
+              value={statusFilter}
+              onChange={handleStatusChange}
+              content={filterCompContent.filterStatusContent}
+            />
 
-          <FilterComp
-            heading={"Sort Tickets: "}
-            value={sortBy}
-            onChange={handleSortChange}
-            content={filterCompContent.filterSortContent}
-          />
-        </Container>
+            <FilterComp
+              heading="Priority"
+              value={priorityFilter}
+              onChange={handlePriorityChange}
+              content={filterCompContent.filterPriorityContent}
+            />
 
-        {ticketsData.length === 0 ? (
-          <>
+            <FilterComp
+              heading="Sort"
+              value={sortBy}
+              onChange={handleSortChange}
+              content={filterCompContent.filterSortContent}
+            />
+          </Box>
+
+          {/* Clear filters */}
+          {(searchTerm ||
+            statusFilter !== "all" ||
+            priorityFilter !== "all" ||
+            sortBy !== "all") && (
+            <Button
+              mt={4}
+              size="sm"
+              variant="ghost"
+              colorPalette="blue"
+              onClick={handleClearFilters}
+            >
+              Clear filters
+            </Button>
+          )}
+        </Box>
+
+        {/* Loading */}
+        {loading && <Loading />}
+
+        {/* Error */}
+        {error && <ErrorMessage message={error} />}
+
+        {/* Ticket list */}
+        {!loading && ticketsData.length === 0 ? (
+          <Box
+            bg="support.surface"
+            border="1px solid"
+            borderColor="support.border"
+            borderRadius="xl"
+            p={{ base: 6, md: 10 }}
+            textAlign="center"
+          >
             <EmptyState
               title="No tickets found"
-              message="Try changing  your search on filters."
+              message="Try changing your search or filters."
             />
-            <Button onClick={handleClearFilters}>Clear Filters</Button>
-          </>
+
+            <Button mt={4} colorPalette="blue" onClick={handleClearFilters}>
+              Clear Filters
+            </Button>
+          </Box>
         ) : (
-          ticketsData.map((ticket) => (
-            <TicketCard key={ticket._id} ticket={ticket} />
-          ))
+          <Box>
+            {ticketsData.map((ticket) => (
+              <TicketCard key={ticket._id} ticket={ticket} />
+            ))}
+          </Box>
         )}
-      </div>
 
-      <Container display="flex" justifyContent="center" gap={3} mt={6}>
-        <Button
-          disabled={page === 1}
-          onClick={() => setPage((prev) => prev - 1)}
-        >
-          {" "}
-          Previous{" "}
-        </Button>
+        {/* Pagination */}
+        {!loading && ticketsData.length > 0 && (
+          <Pagination
+            page={page}
+            totalPages={paginationData?.totalPages}
+            onPrevious={() => setPage((prev) => prev - 1)}
+            onNext={() => setPage((prev) => prev + 1)}
+          />
+        )}
 
-        <Text>
-          {" "}
-          Page {page} of {pagination?.totalPages}{" "}
-        </Text>
-
-        <Button
-          disabled={page === pagination?.totalPages}
-          onClick={() => setPage((prev) => prev + 1)}
-        >
-          {" "}
-          Next{" "}
-        </Button>
+        {/* Admin navigation */}
+        {user.role === "admin" && <BackToHome />}
       </Container>
-      {user.role=== "admin" && <BackToHome />}
-    </>
+    </Box>
   );
 };

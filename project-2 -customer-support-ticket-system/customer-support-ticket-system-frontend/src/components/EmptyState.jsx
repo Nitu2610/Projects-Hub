@@ -5,10 +5,26 @@ export const EmptyState = ({
   message = "There is nothing to display.",
 }) => {
   return (
-    <Center py={10}>
+    <Center
+      py={{ base: 10, md: 14 }}
+      px={4}
+      textAlign="center"
+    >
       <VStack gap={2}>
-        <Heading size="md"> {title}</Heading>
-        <Text color="gray.500"> {message}</Text>
+        <Heading
+          size={{ base: "md", md: "lg" }}
+          color="support.text"
+        >
+          {title}
+        </Heading>
+
+        <Text
+          color="support.muted"
+          fontSize={{ base: "sm", md: "md" }}
+          maxW="420px"
+        >
+          {message}
+        </Text>
       </VStack>
     </Center>
   );

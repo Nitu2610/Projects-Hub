@@ -23,37 +23,3 @@ export const filterCompContent = {
   ],
 };
 
-/**
-
-{
-        $skip: skip,
-      },
-
-      {
-        $limit: limit,
-      },
-
-      {
-        $lookup: {
-          from: "users",
-          localField: "assignedTo",
-          foreignField: "_id",
-          as: "assignedTo",
-        },
-      },
-
-      {
-        $unwind: {
-          path: "$assignedTo",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-
-      {
-        $project: {
-          priorityOrder: 0,
-          "assignedTo.password": 0,
-        },
-      },
-
- */

@@ -14,7 +14,7 @@
 - ##### AuthProvider complete mounting flow
 
   ```text
-    App starts
+  App starts
     ↓
   AuthProvider renders/mounts
     ↓
@@ -284,13 +284,14 @@ return <Tickets />; `
     EFFECTS RUN
   ```
  -  But always remember: ` RENDER ≠ MOUNT ` and  `RE-RENDER ≠ REMOUNT` That distinction solved your entire bug.
-- #####
+
+- ##### Understand the Toaster concept and its working flow?
   -
 
-- #####
+- ##### Understand the concept of loading, loadingText in buttons?
   -
 
-- #####
+- ##### CharkaLink for styling, and RouterLink for routing.
   -
 
 - #####

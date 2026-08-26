@@ -109,6 +109,7 @@ and sends the update to the backend.
     // Send only fields that were actually changed.
     let ticketUpdatePayload = {};
 
+    // Capture only the changed data incomparison with originaldata
     for (let [key, value] of Object.entries(updatedFormData)) {
       if (ticket[key] !== value) {
         ticketUpdatePayload[key] = value;

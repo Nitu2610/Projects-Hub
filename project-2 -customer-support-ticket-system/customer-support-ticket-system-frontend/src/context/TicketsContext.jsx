@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useState } from "react";
 import { ticketApi } from "../api/ticketApi";
 
 // Context layer:
@@ -21,7 +21,7 @@ export const TicketProvider = ({ children }) => {
   // Stores a user-friendly error message when a ticket request fails.
   const [error, setError] = useState("");
 
-  const [pagination, setPagination] = useState(null);
+  const [paginationData, setPaginationData] = useState(null);
 
 
   // Fetch the current user's tickets from the backend
@@ -32,7 +32,7 @@ export const TicketProvider = ({ children }) => {
       const response = await ticketApi.getTickets(query);
 
       setTicketsData(response.data);
-      setPagination(response.pagination);
+      setPaginationData(response.pagination);
     } catch (err) {
       // Prefer the backend's error message when available.
       // Fall back to a general message if the backend does not provide one.
@@ -44,7 +44,7 @@ export const TicketProvider = ({ children }) => {
 
   return (
     <TicketsContext.Provider
-      value={{ ticketsData, loading, error, pagination,  fetchTickets, }}
+      value={{ ticketsData, loading, error, paginationData,  fetchTickets, }}
     >
       {children}
     </TicketsContext.Provider>
