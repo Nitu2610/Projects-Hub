@@ -22,8 +22,10 @@ const getTickets = async (req, res) => {
   res.status(200).json({
     success: tickets.success,
     message: tickets.message,
+    // count → tickets returned in THIS response
     count: tickets.data.length,
     data: tickets.data,
+    pagination: tickets.pagination,
   });
 };
 

@@ -7,6 +7,7 @@ const { validationResult } = require("express-validator");
 // validation rules -> validationMiddleware -> controller
 
 const validationMiddleware = (req, res, next) => {
+  // Collect validation results from the request.
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
@@ -14,6 +15,8 @@ const validationMiddleware = (req, res, next) => {
       success: false,
       message: "Validation failed",
       data: {
+        // Convert the validation errors into an array
+        // and include them in the API response.
         errors: errors.array(),
       },
     });

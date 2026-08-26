@@ -7,8 +7,8 @@ const jwt = require("jsonwebtoken");
 // Controllers should not direclty interact with the User model.
 const getAllUsers = async () => {
   const users = await User.find().select(
-    "firstName lastName email role isActive createdAt"
-  )
+    "firstName lastName email role isActive createdAt",
+  );
 
   return {
     success: true,
@@ -65,12 +65,10 @@ const createUser = async (userData, role) => {
 // Returns a JWT after the credentials are successfully verified.
 const userLogin = async (userData) => {
   const { email, password: clientPassword } = userData;
-
   // Password is excluded from normal User queries by the schema.
   // Explicitly select it here because bcrypt needs the stored hash
   // to verify the password supplied during login.
   const user = await User.findOne({ email }).select("+password");
-  console.log(user)
   if (!user) {
     return {
       success: false,
@@ -101,6 +99,7 @@ const userLogin = async (userData) => {
       expiresIn: process.env.JWT_EXPIRES_IN,
     },
   );
+
 
   return {
     success: true,

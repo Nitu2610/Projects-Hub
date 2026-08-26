@@ -5,6 +5,7 @@ const agentStatusTransitions = {
   Closed: [],
 };
 
+
 const isValidStatusTransition = (currentStatus, requestedStatus) => {
   if (!agentStatusTransitions[currentStatus]) return false;
 

@@ -82,6 +82,7 @@ const createAgent = async (req, res) => {
 // Responsible for translating authentication results from the service
 // into appropriate HTTP status codes and the response sent to the client.
 const userLogin = async (req, res) => {
+ 
   const loginResult = await userService.userLogin(req.body);
 
   if (!loginResult.success) {
@@ -100,14 +101,17 @@ const userLogin = async (req, res) => {
     }
   }
 
+const userData = {
+  id: loginResult.data.user.id,
+  firstName: loginResult.data.user.firstName,
+  role: loginResult.data.user.role,
+};
   return res.status(200).json({
     success: loginResult.success,
     message: loginResult.message,
     data: {
       token: loginResult.data.token,
-      id: loginResult.data.user._id,
-      firstName: loginResult.data.user.firstName,
-      role: loginResult.data.user.role,
+      user:userData,
     },
   });
 };

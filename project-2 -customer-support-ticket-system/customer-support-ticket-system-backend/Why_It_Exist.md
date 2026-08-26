@@ -239,5 +239,10 @@ Can you explain why this comparison failed and how you fixed it?
       - `customer_support` Connect to this MongoDB cluster and use customer_support as the default database for this connection.
       - If no database name is provided manually, then default vaule is .net/, and it will be connected to **test** database of MongoDB Atlas.
 
-- ##### 
-  - 
+- ##### Why did you use .isISO8601() instead of .isDate() for issueOccurredAt?
+  - The frontend sends the date as a string. Initially, I used express-validator's .isDate(), but it wasn't reliably accepting the ISO 8601 datetime format sent by the frontend, such as 2026-08-18T13:35:00.000Z.
+  - I changed the validation to .isISO8601() because it explicitly validates ISO 8601 date-time strings. After validation, Mongoose converts the value into the Date type defined in the schema.
+  - So the validation layer checks whether the input has the correct date format, while Mongoose handles storing it as a Date.
+
+  - ##### Is .isISO8601() itself converting the string into a Date
+    - No. It only validates the format. The value is still a string when it passes validation. Mongoose then casts the valid ISO date string to a JavaScript Date when saving the document.

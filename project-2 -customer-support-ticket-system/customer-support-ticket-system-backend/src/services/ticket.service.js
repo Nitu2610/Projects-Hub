@@ -35,14 +35,117 @@ const createTicket = async (ticketData, user) => {
 
 const getAllTickets = async (query, user) => {
   // Build database query options from the client's query parameters.
+
   const filter = buildFilter(query, user);
   const sort = buildSort(query);
   const { skip, limit } = buildPagination(query);
-  const tickets = await Ticket.find(filter).sort(sort).skip(skip).limit(limit);
+
+  let tickets;
+
+  if (query.sortBy === "priority") {
+    const priorityOrder = {
+      Low: 1,
+      Medium: 2,
+      High: 3,
+      Critical: 4,
+    };
+    const priorityDirection = query.order === "desc" ? -1 : 1;
+
+    const priorityCheck = await Ticket.find(filter)
+  .select("title priority")
+  .lean();
+
+
+  tickets = await Ticket.aggregate([
+    {
+      $match: filter,
+    },
+
+    {
+      $addFields: {
+        priorityOrder: {
+          $switch: {
+            branches: [
+              {
+                case: { $eq: ["$priority", "Low"] },
+                then: 1,
+              },
+              {
+                case: { $eq: ["$priority", "Medium"] },
+                then: 2,
+              },
+              {
+                case: { $eq: ["$priority", "High"] },
+                then: 3,
+              },
+              {
+                case: { $eq: ["$priority", "Critical"] },
+                then: 4,
+              },
+            ],
+            default: 0,
+          },
+        },
+      },
+    },
+
+    {
+      $sort: {
+        priorityOrder: priorityDirection,
+      },
+    },
+
+    {
+      $skip: skip,
+    },
+
+    {
+      $limit: limit,
+    },
+
+    {
+      $lookup: {
+        from: "users",
+        localField: "assignedTo",
+        foreignField: "_id",
+        as: "assignedTo",
+      },
+    },
+
+    {
+      $unwind: {
+        path: "$assignedTo",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+
+    {
+      $project: {
+        priorityOrder: 0,
+        "assignedTo.password": 0,
+      },
+    },
+  ]);
+} else {
+    tickets = await Ticket.find(filter)
+      .sort(sort || {issueOccurredAt: -1}) // sort the data newest to oldest base on issueOccurredAt
+      .skip(skip)
+      .limit(limit)
+      .populate("assignedTo", "firstName lastName");
+  }
+  const ticketsCount = await Ticket.countDocuments(filter);
+
+  const totalPages = Math.ceil(ticketsCount / limit);
+
   return {
     success: true,
     message: "Tickets retrieved successfully.",
     data: tickets,
+    pagination: {
+      // ticketsCount ->  total tickets matching the filter
+      ticketsCount,
+      totalPages,
+    },
   };
 };
 
@@ -124,14 +227,10 @@ const updateTicket = async (ticketId, updateData, user) => {
   // Administrators are allowed to update the complete ticket payload.
   // Mongoose validators still protect the stored document.
   if (user.role === "admin") {
-    const updatedTicket = await Ticket.findByIdAndUpdate(
-      ticketId,
-      updateData,
-      {
-        returnDocument: "after", // It return new updated data/ after update data, without it DB will return old data or before value
-        runValidators: true, // ensure only the selected values are updated as set in the mongoose Schma.
-      },
-    );
+    const updatedTicket = await Ticket.findByIdAndUpdate(ticketId, updateData, {
+      returnDocument: "after", // It return new updated data/ after update data, without it DB will return old data or before value
+      runValidators: true, // ensure only the selected values are updated as set in the mongoose Schma.
+    });
     return {
       success: true,
       message: "Ticket updated successfully.",
@@ -147,7 +246,6 @@ const updateTicket = async (ticketId, updateData, user) => {
   ) {
     // Restrict agent updates to fields that agents are permitted to modify.
     const allowedFields = ["status", "priority", "resolution"];
-
     // Prevent agents from bypassing the defined ticket workflow.
     if (
       requestedStatus &&
@@ -295,13 +393,16 @@ const assignTicket = async (ticketId, agentId) => {
   }
 
   const assignmentData = { assignedTo: agentId };
+  if (ticket.status === "Open") {
+    assignmentData.status = "In Progress";
+  }
   const assignedTicket = await Ticket.findByIdAndUpdate(
-    ticketId, 
-    assignmentData, 
+    ticketId,
+    assignmentData,
     {
-    returnDocument: "after",
-    runValidators: true,
-    }
+      returnDocument: "after",
+      runValidators: true,
+    },
   ).populate("assignedTo", "firstName");
 
   return {
