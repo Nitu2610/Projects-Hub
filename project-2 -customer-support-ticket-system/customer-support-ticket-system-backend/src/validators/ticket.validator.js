@@ -26,4 +26,3 @@ const validateTicket=[
 module.exports={validateTicket,}
 
 
-// My name is nitesh kumar.
