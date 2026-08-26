@@ -3,7 +3,6 @@ import { TicketForm } from "../components/TicketForm";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "../customHooks/useForm";
 import { ticketApi } from "../api/ticketApi";
-import { Text } from "@chakra-ui/react";
 import { useTickets } from "../customHooks/useTickets";
 import { toaster } from "../components/ui/toaster";
 import { Loading } from "../components/Loading";
@@ -73,7 +72,13 @@ export const CreateTicket = () => {
 
       navigate("/");
     } catch (err) {
-      setError(err.response?.data?.message || "Unable to create ticket.");
+      const validationError = err.response?.data?.data?.errors?.[0]?.msg;
+
+      setError(
+        validationError ||
+          err.response?.data?.message ||
+          "Unable to create ticket.",
+      );
     } finally {
       // Always stop the loading state whether the request succeeds or fails.
       setCreating(false);
@@ -146,11 +151,7 @@ export const CreateTicket = () => {
   return (
     <>
       {/* Display validation or API errors above the form. */}
-      {error && (
-        <Text color="red.500" whiteSpace="pre-line">
-          {error}
-        </Text>
-      )}
+
       {/* TicketForm is responsible only for rendering the form UI. */}
       <TicketForm
         heading="Create Ticket"
@@ -159,6 +160,7 @@ export const CreateTicket = () => {
         handleSubmit={handleSubmit}
         loading={creating}
         isFormValid={isFormValid}
+        error={error}
       />
     </>
   );

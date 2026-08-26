@@ -115,10 +115,13 @@ export const TicketDetails = () => {
         <Button
           variant="ghost"
           colorPalette="blue"
+          fontWeight="bold"
+          fontSize="md"
+          borderRadius="l"
           mb={5}
           onClick={() => navigate("/")}
         >
-          ← Back to tickets
+          ⬅️ Back to tickets
         </Button>
 
         {/* Header */}

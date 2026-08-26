@@ -12,6 +12,7 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 import { BackToHome } from "./BackToHome";
+import { ErrorMessage } from "../components/ErrorMessage";
 
 // Reusable form for creating and editing tickets.
 // Visible fields depend on the current mode and user role.
@@ -24,6 +25,7 @@ export const TicketForm = ({
   handleSubmit,
   loading,
   isFormValid,
+  error,
   mode = "create",
   role,
   agents,
@@ -60,6 +62,7 @@ export const TicketForm = ({
                   : "Update the ticket information and resolution details."}
               </Text>
             </Box>
+             {error && <ErrorMessage message={error} />}
             <form onSubmit={handleSubmit}>
               <Stack gap={{ base: 4, md: 5 }}>
                 {(mode === "create" || role === "admin") && (
