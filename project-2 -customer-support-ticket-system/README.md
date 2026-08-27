@@ -1,990 +1,1135 @@
 # Customer Support Ticket Management System
 
-A full-stack Customer Support Ticket Management System built using the MERN stack.
+A full-stack **MERN-based Customer Support Ticket Management System** that enables customers to create and track support tickets while agents and administrators manage, update, and resolve those tickets through a role-based workflow.
 
-The system allows customers to create and track support tickets, agents to work on assigned tickets, and administrators to manage users, tickets, assignments, and dashboard statistics.
-
----
-
-# Project Status
-
-## Current Status
-
-- Backend: ~90% complete
-- Backend API implementation: Complete
-- Authentication & authorization: Complete
-- Ticket CRUD: Complete
-- Ticket workflow enforcement: Complete
-- Ticket assignment: Complete
-- Dashboard statistics: Complete
-- Validation & error handling: Complete
-- Backend testing: Completed manually using API requests
-- Backend deployment: Pending
-- Frontend API integration: Pending
-
-The current focus is to deploy and verify the backend before connecting the frontend to the deployed APIs.
+The project was built to demonstrate practical full-stack development skills including **REST API design, JWT authentication, role-based authorization, MongoDB data modeling, aggregation, server-side filtering/pagination/sorting, React Context API, protected routes, form validation, and production deployment**.
 
 ---
 
-# Tech Stack
+## 🚀 Live Demo
+
+* **Frontend:** https://supportdesk-ei3l.onrender.com
+* **Backend API:** https://customer-support-ticket-api.onrender.com
+
+
+---
+
+## 📌 Project Overview
+
+Customer support teams need a centralized system to manage customer issues from creation through resolution.
+
+This application provides a structured ticket-management workflow with three user roles:
+
+* **Customer** — creates and tracks support tickets.
+* **Agent** — works on assigned/support tickets and updates their progress.
+* **Admin** — has full system access and can manage users and tickets.
+
+The application follows a client-server architecture:
+
+```text
+React Frontend
+      │
+      │ HTTP / REST API
+      ▼
+Node.js + Express Backend
+      │
+      │ Mongoose
+      ▼
+MongoDB Database
+```
+
+Authentication is handled using **JWT**, while passwords are securely hashed using **bcrypt**.
+
+---
+
+# ✨ Key Features
+
+## 🔐 Authentication & Authorization
+
+* User registration and login
+* JWT-based authentication
+* Secure password hashing with bcrypt
+* Persistent authentication using `localStorage`
+* Protected API routes
+* Role-based authorization
+* Three user roles:
+
+  * Customer
+  * Agent
+  * Admin
+* JWT contains authenticated user's ID and role
+* Backend authorization prevents unauthorized operations
+
+---
+
+## 🎫 Ticket Management
+
+Customers can:
+
+* Create support tickets
+* View their own tickets
+* View ticket details
+* Track ticket status
+* Set ticket priority
+* Provide issue description
+* Record when the issue occurred
+
+Agents can:
+
+* View tickets available to them
+* Update ticket status
+* Update ticket priority
+* Work on tickets through the support workflow
+
+Admins can:
+
+* View all tickets
+* Update ticket information
+* Manage ticket workflow
+* Delete tickets
+* Manage higher-level system operations
+
+---
+
+## 🔄 Ticket Workflow
+
+Tickets follow a controlled lifecycle:
+
+```text
+Open
+  ↓
+In Progress
+  ↓
+Resolved
+  ↓
+Closed
+```
+
+Available statuses:
+
+* `Open`
+* `In Progress`
+* `Resolved`
+* `Closed`
+
+Available priorities:
+
+* `Low`
+* `Medium`
+* `High`
+* `Critical`
+
+The backend enforces authorization and ticket-management rules rather than relying only on frontend restrictions.
+
+---
+
+## 🔎 Search, Filtering & Sorting
+
+The ticket list supports server-side query functionality including:
+
+* Search
+* Status filtering
+* Priority filtering
+* Sorting
+* Pagination
+
+Example:
+
+```text
+GET /tickets?page=1&limit=10&status=Open&priority=High
+```
+
+This keeps filtering and pagination responsibilities on the backend and avoids loading the entire ticket collection into the browser.
+
+---
+
+## 📄 Pagination
+
+Ticket results are paginated using query parameters such as:
+
+```text
+?page=1&limit=10
+```
+
+The API returns both ticket data and pagination metadata, allowing the frontend to build a reusable pagination experience.
+
+Example response structure:
+
+```json
+{
+  "success": true,
+  "data": [],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 50,
+    "totalPages": 5
+  }
+}
+```
+
+---
+
+## 📊 Dashboard & Aggregation
+
+The backend uses **MongoDB aggregation pipelines** for dashboard-related statistics.
+
+This demonstrates working with MongoDB beyond basic CRUD operations.
+
+Aggregation can be used to derive information such as:
+
+* Total tickets
+* Tickets by status
+* Tickets by priority
+* Ticket distribution
+* Other operational metrics
+
+---
+
+# 👥 User Roles & Permissions
+
+| Feature             | Customer | Agent | Admin |
+| ------------------- | :------: | :---: | :---: |
+| Register            |     ✅    |   ❌   |   ❌   |
+| Login               |     ✅    |   ✅   |   ✅   |
+| Create Ticket       |     ✅    |   ❌   |   ❌   |
+| View Own Tickets    |     ✅    |   —   |   —   |
+| Update Ticket       |     ❌    |   ✅   |   ✅   |
+| Delete Ticket       |     ❌    |   ❌   |   ✅   |
+| Access All Tickets  |     ❌    |   ❌   |   ✅   |
+| Manage Agent Access |     ❌    |   ❌   |   ✅   |
+
+> Agent accounts are not self-registered. Agent access is intended to be controlled by an administrator.
+
+---
+
+# 🛠️ Tech Stack
+
+## Frontend
+
+* **React**
+* **Vite**
+* **JavaScript**
+* **Chakra UI**
+* **React Router**
+* **Context API**
+* **Axios**
+* React Hooks
 
 ## Backend
 
-- Node.js
-- Express.js
-- MongoDB
-- Mongoose
-- JWT
-- bcrypt
-- express-validator
-- Morgan
-- CORS
-- dotenv
-- nodemon
+* **Node.js**
+* **Express.js**
+* **MongoDB**
+* **Mongoose**
+* **JWT**
+* **bcrypt**
+* **express-validator**
+* **Morgan**
+* **CORS**
+* **dotenv**
 
-## Architecture
+## Deployment
 
-The backend follows a layered architecture based primarily on:
-
-- Routes
-- Controllers
-- Services
-- Models
-- Middleware
-- Validators
-- Utilities
-
-The project follows an MCS-style structure:
-
-**Model → Controller → Service**
-
-Additional middleware and utility layers are used for authentication, authorization, validation, error handling, query building, and ticket workflow rules.
+* Frontend - Backend: **Render**
+* Database: **MongoDB Atlas**
 
 ---
 
-# Backend Folder Structure
+# 🏗️ Application Architecture
+
+The application follows a layered client-server architecture.
 
 ```text
-customer-support-ticket-system-backend/
-│
-├── src/
-│   │
-│   ├── config/
-│   │   └── db.js
-│   │
-│   ├── controllers/
-│   │   ├── ticket.controller.js
-│   │   └── user.controller.js
-│   │
-│   ├── middleware/
-│   │   ├── auth.middleware.js
-│   │   ├── authorizeRoles.middleware.js
-│   │   ├── error.middleware.js
-│   │   └── validation.middleware.js
-│   │
-│   ├── models/
-│   │   ├── ticket.model.js
-│   │   └── user.model.js
-│   │
-│   ├── routes/
-│   │   ├── health.routes.js
-│   │   ├── ticket.routes.js
-│   │   └── user.routes.js
-│   │
-│   ├── services/
-│   │   ├── ticket.service.js
-│   │   └── user.service.js
-│   │
-│   ├── utils/
-│   │   ├── asyncHandler.js
-│   │   ├── ticketQuery.utils.js
-│   │   └── ticketWorkflow.utils.js
-│   │
-│   ├── validators/
-│   │   ├── ticket.validator.js
-│   │   └── user.validator.js
-│   │
-│   ├── app.js
-│   └── server.js
-│
-├── .env
-├── package.json
-├── package-lock.json
-└── Why_It_Exist.md
+                         ┌─────────────────────┐
+                         │    React Frontend   │
+                         │                     │
+                         │  Pages / Components │
+                         │  Context API        │
+                         │  React Router       │
+                         │  Axios              │
+                         └──────────┬──────────┘
+                                    │
+                              HTTP / REST
+                                    │
+                                    ▼
+                         ┌─────────────────────┐
+                         │  Express Backend    │
+                         │                     │
+                         │ Routes              │
+                         │ Middleware          │
+                         │ Controllers         │
+                         │ Utilities            │
+                         └──────────┬──────────┘
+                                    │
+                               Mongoose
+                                    │
+                                    ▼
+                         ┌─────────────────────┐
+                         │      MongoDB        │
+                         │                     │
+                         │ Users               │
+                         │ Tickets             │
+                         └─────────────────────┘
 ```
 
-# User Roles
+---
 
-The system has three roles:
+# 🔐 Authentication Flow
 
-| Role     | Description                                       |
-| -------- | ------------------------------------------------- |
-| Customer | Creates and views their own tickets               |
-| Agent    | Works on tickets assigned to them                 |
-| Admin    | Manages users, tickets, assignments and dashboard |
+The application uses JWT-based authentication.
 
-# Authentication
+```text
+                                User
+                                │
+                                │ Login credentials
+                                ▼
+                                React Login Page
+                                │
+                                │ POST /users/login
+                                ▼
+                                Express API
+                                │
+                                │ Validate credentials
+                                ▼
+                                MongoDB
+                                │
+                                │ User found
+                                ▼
+                                bcrypt password verification
+                                │
+                                ▼
+                                JWT generated
+                                │
+                                ▼
+                                Frontend
+                                │
+                                ├── Store token
+                                └── Store user information
+                                      │
+                                      ▼
+                                Axios Interceptor
+                                      │
+                                      │ Authorization: Bearer <token>
+                                      ▼
+                                Protected API Routes
+```
 
-Authentication is implemented using JWT.
+The shared Axios instance automatically attaches the JWT to authenticated requests.
 
-## Registration
+---
 
-Customers can register using:
+# 🛡️ Authorization Flow
 
-`POST /api/users/register`
+Authentication answers:
 
-The customer role is assigned automatically.
+> "Who is the user?"
 
-Agents cannot register themselves.
+Authorization answers:
 
-Agents are created by an administrator using:
+> "What is this user allowed to do?"
 
-`POST /api/users/register/agents`
+The backend uses middleware to verify the JWT and determine the authenticated user's role.
 
-## Password Security
+For example:
 
-Passwords are never stored as plain text.
+```text
+Request
+   ↓
+authMiddleware
+   ↓
+Verify JWT
+   ↓
+Extract user ID + role
+   ↓
+Role authorization
+   ↓
+Controller
+```
 
-The password flow is:
+This ensures that security rules are enforced at the API level rather than trusting the frontend.
 
-Client Password
-↓
-bcrypt hashing
-↓
-Hashed Password
-↓
-MongoDB
+---
 
-During login, the supplied password is compared against the stored hash using bcrypt.
+# 🗄️ Database Design
 
-## Login
+## User
 
-`POST /api/users/login`
+The user model contains:
 
-A successful login returns a JWT containing information required for authorization.
+```text
+User
+├── firstName
+├── lastName
+├── email
+├── password
+└── role
+```
 
-Example JWT payload:
+Supported roles:
 
-{
-id: user.\_id,
-role: user.role
-}
+```text
+customer
+agent
+admin
+```
 
-The token is then sent with protected requests:
+Passwords are hashed before being stored.
 
-`Authorization: Bearer <token>`
+---
 
-## Authentication Middleware
+## Ticket
 
-Protected routes pass through the authentication middleware.
+The ticket model contains:
 
-The middleware:
+```text
+Ticket
+├── title
+├── description
+├── issueOccuredAt
+├── status
+├── priority
+└── createdBy
+```
 
-Reads the Authorization header.
-Checks the Bearer <token> format.
-Verifies the JWT.
-Decodes the user information.
-Stores the decoded user in:
-`req.user`
+`createdBy` is a MongoDB reference to the corresponding user.
 
-Example:
+### Status
 
-`req.user = {`
-id: "...",
-role: "agent"
-};
-
-If the token is missing, invalid, or expired, the request is rejected with:
-
-401 Unauthorized
-
-## Role Authorization
-
-Authentication and authorization are handled separately.
-
-# Authentication
-
-Answers:
-
-Who are you?
-
-Authorization
-
-Answers:
-
-Are you allowed to perform this operation?
-
-The authorizeRoles middleware checks whether the authenticated user's role is allowed to access a route.
-
-Example:
-
-`authorizeRoles("admin", "agent")`
-
-A user with an unauthorized role receives:
-
-403 Forbidden
-
-# Ticket Model
-
-Each ticket contains information such as:
-
-{
-title,
-description,
-issueOccuredAt,
-status,
-priority,
-createdBy,
-assignedTo,
-resolution,
-createdAt,
-updatedAt
-}
-
-## Status
-
-Tickets use the following statuses:
-
+```text
 Open
 In Progress
 Resolved
 Closed
+```
 
-## Priority
+### Priority
 
-Tickets use:
-
+```text
 Low
 Medium
 High
 Critical
-
-## Ticket Relationships
-
-Tickets reference users using MongoDB ObjectIds.
-
-Ticket
-├── createdBy → User
-└── assignedTo → User
-
-This allows the application to determine:
-
-Who created the ticket
-Which agent is responsible for the ticket
-
-Mongoose populate() is used when user information needs to be returned with ticket information.
-
-# Ticket Permissions
-
-## Customer
-
-Customers can:
-
-- Create tickets
-- View their own tickets
-
-Customers cannot:
-
-- View other customers' tickets
-- Update tickets
-- Assign tickets
-- Delete tickets
-- Change ticket status
-
-## Agent
-
-Agents can:
-
-- View tickets assigned to them
-- Update assigned tickets
-- Change allowed ticket fields
-- Change ticket status according to the workflow
-- Add/update resolution
-- Change priority
-
-Agents cannot:
-
-- Modify tickets assigned to another agent
-- Assign tickets
-- Delete tickets
-- Replace tickets
-- Access admin functionality
-
-## Admin
-
-Admins can:
-
-- View all tickets
-- Update tickets
-- Replace tickets
-- Delete tickets
-- Assign tickets to agents
-- Create agents
-- Access dashboard statistics
-- Manage the system at an administrative level
-
-# Ticket Workflow
-
-The ticket lifecycle is intentionally restricted.
-
-The allowed agent transitions are:
-
-Open
-↓
-In Progress
-↓
-Resolved
-↓
-Closed
-
-Agents cannot arbitrarily change the status.
-
-For example:
-
-Open → Resolved
-
-is rejected.
-
-Similarly:
-
-Resolved → Open
-
-is rejected.
-
-The workflow is represented using:
-
-`const allowedAgentTransitions = {`
-Open: ["In Progress"],
-"In Progress": ["Resolved"],
-Resolved: ["Closed"],
-Closed: []
-};
-
-The transition is checked using:
-
-`allowedAgentTransitions[currentStatus].includes(requestedStatus)`
-
-This keeps business rules separate from the controller/service logic.
-
-# Resolution Requirement
-
-A ticket cannot move to:
-
-Resolved
-
-without a valid resolution.
-
-The service checks both:
-
-The resolution supplied by the client
-The existing resolution stored on the ticket
-
-The effective resolution is determined using:
-
-`const resolution =`
-checkClientResolution !== undefined
-? checkClientResolution
-: ticket.resolution;
-
-This allows the following behavior:
-
-| Client Resolution | Existing Resolution | Result   |
-| ----------------- | ------------------- | -------- |
-| Missing           | Missing             | Rejected |
-| Empty             | Missing             | Rejected |
-| Valid             | Missing             | Accepted |
-| Missing           | Valid               | Accepted |
-| Valid             | Valid               | Accepted |
-
-The important rule is:
-
-When moving a ticket to Resolved, there must be a valid resolution either already stored on the ticket or supplied by the client.
-
-# Agent Update Rules
-
-Agents are only allowed to update:
-
-[
-"status",
-"priority",
-"resolution"
-]
-
-Any other fields sent by the client are ignored.
-
-The service filters the incoming request before updating the database.
-
-Example:
-
-`const filteredData = {};`
-
-for (const field of allowedFields) {
-if (updatedData[field] !== undefined) {
-filteredData[field] = updatedData[field];
-}
-}
-
-This prevents agents from modifying protected fields such as:
-
-createdBy
-assignedTo
-Other ticket properties
-
-## Empty Update Protection
-
-If the client sends no valid agent-update fields, the request is rejected.
-
-The service checks:
-
-`Object.keys(filteredData).length`
-
-If the result is 0:
-
-NO_VALID_FIELDS
-
-is returned.
-
-This prevents unnecessary database update operations.
-
-# Ticket Query Features
-
-The ticket listing API supports:
-
-Role-based filtering
-Status filtering
-Priority filtering
-
-## Search
-
-## Sorting
-
-## Pagination
-
-Query-building logic is separated into:
-
-ticketQuery.utils.js
-
-## Role-Based Ticket Filtering
-
-The ticket query automatically changes based on the authenticated user's role.
-
-## Customer
-
-`filter.createdBy = userId;`
-
-Customers only receive tickets created by themselves.
-
-## Agent
-
-`filter.assignedTo = userId;`
-
-Agents only receive tickets assigned to them.
-
-## Admin
-
-Admins can access all tickets.
-
-## Search
-
-Ticket search currently operates on the title field.
-
-Example:
-
-`GET /api/tickets?search=payment`
-
-The search uses MongoDB regular expressions with case-insensitive matching.
-
-{
-title: {
-$regex: search,
-$options: "i"
-}
-}
-
-## Sorting
-
-Supported sorting fields:
-
-createdAt
-updatedAt
-priority
-status
-
-Example:
-
-`GET /api/tickets?sortBy=createdAt&order=desc`
-
-Only whitelisted fields are accepted.
-
-This prevents arbitrary client input from being directly used as a database sort field.
-
-## Pagination
-
-Pagination uses:
-
-page
-limit
-
-Example:
-
-`GET /api/tickets?page=2&limit=10`
-
-The service calculates:
-
-`skip = (page - 1) * limit;`
-
-A maximum limit of 100 is enforced.
-
-# Validation
-
-Request validation is implemented using express-validator.
-
-Validation is separated from controllers and services.
-
-Current validation includes:
-
-User Registration
-
-- First name
-- Last name
-- Email
-- Password
-
-## Login
-
-- Email
-- Password
-  Ticket Creation
-- Title
-- Description
-- Issue occurrence date
-
-## Validation Flow
-
-The request follows this flow:
-
-Client Request
-↓
-Route
-↓
-Validation Rules
-↓
-Validation Middleware
-↓
-Controller
-↓
-Service
-↓
-Database
-
-If validation fails, the request returns:
-
-400 Bad Request
-
-along with the validation errors.
-
-# Error Handling
-
-A global error middleware is used to handle unexpected errors.
-
-The project also uses an asyncHandler utility to avoid repeating try/catch blocks around asynchronous controllers.
+```
+
+---
+
+# 📁 Project Structure
+
+The repository is organized into separate frontend and backend applications.
+
+```text
+customer-support-ticket-system/
+│
+├── customer-support-ticket-system-frontend/
+│   │
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── Navbar/
+│   │   │   ├── Layout/
+│   │   │   ├── TicketCard/
+│   │   │   └── ...
+│   │   │
+│   │   ├── pages/
+│   │   │   ├── Home/
+│   │   │   ├── Tickets/
+│   │   │   ├── TicketDetails/
+│   │   │   ├── CreateTickets/
+│   │   │   └── ...
+│   │   │
+│   │   ├── context/
+│   │   │   ├── AuthContext
+│   │   │   └── TicketContext
+│   │   │
+│   │   ├── hooks/
+│   │   │   ├── useDebounce
+│   │   │   └── useForm
+│   │   │
+│   │   ├── api/
+│   │   ├── routes/
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   │
+│   ├── public/
+│   ├── .env
+│   ├── package.json
+│   └── vite.config.js
+│
+├── customer-support-ticket-system-backend/
+│   │
+│   ├── controllers/
+│   ├── middleware/
+│   ├── models/
+│   ├── routes/
+│   ├── utils/
+│   ├── config/
+│   ├── server.js
+│   ├── .env
+│   └── package.json
+│
+└── README.md
+```
+
+> The exact folder structure may differ slightly depending on the latest repository organization.
+
+---
+
+# 🌐 REST API
+
+The backend exposes RESTful endpoints for authentication, users, tickets, and dashboard functionality.
+
+## Authentication
+
+| Method | Endpoint          | Description         |
+| ------ | ----------------- | ------------------- |
+| `POST` | `/users/register` | Register a customer |
+| `POST` | `/users/login`    | Authenticate user   |
+
+---
+
+## Tickets
+
+| Method   | Endpoint       | Description           |
+| -------- | -------------- | --------------------- |
+| `GET`    | `/tickets`     | Get tickets           |
+| `GET`    | `/tickets/:id` | Get ticket by ID      |
+| `POST`   | `/tickets`     | Create a ticket       |
+| `PATCH`  | `/tickets/:id` | Update ticket         |
+| `PUT`    | `/tickets/:id` | Replace/update ticket |
+| `DELETE` | `/tickets/:id` | Delete ticket         |
+
+
+---
+
+# 🧩 Backend Architecture
+
+The backend separates responsibilities across different layers.
+
+```text
+            Request
+              ↓
+            Route
+              ↓
+            Validation Middleware
+              ↓
+            Authentication Middleware
+              ↓
+            Authorization
+              ↓
+            Controller
+              ↓
+            Utility / Query Builder
+              ↓
+            Mongoose Model
+              ↓
+            MongoDB
+              ↓
+            Response
+```
+
+### Middleware
+
+Middleware handles cross-cutting responsibilities such as:
+
+* Authentication
+* Authorization
+* Request validation
+* Error handling
+* Request logging
+
+### Validation
+
+`express-validator` is used to validate incoming request data before it reaches the controller.
 
 Example flow:
 
-Async Controller
-↓
-asyncHandler
-↓
-Error
-↓
-next(error)
-↓
-Global Error Middleware
-
-This keeps controllers cleaner and centralizes unexpected error handling.
-
-# HTTP Status Codes
-
-The API uses HTTP status codes according to the type of result.
-
-Common examples:
-
-| Status | Meaning                                                                             |
-| ------ | ----------------------------------------------------------------------------------- |
-| 200    | Successful request                                                                  |
-| 201    | Resource created                                                                    |
-| 400    | Bad request                                                                         |
-| 401    | Authentication required / invalid authentication                                    |
-| 403    | Authenticated but not authorized                                                    |
-| 404    | Resource not found                                                                  |
-| 422    | Request is syntactically valid but cannot be processed because of the provided data |
-
-Examples from ticket operations:
-
-INVALID_STATUS_TRANSITION → 400
-RESOLUTION_REQUIRED → 422
-NO_VALID_FIELDS → 400
-AGENT_NOT_FOUND → 404
-TICKET_NOT_FOUND → 404
-NOT_AN_AGENT → 400
-
-# Dashboard
-
-The backend provides an admin-only dashboard endpoint.
-
-The dashboard currently calculates:
-
-Total ticket count
-Tickets by status
-Tickets by priority
-Tickets by agent
-
-The dashboard uses MongoDB aggregation pipelines.
-
-## MongoDB Aggregation
-
-The dashboard demonstrates the use of MongoDB aggregation operators such as:
-
-$group
-$lookup
-$unwind
-$project
-$sort
-
-For example, tickets can be grouped by status:
-
-{
-$group: {
-_id: "$status",
-count: { $sum: 1 }
-}
-}
-
-Agent ticket statistics use $lookup to connect ticket assignment information with the users collection.
-
-# API Endpoint Overview
-
-## User APIs
-
-| Method | Endpoint                     | Access |
-| ------ | ---------------------------- | ------ |
-| POST   | `/api/users/register`        | Public |
-| POST   | `/api/users/login`           | Public |
-| GET    | `/api/users`                 | Admin  |
-| POST   | `/api/users/register/agents` | Admin  |
-
-## Ticket APIs
-
-| Method | Endpoint                        | Access        |
-| ------ | ------------------------------- | ------------- |
-| GET    | `/api/tickets`                  | Authenticated |
-| GET    | `/api/tickets/:ticketId`        | Authenticated |
-| POST   | `/api/tickets`                  | Customer      |
-| PATCH  | `/api/tickets/:ticketId`        | Agent / Admin |
-| PATCH  | `/api/tickets/:ticketId/assign` | Admin         |
-| PUT    | `/api/tickets/:ticketId`        | Admin         |
-| DELETE | `/api/tickets/:ticketId`        | Admin         |
-| GET    | `/api/tickets/dashboard`        | Admin         |
-
-The exact base URL depends on the environment in which the backend is deployed.
-
-# API Request Flow
-
-A typical protected ticket request follows this architecture:
-
-Client
-↓
-Route
-↓
-
-## Authentication Middleware
-
-↓
-Role Authorization Middleware
-↓
+```text
+Validation Rules
+      ↓
 Validation Middleware
-↓
+      ↓
 Controller
-↓
-Service
-↓
-Model / MongoDB
-↓
-Service
-↓
-Controller
-↓
-Client
+```
 
-Not every endpoint uses every middleware layer.
+This keeps controllers cleaner and provides consistent validation responses.
 
-The middleware is applied according to the requirements of each route.
+---
 
-# Why MCS Architecture?
+# 🔎 Ticket Query Utilities
 
-The project separates responsibilities between different layers.
+The backend uses reusable query utilities for ticket retrieval.
 
-## Routes
+These utilities handle responsibilities such as:
 
-Responsible for:
+```text
+buildFilter()
+buildSort()
+buildPagination()
+```
 
-Defining endpoints
-Connecting middleware
-Connecting controllers
+This separates query-building logic from the controller and makes the ticket API easier to maintain and extend.
 
-## Controllers
+---
 
-Responsible for:
+# ⚛️ Frontend Architecture
 
-Receiving HTTP requests
-Extracting request data
-Calling services
-Converting service results into HTTP responses
+The React application uses Context API to manage shared application state.
 
-## Services
+```text
+AuthProvider
+     ↓
+TicketProvider
+     ↓
+BrowserRouter
+     ↓
+App
+     ↓
+Pages / Components
+```
 
-Responsible for:
-
-Business logic
-Database operations
-Permission-related business rules
-Ticket workflow logic
-
-## Models
+## AuthContext
 
 Responsible for:
 
-MongoDB schema definition
-Data structure
-Mongoose validation
+* Current user
+* Authentication state
+* Login
+* Logout
+* Persisting authentication information
 
-This separation makes the application easier to understand, test, and maintain.
+---
 
-# Environment Variables
+## TicketContext
 
-The backend uses environment variables for configuration.
+Responsible for shared ticket state including:
 
-Example:
+* Tickets
+* Loading state
+* Error state
+* Pagination
+* Ticket fetching
 
-`PORT=5000`
-`MONGO_URI=your_mongodb_connection_string`
-`JWT_SECRET=your_secret_key`
+The ticket fetching function is memoized using `useCallback` to maintain a stable function reference when consumed by components and effects.
 
-The .env file must never be committed to Git.
+---
 
-# Running the Backend Locally
+# 🔄 React Data Flow
 
-Navigate to the backend directory:
+A typical ticket-list request follows this flow:
 
-`cd customer-support-ticket-system-backend`
+```text
+        Tickets Page
+            │
+            │ useEffect()
+            ▼
+        fetchTickets()
+            │
+            ▼
+        Ticket API
+            │
+            ▼
+        Axios
+            │
+            ▼
+        Express API
+            │
+            ▼
+        MongoDB
+            │
+            ▼
+        API Response
+            │
+            ▼
+        TicketContext
+            │
+            ▼
+        Tickets Page
+            │
+            ▼
+        Ticket Cards
+```
 
-Install dependencies:
+---
 
-`npm install`
+# 🧠 Important Technical Concepts Demonstrated
 
-Create a .env file:
+This project was intentionally built to go beyond basic CRUD.
 
-`PORT=5000`
-`MONGO_URI=your_mongodb_connection_string`
-`JWT_SECRET=your_secret_key`
+### React
 
-Start the development server:
-
-`npm run dev`
-
-Start the production server:
-
-`npm start`
-
-# Security Considerations
-
-The backend currently implements several basic security practices:
-
-- Password hashing using bcrypt
-- JWT authentication
-- Role-based authorization
-- Environment variables for secrets
-- Request validation
-- Restricted update fields
-- Whitelisted sorting fields
-- Ownership checks
-- Ticket assignment checks
-- Protected admin routes
-- .env excluded from Git
-
-# Testing
-
-Backend APIs were manually tested during development.
-
-Testing focused on:
-
-## Registration
-
-## Login
-
-# Authentication
-
-- Role authorization
-- Ticket creation
-- Ticket retrieval
-- Ticket ownership
-- Ticket assignment
-- Agent updates
-- Status transitions
-- Resolution requirements
-- Invalid requests
-- Forbidden operations
-- Dashboard access
-- Error responses
-
-The ticket workflow was specifically tested against valid and invalid status transitions.
-
-Example:
-
-Open → In Progress ✓
-In Progress → Resolved ✓
-Resolved → Closed ✓
-
-Open → Resolved ✗
-Resolved → Open ✗
-Closed → Open ✗
-
-# Current Backend Limitations
-
-The current backend is intentionally focused on the core functionality required for the project.
-
-Potential future improvements include:
-
-- Automated API test suite
-- Improved centralized error classes
-- More detailed logging
-- Rate limiting
-- Refresh tokens
-- Email notifications
-- Ticket comments
-- File attachments
-- Advanced search
-- Better dashboard analytics
-- Automated API documentation using Swagger/OpenAPI
-
-# Deployment
+* Functional components
+* Props
+* State management
+* `useState`
+* `useEffect`
+* `useContext`
+* `useCallback`
+* Custom hooks
+* Context API
+* Protected routes
+* Conditional rendering
 
 ### Backend
 
-The backend is deployed using Render.
+* REST API development
+* Express middleware
+* Authentication middleware
+* Role-based authorization
+* Request validation
+* Controller architecture
+* Reusable utility functions
+* Error handling
+* MongoDB queries
+* MongoDB aggregation
+* Mongoose population
+* Pagination
+* Filtering
+* Sorting
 
-**Live API:**
-https://customer-support-ticket-api.onrender.com
+### Security
 
-### Database
+* Password hashing with bcrypt
+* JWT authentication
+* Protected routes
+* Role-based access control
+* Environment variables
+* Backend ownership checks
 
-MongoDB Atlas is used as the production database.
+---
 
-### Environment Variables
+# 🔒 Security Considerations
 
-The application uses environment variables for sensitive configuration.
+Several security practices are implemented:
 
-Required variables:
+### Password Hashing
 
-- `MONGO_URL`
-- `BCRYPT_SALT_ROUNDS`
-- `JWT_SECRET`
-- `JWT_EXPIRES_IN`
+Passwords are never stored in plain text.
 
-Sensitive values are not committed to the repository.
+```text
+Plain Password
+      ↓
+bcrypt
+      ↓
+Hashed Password
+      ↓
+MongoDB
+```
 
-# Learning & Interview Documentation
+### JWT Authentication
 
-The project contains a separate file:
+Authenticated requests use:
 
-Why_It_Exist.md
+```http
+Authorization: Bearer <JWT>
+```
 
-This file contains explanations of important implementation decisions and interview-oriented questions.
+### Backend Authorization
 
-Examples include:
+Frontend UI restrictions are not treated as security boundaries.
 
-Why JWT?
-Why bcrypt?
-Why middleware?
-Why separate controller and service layers?
-Why use Mongoose?
-Why use aggregation?
-Why use $lookup?
-Why use asyncHandler?
-Why validate requests?
-Why whitelist update fields?
-Why enforce ticket status transitions?
-Why use role-based authorization?
-Why separate authentication from authorization?
+The backend validates:
 
-The purpose of this file is to help explain the reasoning behind the implementation rather than simply remembering the code.
+* Authentication
+* User role
+* Resource ownership
+* Allowed operations
 
-# Git Milestones
+---
 
-Important development milestones are committed separately so that the project history reflects the evolution of the application.
+# ⚙️ Environment Variables
 
-A major recent milestone:
+## Backend
 
-`feat: enforce ticket workflow and agent update rules`
+Create a `.env` file inside the backend directory:
 
-This milestone introduced:
+```env
+PORT=5000
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+```
 
-- Ticket status transition validation
-- Agent update restrictions
-- Resolution requirements
-- Invalid field protection
-- Ticket workflow enforcement
+Add any additional environment variables required by the deployed configuration.
 
-# Project Goals
+---
 
-The main goals of this project are:
+## Frontend
 
-- Build a realistic MERN backend rather than a simple CRUD application.
-- Practice authentication and authorization.
-- Implement role-based access control.
-- Implement business rules.
-- Work with MongoDB relationships.
-- Practice aggregation pipelines.
-- Follow a maintainable backend architecture.
-- Handle validation and errors correctly.
-- Build APIs that can be consumed by a React frontend.
-- Deploy the backend and make it production-accessible.
+Create a `.env` file inside the frontend directory:
 
-# Future Frontend Integration
+```env
+VITE_API_URL=http://localhost:5000/api
+```
 
-The frontend will consume the backend APIs after deployment.
+For production:
 
-The frontend will eventually provide interfaces for:
+```env
+VITE_API_URL=your_production_backend_url
+```
 
-## Customer
+---
 
-- Register
+# 💻 Local Setup
 
-## Login
+## Prerequisites
 
-- Create ticket
-- View own tickets
-- Track ticket status
+Make sure the following are installed:
 
-## Agent- Login
+* Node.js
+* npm
+* MongoDB / MongoDB Atlas
+* Git
 
-- View assigned tickets
-- Update ticket priority
-- Update ticket status
-- Add resolution
+---
 
-## 
+## 1. Clone the Repository
 
-## Admin-  Login
+```bash
+git clone <YOUR_GITHUB_REPOSITORY_URL>
+```
 
-- View all tickets
-- Assign tickets
-- Create agents
-- Manage tickets
-- View dashboard statistics
+```bash
+cd customer-support-ticket-system
+```
 
-# Author
+---
 
-Built as part of my MERN Stack / Full Stack Web Development upskilling journey.
+## 2. Install Backend Dependencies
 
-The project focuses on understanding backend architecture, authentication, authorization, database operations, business logic, and real-world API development rather than only completing CRUD operations.
+```bash
+cd customer-support-ticket-system-backend
+npm install
+```
+
+---
+
+## 3. Configure Backend Environment Variables
+
+Create:
+
+```text
+.env
+```
+
+and add:
+
+```env
+PORT=5000
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+```
+
+---
+
+## 4. Start the Backend
+
+```bash
+npm run dev
+```
+
+The backend should start on:
+
+```text
+http://localhost:5000
+```
+
+---
+
+## 5. Install Frontend Dependencies
+
+Open another terminal:
+
+```bash
+cd customer-support-ticket-system-frontend
+npm install
+```
+
+---
+
+## 6. Configure Frontend Environment Variables
+
+Create:
+
+```text
+.env
+```
+
+Add:
+
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
+---
+
+## 7. Start the Frontend
+
+```bash
+npm run dev
+```
+
+Vite will provide the local development URL in the terminal.
+
+---
+
+# 📦 Production Build
+
+To create the frontend production build:
+
+```bash
+npm run build
+```
+
+The generated production files will be placed in:
+
+```text
+dist/
+```
+
+To preview the production build locally:
+
+```bash
+npm run preview
+```
+
+---
+
+# 🧪 Testing & Debugging Approach
+
+During development, the application was tested across:
+
+* Authentication flows
+* Protected routes
+* Role-based access
+* Ticket creation
+* Ticket updates
+* Ticket deletion
+* Search
+* Filtering
+* Sorting
+* Pagination
+* API validation
+* Unauthorized requests
+* Invalid ticket IDs
+* Invalid request data
+* Frontend/backend integration
+
+Browser developer tools and backend logging were used to trace request and rendering behavior.
+
+---
+
+# 🐛 Key Debugging Lessons
+
+One of the important debugging challenges involved repeated API requests caused by React rendering and effect dependencies.
+
+The issue highlighted the interaction between:
+
+* Context API
+* `useEffect`
+* Component mounting/unmounting
+* State updates
+* Function references
+* `useCallback`
+* Strict Mode
+
+The solution involved moving shared ticket-fetching logic into `TicketContext` and stabilizing the `fetchTickets` function with `useCallback`.
+
+This helped establish a cleaner separation between:
+
+```text
+Page-specific UI state
+        ↓
+Shared ticket state
+        ↓
+API communication
+```
+
+---
+
+# 🚀 Deployment
+
+The backend is deployed using **Render**, with the application configured to communicate with the production MongoDB database and frontend.
+
+Production architecture:
+
+```text
+User Browser
+     │
+     ▼
+Deployed React Application
+     │
+     │ HTTPS REST API
+     ▼
+Deployed Express API
+     │
+     ▼
+MongoDB Atlas
+```
+
+Before deployment, environment-specific values such as API URLs, database credentials, and JWT secrets are configured through deployment environment variables.
+
+---
+
+# 📸 Screenshots
+
+### Register
+
+<img src="./docs/screenshots/register_page.jpeg" alt="Register Page" width="800" />
+
+### Login
+
+<img src="./docs/screenshots/login_page.jpeg" alt="Login Page" width="800" />
+
+### Customer Dashboard
+
+<img src="./docs/screenshots/cx_dashboard.jpeg" alt="Customer Dashboard" width="800" />
+
+### Ticket List
+
+<img src="./docs/screenshots/ticket_list.jpeg" alt="Ticket List" width="800" />
+
+### Create Ticket
+
+<img src="./docs/screenshots/create_ticket.jpeg" alt="Create Ticket" width="800" />
+
+### Ticket Details
+
+<img src="./docs/screenshots/ticket_details.jpeg" alt="Login Page" width="800" />
+
+### Admin Dashboard
+
+<img src="./docs/screenshots/admin_dashboard.jpeg" alt="Admin Dashboard" width="800" />
+
+### Admin Ticket Details
+
+<img src="./docs/screenshots/admin_ticket_details.jpeg" alt="Ticket Details" width="800" />
+
+### Agent Edit Ticket
+
+<img src="./docs/screenshots/agent_edit_ticket.jpeg" alt="Edit Ticket" width="800" />
+
+---
+
+# 🎯 Project Goals
+
+The primary goals of this project were to:
+
+* Build a production-style MERN application
+* Practice REST API development
+* Implement JWT authentication
+* Implement role-based authorization
+* Work with MongoDB and Mongoose
+* Implement real-world business rules
+* Build reusable React components
+* Manage shared state using Context API
+* Implement server-side pagination, filtering, and sorting
+* Use MongoDB aggregation
+* Handle frontend/backend integration
+* Deploy a full-stack application
+* Improve debugging and architectural thinking
+
+---
+
+# 📚 What I Learned
+
+Through this project, I strengthened my understanding of full-stack application development.
+
+Key learning areas include:
+
+* Designing REST APIs
+* Structuring Express applications
+* JWT authentication and authorization
+* Password hashing
+* MongoDB data modeling
+* Mongoose references and `populate`
+* MongoDB aggregation pipelines
+* Server-side pagination
+* Query filtering and sorting
+* React Context API
+* React rendering behavior
+* `useEffect` dependency management
+* `useCallback` and function identity
+* Protected routes
+* API error handling
+* Form validation
+* Environment configuration
+* Frontend/backend deployment
+* Debugging full-stack applications
+
+---
+
+# 🔮 Future Improvements
+
+Potential future enhancements include:
+
+* Ticket assignment to specific agents
+* Ticket comments/replies
+* Customer-agent conversation history
+* Email notifications
+* Attachment support
+* SLA tracking
+* Agent workload dashboard
+* Advanced analytics
+* Ticket activity/audit history
+* Password reset
+* Refresh-token based authentication
+* Automated testing
+* Rate limiting
+* More comprehensive admin user management
+
+---
+
+# 🏆 Project Highlights
+
+This project demonstrates practical experience with:
+
+```text
+MERN Stack
+   │
+   ├── React
+   ├── Node.js
+   ├── Express.js
+   └── MongoDB
+```
+
+along with:
+
+```text
+Authentication
+Authorization
+REST APIs
+CRUD
+Validation
+Aggregation
+Pagination
+Filtering
+Sorting
+Context API
+Custom Hooks
+Debugging
+Deployment
+```
+
+The focus was not only on making the application work, but also on understanding **how the frontend, backend, database, authentication, authorization, and state-management layers interact as one system**.
+
+---
+
+# 👨‍💻 Author
+
+**Nitesh Kumar**
+
+Full Stack MERN Developer | Senior Quality Analyst transitioning into Software Development
+
+* GitHub: https://github.com/Nitu2610
+* LinkedIn: www.linkedin.com/in/nitesh-kumar-mern
+
+---
+
+## ⭐ If you found this project useful
+
+Feel free to explore the repository, review the implementation, and share feedback.
+
+---
+
+## 📄 License
+
+This project is created for learning, portfolio, and demonstration purposes.
