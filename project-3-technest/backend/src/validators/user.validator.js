@@ -24,9 +24,21 @@ const registerCustomerValidator=[
   .isLength({min:10, max:10})
   .withMessage("Please enter a valid mobile number")
 
+];
+
+const loginCustomerValidator=[
+  body("email")
+  .trim()
+  .isEmail()
+  .withMessage("Enter a valid email address.")
+  ,
+  body("password")
+  .isLength({min:8, max:20})
+  .withMessage("Password must be between 8 - 20 character.")
 ]
 
 
 module.exports={
-  registerCustomerValidator
+  registerCustomerValidator,
+  loginCustomerValidator,
 }
