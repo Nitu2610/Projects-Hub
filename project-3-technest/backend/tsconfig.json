@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "rootDir": "src",
+    "outDir": "dist",
+
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": ["node"],
+    "moduleDetection": "force",
+
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*.ts", "src/controllers/user.controller.ts"],
+  "exclude": ["node_modules", "dist"]
+}
+
+// | Option            | Meaning                                        |
+// | ----------------- | ---------------------------------------------- |
+// | `target`          | JavaScript version we want                     |
+// | `module`          | Backend module system → CommonJS               |
+// | `rootDir`         | Where our source lives                         |
+// | `outDir`          | Where generated JS goes                        |
+// | `strict`          | Strong type checking                           |
+// | `esModuleInterop` | Easier interoperability with CommonJS packages |
+// | `include`         | TypeScript source files to process             |
+// | `exclude`         | Files/folders TypeScript shouldn't process     |

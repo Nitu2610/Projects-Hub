@@ -1,9 +1,22 @@
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import type { AuthPayload } from "../types/auth.types";
 const User = require("../models/user.model");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+
+interface RegisterUserData {
+  fullName: string;
+  email: string;
+  password: string;
+  mobile: string;
+}
+
+interface LoginCredentials {
+  email: string;
+  password: string;
+}
 
 const userService = {
-  registerCustomer: async (userData) => {
+  registerCustomer: async (userData: RegisterUserData) => {
     try {
       const existsEmail = await User.findOne({ email: userData.email });
 
@@ -36,21 +49,27 @@ const userService = {
         message: "Customer registered successfully.",
         data: safeData,
       };
-    } catch (err) {
-      if (err.code === 11000) {
-        if (err.keyPattern.email) {
-          return {
-            success: false,
-            message: "Email already registered!",
-            code: "EMAIL_ALREADY_EXISTS",
-          };
-        }
+    } catch (err: unknown) {
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "code" in err &&
+        "keyPattern" in err &&
+        (err as { code?: number }).code === 11000 &&
+        (err as { keyPattern?: { email?: unknown } }).keyPattern?.email
+      ) {
+        return {
+          success: false,
+          message: "Email already registered!",
+          code: "EMAIL_ALREADY_EXISTS",
+        };
       }
+
       throw err;
     }
   },
 
-  loginCustomer: async (userCreds) => {
+  loginCustomer: async (userCreds: LoginCredentials) => {
     const user = await User.findOne({ email: userCreds.email }).select(
       "+password",
     );
@@ -76,13 +95,15 @@ const userService = {
       };
     }
 
-    const token = jwt.sign(
-      { userId: user._id, role: user.role },
-      process.env.JWT_SECRET_KEY,
-      {
-        expiresIn: "1d",
-      },
-    );
+    const jwtScretKey = process.env.JWT_SECRET_KEY;
+
+    if (!jwtScretKey) {
+      throw new Error("JWT_SECREWT_KEY is missing.");
+    }
+
+    const token = jwt.sign({ userId: user._id, role: user.role }, jwtScretKey, {
+      expiresIn: "1d",
+    });
 
     const safeData = {
       token,
@@ -100,7 +121,7 @@ const userService = {
     };
   },
 
-  customerProfile: async ({userId}) => {
+  customerProfile: async ({ userId }: AuthPayload) => {
     const user = await User.findOne({ _id: userId });
     if (!user) {
       return {

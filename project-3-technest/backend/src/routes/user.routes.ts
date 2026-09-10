@@ -29,4 +29,6 @@ userRoute.get("/me", authMiddleware, asyncHandler(userController.customerProfile
 
 userRoute.post("/logout",   asyncHandler(userController.logoutCustomer) );
 
+userRoute.get("/check",   asyncHandler(userController.checking))
+
 module.exports = userRoute;

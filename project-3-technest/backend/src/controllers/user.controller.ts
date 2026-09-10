@@ -1,7 +1,8 @@
+import { Request, Response } from "express";
 const userService = require("../services/user.service");
 
 const userController = {
-  registerCustomer: async (req, res) => {
+  registerCustomer: async (req: Request, res: Response) => {
     const response = await userService.registerCustomer(req.body);
 
     if (!response.success) {
@@ -20,7 +21,7 @@ const userController = {
     });
   },
 
-  loginCustomer: async (req, res) => {
+  loginCustomer: async (req: Request, res: Response) => {
     const response = await userService.loginCustomer(req.body);
 
     if (!response.success) {
@@ -49,7 +50,7 @@ const userController = {
     });
   },
 
-  customerProfile: async (req, res) => {
+  customerProfile: async (req: Request, res: Response) => {
     const user = await userService.customerProfile(req.user);
 
     if (!user.success) {
@@ -61,16 +62,16 @@ const userController = {
       }
     }
 
-      return res.status(200).json({
-        success: true,
-        message: "Fetched profile details successfully.",
-        data: user.data,
-      });
+    return res.status(200).json({
+      success: true,
+      message: "Fetched profile details successfully.",
+      data: user.data,
+    });
   },
 
-  logoutCustomer:  (req, res) => {
+  logoutCustomer: (req: Request, res: Response) => {
     res.clearCookie("accessToken", {
-     httpOnly: true,
+      httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
     });
@@ -78,6 +79,13 @@ const userController = {
     return res.status(200).json({
       success: true,
       message: "Customer logout successfully.",
+    });
+  },
+
+  checking: (req: Request, res: Response) => {
+    res.status(200).json({
+      success: true,
+      message: "Successfully reached the backend server.",
     });
   },
 };

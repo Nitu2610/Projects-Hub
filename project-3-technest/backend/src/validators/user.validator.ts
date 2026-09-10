@@ -1,6 +1,7 @@
 const{body}=require("express-validator");
 
 
+
 const registerCustomerValidator=[
   body("fullName")
   .trim()
