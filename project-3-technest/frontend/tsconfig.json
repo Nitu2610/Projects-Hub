@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "types": ["vite/client"]
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}
+
+/*
+"strict": true → catches type problems instead of letting them silently pass.
+"jsx": "react-jsx" → allows .tsx React components.
+"module": "ESNext" → matches Vite's ES-module environment.
+"moduleResolution": "Bundler" → appropriate for Vite.
+"noEmit": true → important: TypeScript will type-check our frontend but won't generate JS. Vite handles the build output.
+"types": ["vite/client"] → gives TypeScript knowledge of Vite features such as import.meta.env.
+"include": ["src"] → TypeScript checks our source code.
+"allowJs": false → we're intentionally migrating to TypeScript rather than maintaining mixed JS/TS source files.
+*/
