@@ -1890,6 +1890,7 @@ When something breaks in TechNest:
 ```
 ---
 
+
 # 13. Debugging Mindset
 
 The goal of debugging is not:
