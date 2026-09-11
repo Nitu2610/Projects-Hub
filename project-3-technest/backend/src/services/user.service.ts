@@ -16,6 +16,7 @@ interface LoginCredentials {
 }
 
 const userService = {
+  
   registerCustomer: async (userData: RegisterUserData) => {
     try {
       const existsEmail = await User.findOne({ email: userData.email });
@@ -73,7 +74,7 @@ const userService = {
     const user = await User.findOne({ email: userCreds.email }).select(
       "+password",
     );
-
+    
     if (!user) {
       return {
         success: false,

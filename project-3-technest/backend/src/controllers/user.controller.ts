@@ -2,7 +2,9 @@ import { Request, Response } from "express";
 const userService = require("../services/user.service");
 
 const userController = {
+
   registerCustomer: async (req: Request, res: Response) => {
+    console.log("controller: ", req.body)
     const response = await userService.registerCustomer(req.body);
 
     if (!response.success) {
@@ -78,7 +80,7 @@ const userController = {
 
     return res.status(200).json({
       success: true,
-      message: "Customer logout successfully.",
+      message: "Logged out successfully.",
     });
   },
 

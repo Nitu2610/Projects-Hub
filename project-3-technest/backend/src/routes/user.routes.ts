@@ -10,7 +10,7 @@ const authMiddleware = require("../middlewares/authentication.middleware");
 const authorize = require("../middlewares/authorization.middleware");
 
 const userRoute = express.Router();
-
+//users
 userRoute.post(
   "/register",
   registerCustomerValidator,
