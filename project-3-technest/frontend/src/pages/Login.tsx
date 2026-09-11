@@ -74,7 +74,7 @@ export const Login = () => {
             error.data !== null &&
             "message" in error.data &&
             typeof error.data.message === "string" && (
-              <Heading color="red.500" size="md">
+              <Heading color="red.500" size="md" textAlign="center">
                 {error.data.message}
               </Heading>
             )}
@@ -133,7 +133,13 @@ export const Login = () => {
           <Card.Footer justifyContent="center" pt={0}>
             <Text fontSize="sm" color="gray.500">
               Don't have an account?{" "}
-              <Text as="span" color="blue.500" fontWeight="medium">
+              <Text
+                as="span"
+                color="blue.500"
+                fontWeight="medium"
+                 cursor="pointer"
+                onClick={() => navigate("/register")}
+              >
                 Sign up
               </Text>
             </Text>

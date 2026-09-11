@@ -1,6 +1,5 @@
-import { Navigate, Outlet } from "react-router-dom";
-import { Heading } from "@chakra-ui/react";
 
+import { Navigate, Outlet } from "react-router-dom";
 import { useGetMeQuery } from "../redux/api/apiSlice";
 import { LoadingComp } from "../components/LoadingComp";
 import { ErrorComp } from "../components/ErrorComp";
@@ -18,29 +17,35 @@ export const ProtectedRoute = ({
     return <LoadingComp />;
   }
 
+  // Authentication failed
   if (
     isError &&
-    "data" in error &&
-    typeof error.data === "object" &&
-    error.data !== null &&
-    "status" in error.data &&
-    error.data.status === 401
+    "status" in error &&
+    error.status === 401
   ) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // Other API/server/network errors
+  if (isError) {
     return (
       <ErrorComp
-        status={401}
-        message={
-          "message" in error.data && typeof error.data.message === "string"
-            ? error.data.message
-            : "Authentication failed."
-        }
+        status={500}
+        message="Unable to verify your session. Please try again."
       />
     );
   }
 
-if (allowedRoles && data?.data?.role && allowedRoles.includes(data.data.role)) {
-    return <Outlet />;
+  // User is authenticated but does not have permission
+  if (
+    allowedRoles &&
+    data?.data?.role &&
+    !allowedRoles.includes(data.data.role)
+  ) {
+    return <Navigate to="/unauthorized" replace />;
   }
 
-  return <Navigate to="/unauthorized" replace />;
+  // User is authenticated and authorized
+  return <Outlet />;
 };
+

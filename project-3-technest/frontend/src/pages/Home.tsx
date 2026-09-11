@@ -4,8 +4,6 @@ import { useGetMeQuery } from "../redux/api/apiSlice";
 export const Home = () => {
   const { isLoading, data, isError, error } = useGetMeQuery();
 
-  console.log("isloading:", isLoading);
-
   if (isLoading) {
     return <Heading>Loading ...</Heading>;
   }
