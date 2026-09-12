@@ -4,7 +4,6 @@ const userService = require("../services/user.service");
 const userController = {
 
   registerCustomer: async (req: Request, res: Response) => {
-    console.log("controller: ", req.body)
     const response = await userService.registerCustomer(req.body);
 
     if (!response.success) {
