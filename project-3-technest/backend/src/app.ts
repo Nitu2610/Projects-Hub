@@ -23,11 +23,10 @@ app.use(cookieParser());
 
 app.use("/users", userRoute);
 
-console.log("request reached before the endpoint");
 
 app.use("/category", categoryRoute);
 
-console.log("request reached after the endpoint");
+
 app.use(errorHandler);
 
 module.exports = app;

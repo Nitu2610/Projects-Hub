@@ -6,7 +6,6 @@ const validatorMiddleware = (
   res: Response,
   next: NextFunction,
 ) => {
-  console.log("reached the route successfully.")
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {

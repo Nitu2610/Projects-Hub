@@ -604,7 +604,19 @@ TechNest follows these principles:
 
 ---
 
-# 17. Planned Architecture Enhancements
+# 17. Product & Category Management — Implementation Strategy
+
+   - **Decision:** Implement the Product & Category Management backend before the corresponding frontend features.
+
+   - **Reason:** The backend establishes the authoritative business rules, validation, authorization, database relationships, and API contracts. The frontend will consume these APIs rather than independently implementing business logic.
+
+   - **Implementation order:**
+   ` Category Management → Product Management → Product Browsing → Search/Filter/Sort → Frontend Integration.`
+
+   - Category is implemented before Product because: Product has a dependency on Category through the category reference. Completing Category first establishes the referenced entity and allows Product creation/update logic to validate category existence and active status.
+
+---
+## Planned Architecture Enhancements
 
 The following are planned but **not yet implemented**:
 

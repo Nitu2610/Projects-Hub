@@ -105,40 +105,118 @@ The `products` collection stores products available in TechNest.
 
 # 5. Category Collection
 
-The `categories` collection organizes products into categories.
+The `categories` collection stores the category hierarchy used to organize products.
 
-Examples:
+Each category is stored as an individual document. A category can either be a **top-level (parent) category** or a **child category**.
+
+### Examples
 
 ```text
-Mobile Phones
-Laptops
-Headphones
-Smart Watches
-Accessories
+Electronics
+├── Mobile Phones
+├── Laptops
+├── Headphones
+└── Smart Watches
+
 Gaming
+├── Gaming Consoles
+├── Gaming Accessories
+└── Gaming Chairs
 ```
 
 ### Fields
 
-| Field         | Type     | Purpose               |
-| ------------- | -------- | --------------------- |
-| `_id`         | ObjectId | Category identifier   |
-| `name`        | String   | Category name         |
-| `description` | String   | Category description  |
-| `active`      | Boolean  | Category availability |
-| `createdAt`   | Date     | Creation time         |
-| `updatedAt`   | Date     | Last update time      |
+| Field            | Type            | Purpose                                                   |
+| ---------------- | --------------- | --------------------------------------------------------- |
+| `_id`            | ObjectId        | Category identifier                                       |
+| `name`           | String          | Category name                                             |
+| `normalizedName` | String          | Normalized category name for consistent comparison/search |
+| `parent`         | ObjectId | null | Reference to the parent category                          |
+| `active`         | Boolean         | Indicates whether the category is active                  |
+| `createdAt`      | Date            | Creation time                                             |
+| `updatedAt`      | Date            | Last update time                                          |
+
+### Parent Category
+
+A top-level category does not have a parent, so its `parent` field is `null`.
+
+```json
+{
+  "_id": "100",
+  "name": "Electronics",
+  "normalizedName": "electronics",
+  "parent": null,
+  "active": true
+}
+```
+
+### Child Category
+
+A child category stores the `_id` of its parent category in the `parent` field.
+
+```json
+{
+  "_id": "200",
+  "name": "Mobile Phones",
+  "normalizedName": "mobile phones",
+  "parent": "100",
+  "active": true
+}
+```
 
 ### Relationship
 
 ```text
 Category
-   ↓
-Products
+   │
+   ├── Parent Category
+   │      │
+   │      ├── Child Category
+   │      ├── Child Category
+   │      └── Child Category
+   │
+   └── Product
 ```
 
-A product stores the category's ObjectId rather than duplicating the complete category document.
+The category relationship is **self-referencing** because a category can reference another document from the same `categories` collection.
 
+```text
+Electronics
+_id: 100
+parent: null
+     ↑
+     │
+     │ parent
+     │
+Mobile Phones
+_id: 200
+parent: 100
+
+Laptops
+_id: 300
+parent: 100
+```
+
+A product stores the category's `ObjectId` rather than duplicating the complete category document.
+
+```text
+Category
+   ↓
+ObjectId
+   ↓
+Product
+```
+
+This design supports a one-to-many relationship where one parent category can have multiple child categories.
+
+It also allows deeper category hierarchies in the future without changing the schema.
+
+```text
+Electronics
+└── Mobile Phones
+    └── Android Phones
+        └── Samsung
+```
 ---
 
 # 6. Cart Collection

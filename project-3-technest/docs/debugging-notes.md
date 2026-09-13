@@ -1866,7 +1866,155 @@ Small, frequent validation makes debugging easier than making many changes and t
 
 ---
 
-# 12. General Debugging Checklist
+# 12. API Request Returning 404 Not Found
+
+### Problem
+
+When I sent an API request using Postman / Thunder Client, the API returned: 
+`404 Not Found`
+
+### Initial Debugging Steps
+
+I started by checking the complete request flow:
+
+1. Verified the API endpoint/route.
+2. Checked the request data format.
+3. Checked the controller and service flow.
+4. Checked the import/export statements.
+5. Checked whether the request was reaching the expected route.
+6. Checked whether the latest code changes were actually reflected in the running application.
+
+### Root Cause
+
+The issue was related to my development setup.
+
+I had made changes in the TypeScript source files, but I had not properly started the TypeScript build/watch process and Nodemon.
+
+My application was running the compiled JavaScript 
+from: `dist/`, while I was making changes in: `src/`
+
+Because the TypeScript changes were not being compiled into the latest JavaScript files, and Nodemon was not watching/restarting as expected, the running server was still using the old code.
+
+### Fix
+
+I corrected the development scripts in package.json and started the required development process.
+
+For example:
+```ts
+{
+  "scripts": {
+    "start": "node dist/server.js",
+    "server": "nodemon dist/server.js"
+  }
+}
+```
+I then ensured that the TypeScript build/watch process was running so that:
+```text
+src/*.ts
+    ↓
+TypeScript compiler
+    ↓
+dist/*.js
+    ↓
+Nodemon detects changes
+    ↓
+Server restarts
+```
+After this, the latest code was reflected in the running server and the API request worked as expected.
+
+### Key Learning
+
+A `404` does not always mean the route itself is wrong.
+
+When debugging a `404`, I should also verify:
+
+```text
+Request
+   ↓
+Correct URL / HTTP method?
+   ↓
+Route registered?
+   ↓
+Controller reached?
+   ↓
+Latest code actually running?
+   ↓
+TypeScript compiled?
+   ↓
+Nodemon restarted?
+```
+--- 
+# 13. Cannot find module
+### Problem
+
+After fixing the first issue, the server started crashing with an error similar to:
+
+`Error: Cannot find module ...`
+
+### Initial Debugging Steps
+
+I checked:
+
+1. Folder structure.
+2. Import paths.
+3. Export names.
+4. File names.
+5. Naming consistency between the file and the import.
+6. Singular/plural naming.
+7. Controller and middleware naming conventions.
+
+### Root Cause
+
+The problem was caused by file/path naming inconsistencies.
+
+Examples I found included:
+  - `catergory` instead of: `category`
+  - `authentication.middlewares` while the actual file was: `authentication.middleware`
+  - `categoryController` versus the project's convention: `category.controller`
+
+These small naming differences caused the import path to point to a file that did not exist at the expected location/name.
+
+### Fix
+
+I corrected the file names and corresponding import statements so that they matched exactly.
+For example:
+  ```ts
+  // Incorrect
+  import categoryController from './categoryController';
+
+  // Correct
+  import categoryController from './category.controller';
+  ```
+And:
+  ```ts
+  // Incorrect
+  import authentication from './authentication.middlewares';
+
+  // Correct
+  import authentication from './authentication.middleware';
+  ```
+
+### Key Learning
+
+When seeing: `Cannot find module`, my first checks should be:
+```text
+1. Does the file actually exist?
+          ↓
+2. Is the path correct?
+          ↓
+3. Is the filename spelled correctly?
+          ↓
+4. Singular vs plural?
+          ↓
+5. Uppercase/lowercase correct?
+          ↓
+6. Does the import match the export?
+          ↓
+7. Has TypeScript compiled the latest file into dist/?
+```
+
+---
+# 14. General Debugging Checklist
 
 When something breaks in TechNest:
 
@@ -1909,5 +2057,515 @@ Bug fixed
 Root cause understood
    +
 Lesson documented
-````
+```
+---
+
+# 15.MongoDB Indexing — E11000 Duplicate Key Error
+
+### Problem
+
+While implementing hierarchical categories in TechNest, the category structure was changed from a flat category system to a two-level hierarchy:
+
+```text
+Electronics
+├── Laptops
+├── Mobile Phones
+└── Accessories
+
+Gaming
+└── Accessories
+```
+
+The business rule changed from:
+> Category name must be globally unique.
+
+to:
+> Category name must be unique within the same parent category.
+
+Therefore:
+
+```text
+Electronics → Accessories    ✅
+Gaming → Accessories         ✅
+Electronics → Accessories    ❌
+```
+
+The Mongoose schema was updated to use a compound unique index:
+
+```ts
+categorySchema.index(
+  { parent: 1, normalizedName: 1 },
+  { unique: true }
+);
+```
+
+However, while testing child-category creation, MongoDB returned:
+
+```text
+E11000 duplicate key error
+```
+
+even though the child category had a different `parent`.
+
+### Root Cause
+
+The old category model had:
+
+```ts
+normalizedName: {
+  type: String,
+  required: true,
+  unique: true
+}
+```
+
+The `unique: true` option caused MongoDB to create a unique index on: `normalizedName`. For example:`normalizedName_1`
+
+This old index enforced **global uniqueness**:
+```text
+Accessories
+Accessories
+```
+was not allowed, regardless of the parent.
+
+Later, the schema was changed to remove the global uniqueness:
+
+```ts
+normalizedName: {
+  type: String,
+  required: true
+}
+```
+
+and a compound index was added:
+
+```ts
+categorySchema.index(
+  { parent: 1, normalizedName: 1 },
+  { unique: true }
+);
+```
+
+However, changing the Mongoose schema does not necessarily remove an index that already exists in MongoDB.
+
+Therefore, the database could still contain the old: `normalizedName_1` unique index.
+
+MongoDB was still enforcing the old rule.
+
+### Why E11000 Occurred
+
+Suppose the database already contained:
+
+```text
+Electronics
+└── Accessories
+```
+and we tried to create:
+```text
+Gaming
+└── Accessories
+```
+
+The new business rule allows this because the parents are different.
+
+However, the old global unique index only looked at: `normalizedName`
+
+So MongoDB saw:
+
+```text
+accessories
+accessories
+```
+
+and rejected the second document.
+
+This generated: `E11000 duplicate key error`
+
+The important lesson is:
+
+> The error was not caused by the category service logic. The database was still enforcing an old unique index.
+
+### Understanding MongoDB Indexes
+
+An index is a database structure that helps MongoDB efficiently find and enforce information.
+
+Indexes can be used for:
+
+1. Faster queries
+2. Enforcing uniqueness
+3. Supporting sorting/filtering
+4. Enforcing business/data integrity
+
+For example:
+
+```ts
+Category.findOne({
+  normalizedName: "electronics"
+});
+```
+
+can benefit from an index on `normalizedName`.
+
+A unique index additionally guarantees that duplicate values cannot be inserted.
+
+- #### `unique: true` in Mongoose
+
+  Example:
+
+  ```ts
+  normalizedName: {
+    type: String,
+    unique: true
+  }
+  ```
+
+  The important point is:
+
+  > `unique: true` is not a normal Mongoose validation rule. It creates/represents a database unique index.
+
+  Therefore, duplicate insertion can result in a MongoDB error such as: `E11000 duplicate key error`
+
+  This is why the service contains handling for:
+
+  ```ts
+  if (
+    typeof err === "object" &&
+    err !== null &&
+    "code" in err &&
+    err.code === 11000
+  ) {
+    // duplicate handling
+  }
+  ```
+
+  The service-level duplicate check provides a friendly business response, while the database unique index provides the final integrity protection.
+
+- #### Why the Compound Index Is Required
+
+  The new TechNest category rule is: `Category name must be unique within its parent.`
+
+  Therefore, checking only: `normalizedName` is insufficient.
+
+  We need to check: `parent + normalizedName` . This is called a **compound index**.
+
+  Our index is:
+  ```ts
+  categorySchema.index(
+    { parent: 1, normalizedName: 1 },
+    { unique: true }
+  );
+  ```
+  This tells MongoDB:
+
+  > The combination of `parent` and `normalizedName` must be unique.
+
+  The `1` means ascending index order.
+
+  So the index is conceptually: `(parent, normalizedName)`,  rather than just: `(normalizedName)`.
+
+- #### How the Compound Unique Index Works
+
+  Consider these documents:
+
+  ```text
+  1.
+  parent: null
+  normalizedName: "electronics"
+
+  2.
+  parent: null
+  normalizedName: "gaming"
+
+  3.
+  parent: electronicsId
+  normalizedName: "laptops"
+
+  4.
+  parent: electronicsId
+  normalizedName: "accessories"
+
+  5.
+  parent: gamingId
+  normalizedName: "accessories"
+  ```
+
+  All five are allowed.
+
+  Why?
+
+  Because each `(parent, normalizedName)` combination is different:
+
+  ```text
+  (null, electronics)
+  (null, gaming)
+
+  (electronicsId, laptops)
+  (electronicsId, accessories)
+
+  (gamingId, accessories)
+  ```
+
+  But this is rejected:
+
+  ```text
+  parent: electronicsId
+  normalizedName: "accessories"
+  ```
+
+  when the same combination already exists:
+
+  ```text
+  (electronicsId, accessories)
+  ```
+
+  Therefore:
+
+  ```text
+  Electronics → Accessories    ✅
+  Gaming → Accessories         ✅
+  Electronics → Accessories    ❌
+  ```
+
+  This matches the TechNest business rule exactly.
+
+- #### Why `parent` Is Part of the Index
+
+  Without `parent`:
+
+  ```ts
+  categorySchema.index(
+    { normalizedName: 1 },
+    { unique: true }
+  );
+  ```
+
+  MongoDB would enforce:
+
+  ```text
+  Accessories
+  Accessories
+  ```
+  as globally unique.
+
+  That would prevent:
+
+  ```text
+  Electronics → Accessories
+  Gaming → Accessories
+  ```
+
+  even though the business requirements allow both.
+
+  By adding `parent`:
+
+  ```ts
+  categorySchema.index(
+    { parent: 1, normalizedName: 1 },
+    { unique: true }
+  );
+  ```
+
+  the uniqueness scope becomes:
+
+  ```text
+  same parent + same name
+  ```
+
+  rather than:
+
+  ```text
+  same name everywhere
+  ```
+
+- #### Parent Categories and `parent: null`
+
+  Top-level categories have:
+
+  ```ts
+  parent: null
+  ```
+
+  For example:
+
+  ```text
+  Electronics
+  parent: null
+  ```
+
+  and:
+
+  ```text
+  Gaming
+  parent: null
+  ```
+
+  The compound index also protects these.
+
+  Therefore:
+
+  ```text
+  (null, electronics)   → allowed once
+  (null, electronics)   → duplicate
+  ```
+
+  So:
+
+  ```text
+  Electronics    ✅
+  electronics    ❌
+  ELECTRONICS    ❌
+  ```
+
+  because all names are converted to `normalizedName`.
+
+- #### `normalizedName` and Indexing
+
+  The displayed category name is stored separately:
+
+  ```text
+  name: "Electronics"
+  ```
+
+  while:
+
+  ```text
+  normalizedName: "electronics"
+  ```
+
+  is used for consistent comparison.
+
+  Therefore:
+
+  ```text
+  Electronics
+  electronics
+  ELECTRONICS
+  ```
+
+  all produce:
+
+  ```text
+  normalizedName: "electronics"
+  ```
+
+  The compound unique index then prevents duplicates within the same parent.
+
+  This gives us:
+
+  ```text
+  name
+  ↓
+  display value
+
+  normalizedName
+  ↓
+  comparison + uniqueness
+  ```
+
+- #### Important Debugging Lesson: Schema vs Database Index
+
+  One of the most important lessons from this issue is:
+
+  > Updating the Mongoose schema does not mean every existing MongoDB index has automatically been removed or changed.
+
+  For example, the application schema may now contain:
+
+  ```ts
+  categorySchema.index(
+    { parent: 1, normalizedName: 1 },
+    { unique: true }
+  );
+  ```
+
+  but MongoDB may still have:
+
+  ```text
+  normalizedName_1
+  ```
+
+  from the previous schema.
+
+  Therefore, when changing uniqueness rules, always inspect the actual indexes in the database.
+
+  Useful debugging questions:
+
+  ```text
+  1. What indexes currently exist?
+  2. Which fields does each index use?
+  3. Is the index unique?
+  4. Is it an old index from a previous schema?
+  5. Does the current index match the current business rule?
+  ```
+
+- #### E11000 Debugging Pattern
+
+  When MongoDB reports:
+
+  ```text
+  E11000 duplicate key error
+  ```
+
+  think:
+
+  ```text
+  E11000
+    ↓
+  MongoDB duplicate key
+    ↓
+  Check unique indexes
+    ↓
+  Identify the indexed fields
+    ↓
+  Compare them with the business rule
+    ↓
+  Check whether an old index still exists
+  ```
+
+  Do not immediately assume that the service duplicate-check logic is wrong.
+
+  The database itself may be rejecting the operation because of an existing unique index.
+
+### Key Takeaways
+
+- #### 1. Index ≠ only performance
+  Indexes can also enforce database integrity.
+
+- ### 2. `unique: true` is database-level uniqueness
+  It can result in: `E11000 duplicate key error`
+
+- ### 3. Compound index
+
+  `{ parent: 1, normalizedName: 1 }`, means MongoDB considers both fields together.
+
+- ### 4. Unique compound index
+  `{ unique: true }` means the **combination** must be unique.
+
+- ### 5. Old indexes can cause unexpected errors
+  Changing the Mongoose schema does not automatically mean old database indexes disappear.
+
+- ### 6. Service check + database index
+  TechNest uses both:
+  ```text
+  Service duplicate check
+          ↓
+  Friendly business response
+
+  Database unique index
+          ↓
+  Final data-integrity protection
+  ```
+
+  This protects the application even when two requests arrive at nearly the same time.
+
+### Interview Question
+
+**Q: Why did you use a compound unique index for categories instead of making `normalizedName` globally unique?**
+
+**Answer:**
+
+> Initially, category names were globally unique, but after introducing a two-level hierarchy, the requirement changed. The same child category name should be allowed under different parent categories, such as `Electronics → Accessories` and `Gaming → Accessories`. Therefore, I used a compound unique index on `parent` and `normalizedName`. This enforces uniqueness within the same parent while allowing the same category name under different parents. During implementation, I also encountered an E11000 error because the old global unique index was still present in MongoDB, which taught me to distinguish between the current Mongoose schema and the actual indexes stored in the database.
+
+---
+
+
 

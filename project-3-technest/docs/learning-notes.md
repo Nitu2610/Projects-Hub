@@ -26,7 +26,7 @@
 22. [Design Before Implementation](#design-before-implementation)
 23. [AI-Assisted Development Workflow](#ai-assisted-development-workflow)
 24. [Documentation as Part of Development](#documentation-as-part-of-development)
-
+25. [Duplication at Database](#duplication-at-database)
 ---
 
 # Redux Toolkit vs RTK Query
@@ -2172,9 +2172,111 @@ Improve
       ↓
 Document
 ```
-
 Documentation therefore becomes part of the development process rather than merely an afterthought.
 
+---
+
+# Duplication at Database
+#### How did you prevent duplicate categories when category names were case-insensitive?
+- **Problem:**  Categories like Electronics and electronics should be treated as the same category when the 2or more admins wish to add new category.
+- **Normalization:** I normalized the category name before checking or storing it, so different cases map to the same value.
+- **Solution** - 
+  - **1. Service-level check:** Before creating a category, the service checks whether the normalized name already exists and returns a meaningful business error if it does.
+  - **2. Database protection:** I also added a unique index on the normalized category name.
+  - **Why both?**
+    - Service check → gives a clear, user-friendly error.
+    - Unique index → provides the final data-integrity guarantee and prevents duplicates during concurrent requests.
+    - Result: Duplicate categories are prevented even when multiple requests arrive at the same time.
+- Complete mental model 
+  ```text
+          Category.create()
+                │
+        ┌──────┴──────┐
+        │             │
+      Success        Error
+        │             │
+        ↓             ↓
+  return success   catch(error)
+                      │
+            ┌─────────┴─────────┐
+            │                   │
+          code 11000          other error
+            │                   │
+            ↓                   ↓
+      ALREADY_EXIST          throw err
+                                │
+                                ↓
+                          global handler
+  ```
+  ---
+- Code:
+
+    ```ts
+    // From category.model.ts 
+    const categorySchema= new mongoose.Schema<Category>(
+    {
+      name:{..}
+      normalizedName:{
+        type:String,
+        required:true,
+        unique:true,  
+      // Creates a MongoDB unique index.
+      // This prevents duplicate normalizedName values,
+      // even when concurrent requests reach the database.
+      // If a duplicate insert is attempted, MongoDB throws
+      // a duplicate-key error with code 11000.
+        },
+    })
+
+    // From category.service.ts
+      addCategory: async (categoryName: categoryData) => {
+      try {
+    } catch (err: unknown
+      // err could be any data type 
+      // and at this stage we are not aware of it so we assign it as unknown.
+    ) { 
+    if (
+      typeof err === "object" &&
+        // Narrow the unknown error to an object.
+        
+        err !== null &&
+        // Check that the error is not null because:
+        // typeof null === "object" in JavaScript.
+        
+        "code" in err &&
+        // Check that the error object contains a "code" property.
+        // Mongoose/MongoDB provides this code for database errors.
+        
+        err.code === 11000
+        // MongoDB error code 11000 means a duplicate-key violation.
+        // Here, it indicates that the unique normalizedName constraint
+        // was violated.
+      ) {
+      return {...};
+    }
+    throw err; // if not the duplicate error, treat as normal error.
+    },}
+    ```
+- Mental model
+    ```text
+    unique: true
+          ↓
+    MongoDB unique index
+          ↓
+    Duplicate insert
+          ↓
+    MongoDB rejects it
+          ↓
+    error code 11000
+          ↓
+    catch (err: unknown)
+          ↓
+    Type narrowing
+          ↓
+    handle known duplicate error
+          ↓
+    throw everything else
+    ```
 ---
 
 # TechNest Core Mental Model
