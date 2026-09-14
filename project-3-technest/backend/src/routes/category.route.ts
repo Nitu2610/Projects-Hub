@@ -15,8 +15,8 @@ const categoryRoute = express.Router();
 
 categoryRoute.post(
   "/add-category",
-  // authMiddleware,
-  // authorize("admin"), // Need to create the unlock after frontend integration.
+  authMiddleware,
+  authorize("admin"), 
   categoryValidator,
   validatorMiddleware,
   asyncHandler(categoryController.addCategory),

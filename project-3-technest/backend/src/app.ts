@@ -2,9 +2,10 @@ const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
-const userRoute = require("./routes/user.routes");
+const userRoute = require("./routes/user.route");
 const categoryRoute = require("./routes/category.route");
 const errorHandler = require("./middlewares/errorHandler");
+const productRoute = require("./routes/product.route");
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use("/users", userRoute);
 
 app.use("/category", categoryRoute);
 
+app.use("/products", productRoute);
 
 app.use(errorHandler);
 
