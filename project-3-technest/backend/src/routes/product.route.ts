@@ -1,7 +1,9 @@
 const express = require("express");
 const authMiddleware = require("../middlewares/authentication.middleware");
 const authorize = require("../middlewares/authorization.middleware");
-const {createProductValidator} = require("../validators/product.validator");
+const {createProductValidator,
+  updateProductValidator,
+} = require("../validators/product.validator");
 const validatorMiddleware = require("../middlewares/validator.middleware");
 const asyncHandler = require("../utils/asyncHandler");
 const productController = require("../controllers/product.controller");
@@ -32,6 +34,21 @@ productRoute.get(
   authMiddleware,
   authorize(["admin", "customer"]),
   asyncHandler(productController.getProductDetails),
+);
+
+productRoute.patch(
+  "/:productId",
+  authMiddleware,
+  authorize(["admin"]),
+  updateProductValidator,
+  asyncHandler(productController.updateProduct),
+);
+
+productRoute.patch(
+  "/:productId/deactivate",
+  authMiddleware,
+  authorize(["admin"]),
+  asyncHandler(productController.deactivateProduct),
 );
 
 module.exports = productRoute;

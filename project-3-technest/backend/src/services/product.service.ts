@@ -315,6 +315,132 @@ const productService = {
       data: productDetails,
     };
   },
+
+  updateProduct: async (
+    productId: string,
+    productDetails: Partial<ProductDataFormat>,
+  ) => {
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return {
+        success: false,
+        message: "Invalid product ID.",
+        code: "INVALID_PRODUCT_ID",
+      };
+    }
+
+    const existingProduct = await Product.findById(productId);
+
+    if (!existingProduct) {
+      return {
+        success: false,
+        message: "Product not found.",
+        code: "NOT_FOUND",
+      };
+    }
+
+    // Validate category only if category is being changed
+    if (productDetails.category) {
+      const category = await Category.findById(productDetails.category);
+
+      if (!category) {
+        return {
+          success: false,
+          message: "Category doesn't exist.",
+          code: "NOT_FOUND",
+        };
+      }
+
+      if (!category.parent) {
+        return {
+          success: false,
+          message: "Product must belong to a child category.",
+          code: "INVALID_CATEGORY",
+        };
+      }
+
+      if (!category.active) {
+        return {
+          success: false,
+          message: "Category is inactive.",
+          code: "INACTIVE_CATEGORY",
+        };
+      }
+
+      const parentCategory = await Category.findById(category.parent);
+
+      if (!parentCategory || !parentCategory.active) {
+        return {
+          success: false,
+          message: "Parent category is inactive.",
+          code: "INACTIVE_CATEGORY",
+        };
+      }
+    }
+
+    // Validate discounted price against the final price
+    const finalPrice = productDetails.price ?? existingProduct.price;
+
+    if (
+      typeof productDetails.discountedPrice === "number" &&
+      productDetails.discountedPrice >= finalPrice
+    ) {
+      return {
+        success: false,
+        message: "Discounted price must be lower than the product price.",
+        code: "INCORRECT_DISCOUNTED_PRICE",
+      };
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(
+      productId,
+      { $set: productDetails },
+      { new: true, runValidators: true },
+    ).populate("category", "name");
+
+    return {
+      success: true,
+      message: "Product updated successfully.",
+      data: updatedProduct,
+    };
+  },
+
+  deactivateProduct: async (productId: string) => {
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    return {
+      success: false,
+      message: "Invalid product ID.",
+      code: "INVALID_PRODUCT_ID",
+    };
+  }
+
+  const product = await Product.findById(productId);
+
+  if (!product) {
+    return {
+      success: false,
+      message: "Product not found.",
+      code: "NOT_FOUND",
+    };
+  }
+
+  if (!product.active) {
+    return {
+      success: false,
+      message: "Product is already inactive.",
+      code: "ALREADY_INACTIVE",
+    };
+  }
+
+  product.active = false;
+  await product.save();
+
+  return {
+    success: true,
+    message: "Product deactivated successfully.",
+    data: product,
+  };
+},
+
 };
 
 module.exports = productService;

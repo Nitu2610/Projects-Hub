@@ -1,4 +1,4 @@
-import { body } from "express-validator";
+import { body, param } from "express-validator";
 
 const createProductValidator = [
   body("title")
@@ -51,4 +51,47 @@ const createProductValidator = [
     .withMessage("Invalid category ID."),
 ];
 
-module.exports={createProductValidator}
+const updateProductValidator = [
+  param("productId")
+    .isMongoId()
+    .withMessage("Invalid product ID."),
+
+  body("title")
+    .optional()
+    .trim()
+    .notEmpty()
+    .withMessage("Product title cannot be empty.")
+    .isLength({ min: 3, max: 100 })
+    .withMessage("Product title must be between 3 and 100 characters."),
+
+  body("description")
+    .optional()
+    .trim()
+    .notEmpty()
+    .withMessage("Product description cannot be empty."),
+
+  body("price")
+    .optional()
+    .isFloat({ gt: 0 })
+    .withMessage("Price must be greater than 0."),
+
+  body("discountedPrice")
+    .optional()
+    .isFloat({ gt: 0 })
+    .withMessage("Discounted price must be greater than 0."),
+
+  body("stock")
+    .optional()
+    .isInt({ min: 0 })
+    .withMessage("Stock cannot be negative."),
+
+  body("category")
+    .optional()
+    .isMongoId()
+    .withMessage("Invalid category ID."),
+];
+
+module.exports={createProductValidator,
+   updateProductValidator,
+   
+  }

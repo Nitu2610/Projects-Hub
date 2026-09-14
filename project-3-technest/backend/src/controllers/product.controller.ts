@@ -140,6 +140,67 @@ const productController = {
       data: response.data,
     });
   },
+
+  updateProduct: async (req: Request, res: Response) => {
+    const productId = req.params.productId;
+
+    const response = await productService.updateProduct(productId, req.body);
+
+    if (!response.success) {
+      if (response.code === "INVALID_PRODUCT_ID") {
+        return res.status(400).json(response);
+      }
+
+      if (response.code === "INVALID_CATEGORY") {
+        return res.status(400).json(response);
+      }
+
+      if (response.code === "INCORRECT_DISCOUNTED_PRICE") {
+        return res.status(400).json(response);
+      }
+
+      if (response.code === "INACTIVE_CATEGORY") {
+        return res.status(409).json(response);
+      }
+
+      if (response.code === "NOT_FOUND") {
+        return res.status(404).json(response);
+      }
+    }
+
+    return res.status(200).json({
+      success: response.success,
+      message: response.message,
+      data: response.data,
+    });
+  },
+
+  deactivateProduct: async (req: Request, res: Response) => {
+    const productId = req.params.productId;
+
+    const response = await productService.deactivateProduct(productId);
+
+    if (!response.success) {
+      if (response.code === "INVALID_PRODUCT_ID") {
+        return res.status(400).json(response);
+      }
+
+      if (response.code === "NOT_FOUND") {
+        return res.status(404).json(response);
+      }
+
+      if (response.code === "ALREADY_INACTIVE") {
+        return res.status(409).json(response);
+      }
+    }
+
+    return res.status(200).json({
+      success: response.success,
+      message: response.message,
+      data: response.data,
+    });
+  },
+  
 };
 
 module.exports = productController;
