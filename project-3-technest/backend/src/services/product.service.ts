@@ -1,7 +1,6 @@
+const mongoose = require("mongoose");
 const Product = require("../models/product.model");
 const Category = require("../models/category.model");
-
-console.log(Product);
 
 interface Specification {
   [key: string]: string;
@@ -46,7 +45,7 @@ const productService = {
         return {
           success: false,
           message: "Incorrect category selected.",
-          code: "INVALID_CATEGORY",
+          code: "INVALID_REQUEST",
         };
       }
 
@@ -108,9 +107,11 @@ const productService = {
 
   getProducts: async (
     role: string,
-    categoryId?: string,
-    search?: string,
-    sort?: string,
+    categoryId: string,
+    search: string,
+    sort: string,
+    page: number,
+    limit: number,
   ) => {
     let productFilter: ProductFilterDataFormat = {};
     let sortStage: {
@@ -120,6 +121,31 @@ const productService = {
       createdAt: -1,
     };
     const allowedSortValue = ["price_asc", "price_desc", "newest", "oldest"];
+
+    if (
+      typeof page !== "number" ||
+      typeof limit !== "number" ||
+      !Number.isInteger(page) ||
+      !Number.isInteger(limit) ||
+      page < 1 ||
+      limit < 1
+    ) {
+      return {
+        success: false,
+        message: "Invalid pagination request.",
+        code: "INVALID_REQUEST",
+      };
+    }
+
+    const skip = (page - 1) * limit;
+
+    if (sort && !allowedSortValue.includes(sort)) {
+      return {
+        success: false,
+        message: "Invalid sorting request.",
+        code: "INVALID_REQUEST",
+      };
+    }
 
     if (sort === "price_asc") {
       sortStage = {
@@ -136,13 +162,6 @@ const productService = {
     } else if (sort === "oldest") {
       sortStage = {
         createdAt: 1,
-      };
-    }
-    if (sort && !allowedSortValue.includes(sort)) {
-      return {
-        success: false,
-        message: "Invalid sorting request.",
-        code: "INVALID_SORT",
       };
     }
 
@@ -211,9 +230,27 @@ const productService = {
       {
         $sort: sortStage,
       },
+
+      {
+        $facet: {
+          products: [
+            {
+              $skip: skip,
+            },
+            {
+              $limit: limit,
+            },
+          ],
+          totalCount: [{ $count: "total" }],
+        },
+      },
     ];
 
-    const productsData = await Product.aggregate(pipeline);
+    const result = await Product.aggregate(pipeline);
+    const productsData = result[0].products;
+    const total = result[0].totalCount[0]?.total ?? 0;
+
+    const totalPages = Math.ceil(total / limit);
 
     await Product.populate(productsData, { path: "category", select: "name" });
 
@@ -223,7 +260,59 @@ const productService = {
         productsData.length === 0
           ? "No product data available."
           : "Products data fetched successfully.",
-      data: productsData,
+      data: {
+        products: productsData,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages,
+        },
+      },
+    };
+  },
+
+  getProductDetails: async (role: string, productId: string) => {
+    const isProductIdValid = mongoose.Types.ObjectId.isValid(productId);
+    if (!isProductIdValid) {
+      return {
+        success: false,
+        message: "Invalid product ID.",
+        code: "INVALID_PRODUCT_ID",
+      };
+    }
+
+    let productDetailsFilter = {};
+
+    if (role === "customer") {
+      productDetailsFilter = { _id: productId, active: true };
+    } else if (role === "admin") {
+      productDetailsFilter = { _id: productId };
+    } else {
+      return {
+        success: false,
+        message: "You  don't have the authority to access this data.",
+        code: "FORBIDDEN",
+      };
+    }
+
+    const productDetails = await Product.findOne(productDetailsFilter).populate(
+      "category",
+      "name",
+    );
+
+    if (!productDetails) {
+      return {
+        success: false,
+        message: "Product not found.",
+        code: "NOT_FOUND",
+      };
+    }
+
+    return {
+      success: true,
+      message: "Product details fetched successfully.",
+      data: productDetails,
     };
   },
 };

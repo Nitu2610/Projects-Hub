@@ -59,11 +59,18 @@ const productController = {
     const sort =
       typeof req.query.sort === "string" ? req.query.sort : undefined;
 
+    const page =
+      typeof req.query.page === "string" ? Number(req.query.page) : 1;
+    const limit =
+      typeof req.query.limit === "string" ? Number(req.query.limit) : 10;
+
     const response = await productService.getProducts(
       role,
       categoryId,
       search,
       sort,
+      page,
+      limit,
     );
 
     if (!response.success) {
@@ -79,7 +86,7 @@ const productController = {
           message: response.message,
         });
       }
-      if (response.code === "INVALID_CATEGORY" || response.code === "INVALID_SORT") {
+      if (response.code === "INVALID_REQUEST") {
         return res.status(400).json({
           success: response.success,
           message: response.message,
@@ -96,7 +103,40 @@ const productController = {
     return res.status(200).json({
       success: response.success,
       message: response.message,
-      totalCount: response.data.length,
+      data: response.data,
+    });
+  },
+
+  getProductDetails: async (req: Request, res: Response) => {
+    const role = req.user.role;
+    const productId = req.params.productId;
+
+    const response = await productService.getProductDetails(role, productId);
+
+    if (!response.success) {
+      if (response.code === "INVALID_PRODUCT_ID") {
+        return res.status(400).json({
+          success: response.success,
+          message: response.message,
+        });
+      }
+      if (response.code === "FORBIDDEN") {
+        return res.status(403).json({
+          success: response.success,
+          message: response.message,
+        });
+      }
+      if (response.code === "NOT_FOUND") {
+        return res.status(404).json({
+          success: response.success,
+          message: response.message,
+        });
+      }
+    }
+
+    return res.status(200).json({
+      success: response.success,
+      message: response.message,
       data: response.data,
     });
   },

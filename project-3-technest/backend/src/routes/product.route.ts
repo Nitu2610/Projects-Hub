@@ -27,6 +27,13 @@ productRoute.get(
   asyncHandler(productController.getProducts),
 );
 
+productRoute.get(
+  "/:productId",
+  authMiddleware,
+  authorize(["admin", "customer"]),
+  asyncHandler(productController.getProductDetails),
+);
+
 module.exports = productRoute;
 
 

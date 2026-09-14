@@ -122,7 +122,6 @@ const categoryService = {
         parent: parentCategory._id,
       });
 
-      console.log(newCategory);
       return {
         success: true,
         message: "Category created successfully.",
