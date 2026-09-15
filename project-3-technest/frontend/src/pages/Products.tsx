@@ -13,18 +13,22 @@ import {
 
 import { useGetProductsQuery } from "../redux/api/productApi";
 import { useGetCategoriesQuery } from "../redux/api/categoryApi";
+import { Pagination } from "../components/Pagination";
+
 
 const Products = () => {
   const [search, setSearch] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [sort, setSort] = useState("");
+  const [page, setPage] = useState(1);
 
   const { data: categoryData } = useGetCategoriesQuery();
   const { data, isLoading, isError } = useGetProductsQuery({
     search: searchTerm || undefined,
     categoryId: categoryId || undefined,
     sort: sort || undefined,
+    page,
   });
 
   const childCategories = categoryData?.data.filter(
@@ -72,13 +76,16 @@ const Products = () => {
         ))}
       </select>
 
-      <select value={sort} onChange={(event) => setSort(event.target.value)}
-      style={{marginLeft:"20px"}} >
+      <select
+        value={sort}
+        onChange={(event) => setSort(event.target.value)}
+        style={{ marginLeft: "20px" }}
+      >
         <option value="">Sort By</option>
         <option value="price_asc">Price: Low to High</option>
         <option value="price_desc">Price: High to Low</option>
         <option value="newest">Newest</option>
-         <option value="oldest">Oldest</option>
+        <option value="oldest">Oldest</option>
       </select>
 
       {products.length === 0 ? (
@@ -150,6 +157,12 @@ const Products = () => {
           ))}
         </Grid>
       )}
+
+      <Pagination
+        currentPage={data?.data.pagination.page ?? 1}
+        totalPages={data?.data.pagination.totalPages ?? 1}
+        onPageChange={setPage}
+      />
     </Box>
   );
 };
