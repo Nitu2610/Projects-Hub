@@ -10,6 +10,7 @@ interface DatabaseCategoryDataFormat {
   normalizedName: string;
   parent: string | null;
   active: boolean;
+  _id?:string;
 }
 
 interface UpdateCategoryDataFormat {
@@ -157,16 +158,17 @@ const categoryService = {
     try {
       let response: DatabaseCategoryDataFormat[] = [];
       if (role === "customer") {
-        const data = await Category.find({ active: true });
-        response = await data.map(
-          (item: DatabaseCategoryDataFormat) => item.name,
-        );
+        const data = await Category.find({
+          active: true,
+        });
+        response = data.map((item: DatabaseCategoryDataFormat) => ({
+          _id: item._id,
+          name: item.name,
+          parent: item.parent,
+        }));
       }
       if (role === "admin") {
-        const data = await Category.find();
-        response = await data.map(
-          (item: DatabaseCategoryDataFormat) => item.name,
-        );
+        response = await Category.find();
       }
 
       if (response.length === 0) {

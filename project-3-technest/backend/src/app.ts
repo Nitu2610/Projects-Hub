@@ -6,6 +6,7 @@ const userRoute = require("./routes/user.route");
 const categoryRoute = require("./routes/category.route");
 const errorHandler = require("./middlewares/errorHandler");
 const productRoute = require("./routes/product.route");
+const cartRoute = require("./routes/cart.route");
 
 const app = express();
 
@@ -28,6 +29,8 @@ app.use("/users", userRoute);
 app.use("/category", categoryRoute);
 
 app.use("/products", productRoute);
+
+app.use("/cart", cartRoute);
 
 app.use(errorHandler);
 
