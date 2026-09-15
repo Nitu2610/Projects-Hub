@@ -1,5 +1,6 @@
 import { Heading } from "@chakra-ui/react";
-import { useGetMeQuery } from "../redux/api/apiSlice";
+import { useGetMeQuery } from "../redux/api/authApi";
+
 
 export const Home = () => {
   const { isLoading, data, isError, error } = useGetMeQuery();

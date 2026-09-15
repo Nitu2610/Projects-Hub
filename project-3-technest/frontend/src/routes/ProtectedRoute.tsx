@@ -1,6 +1,6 @@
 
 import { Navigate, Outlet } from "react-router-dom";
-import { useGetMeQuery } from "../redux/api/apiSlice";
+import { useGetMeQuery } from "../redux/api/authApi";
 import { LoadingComp } from "../components/LoadingComp";
 import { ErrorComp } from "../components/ErrorComp";
 

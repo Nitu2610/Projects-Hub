@@ -10,7 +10,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useState, type ChangeEvent, type FormEvent } from "react";
-import { useLoginMutation } from "../redux/api/apiSlice";
+import { useLoginMutation } from "../redux/api/authApi";
 import { useNavigate } from "react-router-dom";
 
 interface UserCredentials {

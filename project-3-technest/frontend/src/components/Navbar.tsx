@@ -18,7 +18,8 @@ import {
   FiUser,
 } from "react-icons/fi";
 import { NavLink, useNavigate } from "react-router-dom";
-import { useLogoutMutation } from "../redux/api/apiSlice";
+import { useLogoutMutation } from "../redux/api/authApi";
+
 
 export const Navbar = () => {
   const navigate = useNavigate();

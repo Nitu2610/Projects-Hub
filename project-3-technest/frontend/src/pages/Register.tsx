@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { useRegisterMutation } from "../redux/api/apiSlice";
+import { useRegisterMutation } from "../redux/api/authApi";
 
 interface RegisterFormData {
   fullName: string;
