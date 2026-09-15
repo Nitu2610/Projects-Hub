@@ -14,7 +14,7 @@ import {
 import { useGetProductsQuery } from "../redux/api/productApi";
 import { useGetCategoriesQuery } from "../redux/api/categoryApi";
 import { Pagination } from "../components/Pagination";
-
+import { Link } from "react-router-dom";
 
 const Products = () => {
   const [search, setSearch] = useState("");
@@ -101,59 +101,63 @@ const Products = () => {
           gap={6}
         >
           {products.map((product) => (
-            <Box
-              key={product._id}
-              borderWidth="1px"
-              borderRadius="lg"
-              overflow="hidden"
-              p={4}
-            >
-              {product.image && (
-                <Image
-                  src={product.image}
-                  alt={product.title}
-                  width="100%"
-                  height="200px"
-                  objectFit="cover"
-                />
-              )}
+            <Link to={`/products/${product._id}`}>
+              <Box
+                key={product._id}
+                borderWidth="1px"
+                borderRadius="lg"
+                overflow="hidden"
+                p={4}
+              >
+                {product.image && (
+                  <Image
+                    src={product.image}
+                    alt={product.title}
+                    width="100%"
+                    height="200px"
+                    objectFit="cover"
+                  />
+                )}
 
-              <Box mt={4}>
-                <Text fontSize="sm" color="gray.500">
-                  {product.category.name}
-                </Text>
+                <Box mt={4}>
+                  <Text fontSize="sm" color="gray.500">
+                    {product.category.name}
+                  </Text>
 
-                <Heading size="md" mt={2}>
-                  {product.title}
-                </Heading>
+                  <Heading size="md" mt={2}>
+                    {product.title}
+                  </Heading>
 
-                <Text mt={2} lineClamp={2}>
-                  {product.description}
-                </Text>
+                  <Text mt={2} lineClamp={2}>
+                    {product.description}
+                  </Text>
 
-                <Box mt={3}>
-                  {product.discountedPrice ? (
-                    <>
-                      <Text fontWeight="bold">₹{product.discountedPrice}</Text>
+                  <Box mt={3}>
+                    {product.discountedPrice ? (
+                      <>
+                        <Text fontWeight="bold">
+                          ₹{product.discountedPrice}
+                        </Text>
 
-                      <Text
-                        textDecoration="line-through"
-                        color="gray.500"
-                        fontSize="sm"
-                      >
-                        ₹{product.price}
-                      </Text>
-                    </>
-                  ) : (
-                    <Text fontWeight="bold">₹{product.price}</Text>
-                  )}
+                        <Text
+                          textDecoration="line-through"
+                          color="gray.500"
+                          fontSize="sm"
+                        >
+                          ₹{product.price}
+                        </Text>
+                      </>
+                    ) : (
+                      <Text fontWeight="bold">₹{product.price}</Text>
+                    )}
+                  </Box>
+
+                  <Badge mt={3}>
+                    {product.stock > 0 ? "In Stock" : "Out of Stock"}
+                  </Badge>
                 </Box>
-
-                <Badge mt={3}>
-                  {product.stock > 0 ? "In Stock" : "Out of Stock"}
-                </Badge>
               </Box>
-            </Box>
+            </Link>
           ))}
         </Grid>
       )}

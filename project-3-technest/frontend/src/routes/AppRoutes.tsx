@@ -6,6 +6,7 @@ import { ProtectedRoute } from "./ProtectedRoute";
 import { Register } from "../pages/Register";
 import { Unauthorized } from "../pages/Unauthorized";
 import Products from "../pages/Products";
+import { ProductDetails } from "../pages/ProductDetails";
 
 export const AppRoutes = () => {
   return (
@@ -14,7 +15,7 @@ export const AppRoutes = () => {
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Home />} />
             <Route path="/products" element={<Products />} />
-             {/* <Route path="/products/:productId" element={<Products />} /> */}
+             <Route path="/products/:productId" element={<ProductDetails />} /> 
         </Route>
       </Route>
 
