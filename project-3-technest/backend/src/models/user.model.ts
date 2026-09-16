@@ -28,6 +28,7 @@ const userSchema = new mongoose.Schema<User>(
     mobile: {
       type: String,
       required: true,
+      match:[/^[6-9]\d{9}$/,"Please provide a valid Indian mobile number"]
     },
     role: {
       type: String,

@@ -78,7 +78,7 @@ addToCart: async ( productId: Types.ObjectId,
 },
 
 getCart: async (userId: Types.ObjectId) => {
-  const cart = await Cart.findOne({ userId });
+  const cart = await Cart.findOne({ userId }).populate("items.productId");
 
   if (!cart) {
     return {
