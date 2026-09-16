@@ -1,6 +1,7 @@
-import { Box, Heading, Image, Text, Stack } from "@chakra-ui/react";
+import { Box, Heading, Image, Text, Stack, Button } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
 import { useGetProductDetailsQuery } from "../redux/api/productApi";
+import { useAddToCartMutation } from "../redux/api/cartApi";
 
 export const ProductDetails = () => {
   const { productId } = useParams();
@@ -13,6 +14,11 @@ export const ProductDetails = () => {
       // MongoDB $skip → backend/database aggregation: skip a specified number of documents, typically for pagination.
     },
   );
+
+  const [addToCart, { isLoading: isAddingToCart, data:cartData }] = useAddToCartMutation();
+
+  console.log(cartData)
+
 
   if (isLoading) {
     return <Heading>Loading... </Heading>;
@@ -63,6 +69,22 @@ export const ProductDetails = () => {
           <Text mt={2}>Stock: {product.stock}</Text>
         </Box>
       </Stack>
+      <Button
+        mt={6}
+        onClick={() =>
+          addToCart({
+            productId: product._id,
+            quantity: 1,
+          })
+        }
+        disabled={product.stock === 0 || isAddingToCart}
+      >
+        {product.stock === 0
+          ? "Out of Stock"
+          : isAddingToCart
+            ? "Adding..."
+            : "Add to Cart"}
+      </Button>
     </Box>
   );
 };

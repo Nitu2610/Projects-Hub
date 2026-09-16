@@ -7,6 +7,7 @@ import { Register } from "../pages/Register";
 import { Unauthorized } from "../pages/Unauthorized";
 import Products from "../pages/Products";
 import { ProductDetails } from "../pages/ProductDetails";
+import {Cart} from "../pages/Cart";
 
 export const AppRoutes = () => {
   return (
@@ -16,6 +17,7 @@ export const AppRoutes = () => {
           <Route index element={<Home />} />
             <Route path="/products" element={<Products />} />
              <Route path="/products/:productId" element={<ProductDetails />} /> 
+             <Route path="/cart" element={<Cart />} />
         </Route>
       </Route>
 

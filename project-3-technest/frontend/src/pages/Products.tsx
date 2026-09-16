@@ -69,7 +69,7 @@ const Products = () => {
       >
         <option value="">All Categories</option>
 
-        {childCategories.map((category) => (
+        {childCategories?.map((category) => (
           <option key={category._id} value={category._id}>
             {category.name}
           </option>
@@ -101,9 +101,8 @@ const Products = () => {
           gap={6}
         >
           {products.map((product) => (
-            <Link to={`/products/${product._id}`}>
+            <Link to={`/products/${product._id}`}  key={product._id} >
               <Box
-                key={product._id}
                 borderWidth="1px"
                 borderRadius="lg"
                 overflow="hidden"
