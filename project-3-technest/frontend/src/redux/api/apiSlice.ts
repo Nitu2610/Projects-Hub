@@ -10,7 +10,7 @@ export const apiSlice = createApi({
     credentials: "include",
   }),
 
-    tagTypes: ["Cart"],
-    
+  tagTypes: ["Cart", "Address"],
+
   endpoints: () => ({}),
 });

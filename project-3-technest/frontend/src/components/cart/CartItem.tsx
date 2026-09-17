@@ -45,7 +45,9 @@ export const CartItem = ({ item }: CartItemProps) => {
         quantity={item.quantity}
         stock={product.stock}
         active={product.active}
+        price={product.discountedPrice ?? product.price}
       />
     </Box>
   );
 };
+

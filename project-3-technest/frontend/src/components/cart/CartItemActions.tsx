@@ -9,6 +9,7 @@ interface CartItemActionsProps {
   quantity: number;
   stock: number;
   active: boolean;
+  price:number;
 }
 
 export const CartItemActions = ({
@@ -16,12 +17,15 @@ export const CartItemActions = ({
   quantity,
   stock,
   active,
+  price,
 }: CartItemActionsProps) => {
   const [updateCartItem, { isLoading: isUpdating }] =
     useUpdateCartItemMutation();
 
   const [deleteCartItem, { isLoading: isDeleting }] =
     useDeleteCartItemMutation();
+
+    const productTotalPrice= price* quantity;
 
   const handleDecrease = async () => {
     if (quantity <= 1) {
@@ -82,6 +86,8 @@ export const CartItemActions = ({
       >
         Remove
       </Button>
+      <Text> Product Total Amount : ₹ {productTotalPrice.toLocaleString("en-IN")} /- </Text>
     </HStack>
   );
 };
+

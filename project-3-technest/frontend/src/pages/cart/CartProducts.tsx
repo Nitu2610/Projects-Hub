@@ -1,13 +1,13 @@
-import { Box, Button, Heading, Image, Stack, Text } from "@chakra-ui/react";
-import { useGetCartQuery } from "../redux/api/cartApi";
-import { CartItem } from "../components/cart/CartItem";
-import { CartSummary } from "../components/cart/CartSummary";
+import { CartItem } from "../../components/cart/CartItem";
+import { useGetCartQuery } from "../../redux/api/cartApi";
+import { Box, Heading, Stack } from "@chakra-ui/react";
 
-export const Cart = () => {
+interface CartProductsProps {
+  setCartTotal?: React.Dispatch<React.SetStateAction<number>>;
+}
+
+export const CartProducts = ({ setCartTotal }: CartProductsProps) => {
   const { data, isLoading, isError } = useGetCartQuery();
-
- 
-
   if (isLoading) {
     return <Heading>Loading cart...</Heading>;
   }
@@ -18,12 +18,16 @@ export const Cart = () => {
 
   const cart = data.data;
 
-   const total = cart.items.reduce((sum, item) => {
-  const price =
-    item.productId.discountedPrice ?? item.productId.price;
+  const cartTotal = cart.items.reduce((sum, item) => {
+    const price = item.productId.discountedPrice ?? item.productId.price;
 
-  return sum + price * item.quantity;
-}, 0);
+    return sum + price * item.quantity;
+  }, 0);
+
+  // setCartTotal is used to share the price to cart summary.
+  if (setCartTotal) {
+    setCartTotal(cartTotal);
+  }
 
   if (cart.items.length === 0) {
     return (
@@ -42,9 +46,7 @@ export const Cart = () => {
           <CartItem key={item.productId._id} item={item} />
         ))}
       </Stack>
-
-      <CartSummary total={total} />
-      
     </Box>
   );
 };
+

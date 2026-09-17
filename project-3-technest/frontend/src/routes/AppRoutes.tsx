@@ -7,7 +7,10 @@ import { Register } from "../pages/Register";
 import { Unauthorized } from "../pages/Unauthorized";
 import Products from "../pages/Products";
 import { ProductDetails } from "../pages/ProductDetails";
-import {Cart} from "../pages/Cart";
+import { Cart } from "../pages/cart/Cart";
+import { Checkout } from "../pages/Checkout";
+import { Payment } from "../pages/payment/Payment";
+
 
 export const AppRoutes = () => {
   return (
@@ -15,9 +18,11 @@ export const AppRoutes = () => {
       <Route element={<ProtectedRoute allowedRoles={["customer"]} />}>
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Home />} />
-            <Route path="/products" element={<Products />} />
-             <Route path="/products/:productId" element={<ProductDetails />} /> 
-             <Route path="/cart" element={<Cart />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/products/:productId" element={<ProductDetails />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/payment" element={<Payment />} />
         </Route>
       </Route>
 
@@ -25,10 +30,7 @@ export const AppRoutes = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
 
-
-
-
-         <Route path="*" element={<Unauthorized />} />
+      <Route path="*" element={<Unauthorized />} />
     </Routes>
   );
 };
