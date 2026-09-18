@@ -18,6 +18,13 @@ addressRoute.post(
 );
 
 addressRoute.get(
+  "/",
+  authMiddleware,
+  authorize("customer"),
+  asyncHandler(addressController.getAddresses),
+);
+
+addressRoute.get(
   "/:addressId",
   authMiddleware,
   authorize("customer"),

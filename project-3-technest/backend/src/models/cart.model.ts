@@ -4,7 +4,7 @@ interface CartDataFormat {
   userId: Types.ObjectId;
   items: [
     {
-      propertyId: Types.ObjectId;
+      productId: Types.ObjectId;
       quantity: number;
     },
   ];
@@ -15,7 +15,7 @@ const cartSchema = new mongoose.Schema<CartDataFormat>(
     userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      require: true,
+      required: true,
       unique: true,
     },
     items: [
@@ -23,12 +23,12 @@ const cartSchema = new mongoose.Schema<CartDataFormat>(
         productId: {
           type: Schema.Types.ObjectId,
           ref: "Product",
-          require: true,
+          required: true,
         },
         quantity: {
           type: Number,
           min: 1,
-          require: true,
+          required: true,
         },
       },
     ],

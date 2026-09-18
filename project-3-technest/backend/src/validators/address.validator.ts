@@ -1,4 +1,4 @@
-const { body, param } = require("express-validator");
+const { body } = require("express-validator");
 
 const Labels = {
   Home: "Home",
@@ -7,13 +7,13 @@ const Labels = {
 };
 const addressValidator = [
   body("label")
+    .trim()
     .notEmpty()
     .withMessage("Address label can't be empty.")
     .isString()
     .withMessage("Invalid label provided")
     .isIn(Object.values(Labels))
-    .withMessage("Invalid lable, select Home/Work/Other label")
-    .trim(),
+    .withMessage("Invalid lable, select Home/Work/Other label"),
   body("fullName")
     .isString()
     .trim()
