@@ -9,6 +9,7 @@ const productRoute = require("./routes/product.route");
 const cartRoute = require("./routes/cart.route");
 const addressRoute = require("./routes/address.route");
 const orderRoute = require("./routes/order.route");
+const adminOrderRoute = require("./routes/admin.order.route");
 
 const app = express();
 
@@ -37,6 +38,8 @@ app.use("/cart", cartRoute);
 app.use("/addresses", addressRoute);
 
 app.use("/orders", orderRoute);
+
+app.use("/admin/orders", adminOrderRoute);
 
 app.use(errorHandler);
 

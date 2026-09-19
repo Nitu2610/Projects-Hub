@@ -19,6 +19,14 @@ interface ShippingAddressSnapshot {
   country: string;
 }
 
+export type OrderStatus =
+  | "PLACED"
+  | "CONFIRMED"
+  | "SHIPPED"
+  | "DELIVERED"
+  | "CANCELLED";
+
+  
 interface OrderDataFormat {
   userId: Types.ObjectId;
   items: OrderItem[];
@@ -26,7 +34,7 @@ interface OrderDataFormat {
   totalAmount: number;
   paymentMethod: "COD" | "UPI" | "CARD";
   paymentStatus: "PENDING" | "PAID" | "FAILED";
-  orderStatus: "PLACED" | "CONFIRMED" | "SHIPPED" | "DELIVERED" | "CANCELLED";
+  orderStatus:OrderStatus;
   cancellationReason?:
     | "CHANGED_MIND"
     | "ORDERED_BY_MISTAKE"
@@ -125,32 +133,6 @@ const orderSchema = new mongoose.Schema<OrderDataFormat>(
   { timestamps: true },
 );
 
-const Order = mongoose.model("Order", orderSchema);
+const Order = mongoose.model<OrderDataFormat>("Order", orderSchema);
 
 module.exports = Order;
-
-// |-OrderId
-// │
-// ├── userId
-// │
-// ├── items[{itemId}]
-// │   ├── productId
-// │   ├── productName
-// │   ├── quantity
-// │   ├── purchasedPrice
-// │   └── subtotal
-// │
-// ├── shippingAddress{}
-// │   ├── fullName
-// │   ├── phone
-// │   ├── addressLine1
-// │   ├── addressLine2
-// │   ├── city
-// │   ├── state
-// │   ├── postalCode
-// │   └── country
-// │
-// ├── totalAmount
-// ├── paymentMethod
-// ├── paymentStatus
-// └── orderStatus
