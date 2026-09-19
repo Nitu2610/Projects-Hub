@@ -9,8 +9,9 @@ import Products from "../pages/Products";
 import { ProductDetails } from "../pages/ProductDetails";
 import { Cart } from "../pages/cart/Cart";
 import { Checkout } from "../pages/Checkout";
-import { Payment } from "../pages/payment/Payment";
-
+import { Payment } from "../pages/Payment";
+import { Orders } from "../pages/Orders";
+import { OrderDetails } from "../pages/OrderDetails";
 
 export const AppRoutes = () => {
   return (
@@ -23,6 +24,8 @@ export const AppRoutes = () => {
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/payment" element={<Payment />} />
+          <Route path="/orders" element={<Orders />} />
+          <Route path="/orders/:orderId" element={<OrderDetails />} />
         </Route>
       </Route>
 

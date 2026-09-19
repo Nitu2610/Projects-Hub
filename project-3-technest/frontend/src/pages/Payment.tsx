@@ -11,13 +11,16 @@ import {
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useGetAddressByIdQuery } from "../../redux/api/addressApi";
-import { useGetCartQuery } from "../../redux/api/cartApi";
-import { useAppSelector } from "../../redux/hooks";
-import { PaymentMethod, PaymentMethodType } from "./PaymentMethod";
-import { PaymentSummary } from "./PaymentSummary";
-
-
+import { useGetAddressByIdQuery } from "../redux/api/addressApi";
+import { useGetCartQuery } from "../redux/api/cartApi";
+import { useAppSelector } from "../redux/hooks";
+import {
+  PaymentMethod,
+  PaymentMethodType,
+} from "../components/payment/PaymentMethod";
+import { PaymentSummary } from "../components/payment/PaymentSummary";
+import { useCreateOrderMutation } from "../redux/api/orderApi";
+import { AddressDetails } from "../components/AddressDetails";
 
 export const Payment = () => {
   const navigate = useNavigate();
@@ -27,6 +30,9 @@ export const Payment = () => {
   );
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>("COD");
+
+  const [createOrder, { isLoading: isCreatingOrder }] =
+    useCreateOrderMutation();
 
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -55,12 +61,37 @@ export const Payment = () => {
   const total = subtotal + shippingCharges;
   const address = addressData?.data;
 
-  const onPayment = (
+  const handlePlaceOrder = async (
     paymentMethod: "COD" | "UPI" | "CARD",
     upiId: string,
     cardType: "CREDIT" | "DEBIT",
   ) => {
-    console.log(paymentMethod, upiId, cardType);
+    if (!selectedAddressId) {
+      return;
+    }
+
+    try {
+      const response = await createOrder({
+        addressId: selectedAddressId,
+        paymentMethod,
+        ...(paymentMethod === "UPI" && {
+          paymentData: {
+            upiId,
+          },
+        }),
+        ...(paymentMethod === "CARD" && {
+          paymentData: {
+            cardType,
+          },
+        }),
+      }).unwrap();
+
+      const orderId = response.data._id;
+
+      navigate(`/orders/${orderId}`);
+    } catch (error) {
+      console.error("Order creation failed:", error);
+    }
   };
 
   if (!selectedAddressId) {
@@ -127,45 +158,20 @@ export const Payment = () => {
         {/* Left Section */}
         <Stack gap={6}>
           {/* Delivery Address */}
-          <Card.Root>
-            <Card.Body>
-              <Stack gap={3}>
-                <Heading size="md">Delivery Address</Heading>
+          <Box>
+            <Heading size="md" mb={3}>
+              Shipping Address
+            </Heading>
 
-                <Text fontWeight="bold">{address.label}</Text>
-
-                <Text>{address.fullName}</Text>
-
-                <Text>{address.phone}</Text>
-
-                <Text>
-                  {address.addressLine1}
-                  {address.addressLine2 && `, ${address.addressLine2}`}
-                </Text>
-
-                <Text>
-                  {address.city}, {address.state} - {address.postalCode}
-                </Text>
-
-                <Text>{address.country}</Text>
-
-                <Button
-                  variant="outline"
-                  alignSelf="flex-start"
-                  onClick={() => navigate("/checkout")}
-                >
-                  Change Address
-                </Button>
-              </Stack>
-            </Card.Body>
-          </Card.Root>
+            <AddressDetails address={address} />
+          </Box>
 
           {/* Payment Methods */}
           <PaymentMethod
             paymentMethod={paymentMethod}
             setPaymentMethod={setPaymentMethod}
             total={total}
-            onPayment={onPayment}
+            handlePlaceOrder={handlePlaceOrder}
             isProcessing={isProcessing}
             paymentMessage={paymentMessage}
           />

@@ -121,6 +121,7 @@ export const Checkout = () => {
                     cursor="pointer"
                     borderWidth="1px"
                   >
+                      <RadioGroup.Item value={address._id}></RadioGroup.Item>
                     <Card.Body>
                       <Flex gap={4}>
                         <RadioGroup.Item value={address._id}>

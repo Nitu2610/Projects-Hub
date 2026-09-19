@@ -18,7 +18,7 @@ interface PaymentMethodProps {
   paymentMethod: PaymentMethodType;
   setPaymentMethod: (method: PaymentMethodType) => void;
   total: number;
-  onPayment: (
+  handlePlaceOrder: (
     paymentMethod: PaymentMethodType,
     upiId: string,
     cardType: "CREDIT" | "DEBIT",
@@ -31,7 +31,7 @@ export const PaymentMethod = ({
   paymentMethod,
   setPaymentMethod,
   total,
-  onPayment,
+  handlePlaceOrder,
   isProcessing,
   paymentMessage,
 }: PaymentMethodProps) => {
@@ -40,7 +40,7 @@ export const PaymentMethod = ({
   const [cardType, setCardType] = useState<"CREDIT" | "DEBIT">("CREDIT");
 
   const handlePayment = () => {
-    onPayment(paymentMethod, upiId, cardType);
+    handlePlaceOrder(paymentMethod, upiId, cardType);
   };
 
   return (
