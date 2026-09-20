@@ -1,11 +1,11 @@
 import { Box, Heading, Spinner, Stack, Text } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
-import { useGetOrderByIdQuery } from "../redux/api/orderApi";
-import { CancelOrderButton } from "../components/orders/CancelOrderButton";
-import { AddressDetails } from "../components/AddressDetails";
-import { OrderItem } from "../components/orders/OrderItem";
-import { OrderPaymentSummary } from "../components/orders/OrderPaymentSummary";
-import { OrderStatus } from "../components/orders/OrderStatus";
+import { useGetOrderByIdQuery } from "../../redux/api/orderApi";
+import { CancelOrderButton } from "../../components/orders/CancelOrderButton";
+import { AddressDetails } from "../../components/orders/AddressDetails";
+import { OrderItem } from "../../components/orders/OrderItem";
+import { OrderPaymentSummary } from "../../components/orders/OrderPaymentSummary";
+import { OrderStatus } from "../../components/orders/OrderStatus";
 
 export const OrderDetails = () => {
   const { orderId } = useParams();

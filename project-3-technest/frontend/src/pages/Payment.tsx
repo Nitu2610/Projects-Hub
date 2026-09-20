@@ -20,7 +20,7 @@ import {
 } from "../components/payment/PaymentMethod";
 import { PaymentSummary } from "../components/payment/PaymentSummary";
 import { useCreateOrderMutation } from "../redux/api/orderApi";
-import { AddressDetails } from "../components/AddressDetails";
+import { AddressDetails } from "../components/orders/AddressDetails";
 
 export const Payment = () => {
   const navigate = useNavigate();

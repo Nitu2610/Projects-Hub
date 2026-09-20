@@ -1,7 +1,7 @@
 import { Box, Heading, Text } from "@chakra-ui/react";
-import { useGetOrdersQuery } from "../redux/api/orderApi";
-import { Order } from "../types/order.types";
-import { OrderCard } from "../components/orders/OrderCard";
+import { useGetOrdersQuery } from "../../redux/api/orderApi";
+import { Order } from "../../types/order.types";
+import { OrderCard } from "../../components/orders/OrderCard";
 
 export const Orders = () => {
   const { data, isLoading, isError } = useGetOrdersQuery(undefined);

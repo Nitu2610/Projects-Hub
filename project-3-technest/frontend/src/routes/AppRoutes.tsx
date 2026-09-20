@@ -10,13 +10,15 @@ import { ProductDetails } from "../pages/ProductDetails";
 import { Cart } from "../pages/cart/Cart";
 import { Checkout } from "../pages/Checkout";
 import { Payment } from "../pages/Payment";
-import { Orders } from "../pages/Orders";
-import { OrderDetails } from "../pages/OrderDetails";
+import { Orders } from "../pages/order/Orders";
+import { OrderDetails } from "../pages/order/OrderDetails";
+import { AdminOrders } from "../pages/order/admin.order/AdminOrder";
+import { AdminOrderDetails } from "../pages/order/admin.order/AdminOrderDetails";
 
 export const AppRoutes = () => {
   return (
     <Routes>
-      <Route element={<ProtectedRoute allowedRoles={["customer"]} />}>
+      <Route element={<ProtectedRoute allowedRoles={["customer","admin"]} />}>
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Home />} />
           <Route path="/products" element={<Products />} />
@@ -26,6 +28,9 @@ export const AppRoutes = () => {
           <Route path="/payment" element={<Payment />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/orders/:orderId" element={<OrderDetails />} />
+
+          <Route path="/admin/orders" element={<AdminOrders />} />
+          <Route path="/admin/orders/:orderId" element={<AdminOrderDetails />} />
         </Route>
       </Route>
 
@@ -33,7 +38,7 @@ export const AppRoutes = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
 
-      <Route path="*" element={<Unauthorized />} />
+    {/* {  <Route path="*" element={<Unauthorized />} />} */}
     </Routes>
   );
 };

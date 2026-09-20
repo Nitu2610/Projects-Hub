@@ -5,7 +5,7 @@ import type {
   PaymentStatus,
 } from "../../types/order.types";
 
-interface OrderPaymentSummaryProps {
+export interface OrderPaymentSummaryProps {
   paymentMethod: PaymentMethod;
   paymentStatus: PaymentStatus;
   totalAmount: number;
