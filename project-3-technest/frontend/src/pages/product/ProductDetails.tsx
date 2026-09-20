@@ -1,7 +1,7 @@
 import { Box, Heading, Image, Text, Stack, Button } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
-import { useGetProductDetailsQuery } from "../redux/api/productApi";
-import { useAddToCartMutation } from "../redux/api/cartApi";
+import { useGetProductDetailsQuery } from "../../redux/api/productApi";
+import { useAddToCartMutation } from "../../redux/api/cartApi";
 
 export const ProductDetails = () => {
   const { productId } = useParams();
@@ -15,10 +15,10 @@ export const ProductDetails = () => {
     },
   );
 
-  const [addToCart, { isLoading: isAddingToCart, data:cartData }] = useAddToCartMutation();
+  const [addToCart, { isLoading: isAddingToCart, data: cartData }] =
+    useAddToCartMutation();
 
-  console.log(cartData)
-
+  console.log(cartData);
 
   if (isLoading) {
     return <Heading>Loading... </Heading>;
@@ -42,13 +42,15 @@ export const ProductDetails = () => {
     <Box maxW="1000px" mx="auto" p={6}>
       <Stack direction={{ base: "column", md: "row" }} gap={8}>
         <Box flex="1">
-          <Image
-            src={product.image}
-            alt={product.title}
-            w="100%"
-            maxH="450px"
-            objectFit="contain"
-          />
+          {product.images?.length > 0 && (
+            <Image
+              src={product.images[0].url}
+              alt={product.title}
+              width="100%"
+              height="100%"
+              objectFit="cover"
+            />
+          )}
         </Box>
 
         <Box flex="1">

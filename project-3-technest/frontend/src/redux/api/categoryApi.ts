@@ -1,6 +1,6 @@
 import { apiSlice } from "./apiSlice";
 
-interface Category {
+export interface Category {
   _id: string;
   name: string;
   normalizedName: string;
@@ -18,6 +18,7 @@ export const categoryApi = apiSlice.injectEndpoints({
   endpoints: (build) => ({
     getCategories: build.query<GetCategoriesResponse, void>({
       query: () => "/category",
+      providesTags: ["Category"],
     }),
   }),
 });

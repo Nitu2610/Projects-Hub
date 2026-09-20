@@ -11,9 +11,9 @@ import {
   Button,
 } from "@chakra-ui/react";
 
-import { useGetProductsQuery } from "../redux/api/productApi";
-import { useGetCategoriesQuery } from "../redux/api/categoryApi";
-import { Pagination } from "../components/Pagination";
+import { useGetProductsQuery } from "../../redux/api/productApi";
+import { useGetCategoriesQuery } from "../../redux/api/categoryApi";
+import { Pagination } from "../../components/Pagination";
 import { Link } from "react-router-dom";
 
 const Products = () => {
@@ -24,7 +24,11 @@ const Products = () => {
   const [page, setPage] = useState(1);
 
   const { data: categoryData } = useGetCategoriesQuery();
-  const { data, isLoading, isError } = useGetProductsQuery({
+  const {
+    data: productsData,
+    isLoading,
+    isError,
+  } = useGetProductsQuery({
     search: searchTerm || undefined,
     categoryId: categoryId || undefined,
     sort: sort || undefined,
@@ -47,8 +51,7 @@ const Products = () => {
     return <Text>Failed to load products.</Text>;
   }
 
-  const products = data?.data.products ?? [];
-
+  const products = productsData?.data.products ?? [];
   return (
     <Box p={6}>
       <Heading mb={6}>Products</Heading>
@@ -101,20 +104,17 @@ const Products = () => {
           gap={6}
         >
           {products.map((product) => (
-            <Link to={`/products/${product._id}`}  key={product._id} >
-              <Box
-                borderWidth="1px"
-                borderRadius="lg"
-                overflow="hidden"
-                p={4}
-              >
-                {product.image && (
+            <Link to={`/products/${product._id}`} key={product._id}>
+              <Box borderWidth="1px" borderRadius="lg" overflow="hidden" p={4}>
+             
+                {product.images?.length > 0 && (
                   <Image
-                    src={product.image}
+                    src={product.images[0].url}
                     alt={product.title}
-                    width="100%"
+                    width="300px"
                     height="200px"
-                    objectFit="cover"
+                    objectFit="contain"
+
                   />
                 )}
 
@@ -162,8 +162,8 @@ const Products = () => {
       )}
 
       <Pagination
-        currentPage={data?.data.pagination.page ?? 1}
-        totalPages={data?.data.pagination.totalPages ?? 1}
+        currentPage={productsData?.data.pagination.page ?? 1}
+        totalPages={productsData?.data.pagination.totalPages ?? 1}
         onPageChange={setPage}
       />
     </Box>

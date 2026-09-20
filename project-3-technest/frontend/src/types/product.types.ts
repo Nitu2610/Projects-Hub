@@ -1,3 +1,5 @@
+import { ProductImage } from "../components/admin/products/ProductImageUpload";
+
 export interface ProductCategory {
   _id: string;
   name: string;
@@ -7,7 +9,7 @@ export interface Product {
   _id: string;
   title: string;
   description: string;
-  image?: string;
+  images: ProductImage[];
   color?: string;
   price: number;
   discountedPrice?: number;

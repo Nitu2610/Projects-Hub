@@ -23,10 +23,10 @@ interface Cart {
   updatedAt?: string;
 }
 
-interface CartResponse {
+ interface CartResponse {
   success: boolean;
   message: string;
-  data: Cart;
+  data: Cart ;
 }
 
 interface CartItemRequest {
