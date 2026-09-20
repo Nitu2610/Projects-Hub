@@ -168,7 +168,7 @@ const categoryService = {
         }));
       }
       if (role === "admin") {
-        response = await Category.find();
+        response = await Category.find({parent:{$ne:null}});
       }
 
       if (response.length === 0) {

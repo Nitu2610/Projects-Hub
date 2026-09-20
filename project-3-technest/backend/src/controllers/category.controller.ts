@@ -1,5 +1,14 @@
 import { Request, Response } from "express";
+import { Category } from "../models/category.model";
 const categoryService = require("../services/category.service");
+
+interface CategoryRespond extends Category{
+_id:string;
+createdAt:string;
+updatedAt:string;
+__v:number
+}
+
 
 const categoryController = {
   addCategory: async (req: Request, res: Response) => {
@@ -55,10 +64,16 @@ const categoryController = {
       }
     }
 
+    const safeData= response.data.map((data:CategoryRespond)=>{
+      const {_id,name,active, parent}=data;
+      return {
+        _id,name,active, parent
+      }
+    })
     return res.status(200).json({
       success: response.success,
       message: response.message,
-      data: response.data,
+      data:safeData,
     });
   },
 

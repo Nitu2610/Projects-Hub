@@ -15,11 +15,6 @@ const createProductValidator = [
     .isString()
     .withMessage("Enter a valid product description."),
 
-  body("image")
-    .optional()
-    .isString()
-    .withMessage("Image must be a valid string."),
-
   body("color")
     .optional()
     .isString()
@@ -49,6 +44,22 @@ const createProductValidator = [
     .notEmpty()
     .isMongoId()
     .withMessage("Invalid category ID."),
+
+  body("images")
+    .isArray({ min: 1, max: 3 })
+    .withMessage("Product must have between 1 and 3 images."),
+
+  body("images.*.url")
+    .isString()
+    .trim()
+    .notEmpty()
+    .withMessage("Image URL is required."),
+
+  body("images.*.publicId")
+    .isString()
+    .trim()
+    .notEmpty()
+    .withMessage("Image public ID is required."),
 ];
 
 const updateProductValidator = [
@@ -89,6 +100,26 @@ const updateProductValidator = [
     .optional()
     .isMongoId()
     .withMessage("Invalid category ID."),
+
+  body("images")
+  .optional()
+  .isArray({ min: 1, max: 3 })
+  .withMessage("Product must have between 1 and 3 images."),
+
+body("images.*.url")
+  .optional()
+  .isString()
+  .trim()
+  .notEmpty()
+  .withMessage("Image URL is required."),
+
+body("images.*.publicId")
+  .optional()
+  .isString()
+  .trim()
+  .notEmpty()
+  .withMessage("Image public ID is required."),
+    
 ];
 
 module.exports={createProductValidator,

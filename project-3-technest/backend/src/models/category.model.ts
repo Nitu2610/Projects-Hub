@@ -1,6 +1,6 @@
 import mongoose, { Schema, Types } from "mongoose";
 
-interface Category{
+export interface Category{
   name:string;
   normalizedName:string;
   parent:Types.ObjectId | null;

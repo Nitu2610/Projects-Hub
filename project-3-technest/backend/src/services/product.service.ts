@@ -6,10 +6,15 @@ interface Specification {
   [key: string]: string;
 }
 
+interface ProductImage {
+  url: string;
+  publicId: string;
+}
+
 interface ProductDataFormat {
   title: string;
   description: string;
-  image?: string;
+  images: ProductImage[];
   color?: string;
   price: number;
   discountedPrice?: number;
@@ -405,42 +410,41 @@ const productService = {
   },
 
   deactivateProduct: async (productId: string) => {
-  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return {
+        success: false,
+        message: "Invalid product ID.",
+        code: "INVALID_PRODUCT_ID",
+      };
+    }
+
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return {
+        success: false,
+        message: "Product not found.",
+        code: "NOT_FOUND",
+      };
+    }
+
+    if (!product.active) {
+      return {
+        success: false,
+        message: "Product is already inactive.",
+        code: "ALREADY_INACTIVE",
+      };
+    }
+
+    product.active = false;
+    await product.save();
+
     return {
-      success: false,
-      message: "Invalid product ID.",
-      code: "INVALID_PRODUCT_ID",
+      success: true,
+      message: "Product deactivated successfully.",
+      data: product,
     };
-  }
-
-  const product = await Product.findById(productId);
-
-  if (!product) {
-    return {
-      success: false,
-      message: "Product not found.",
-      code: "NOT_FOUND",
-    };
-  }
-
-  if (!product.active) {
-    return {
-      success: false,
-      message: "Product is already inactive.",
-      code: "ALREADY_INACTIVE",
-    };
-  }
-
-  product.active = false;
-  await product.save();
-
-  return {
-    success: true,
-    message: "Product deactivated successfully.",
-    data: product,
-  };
-},
-
+  },
 };
 
 module.exports = productService;

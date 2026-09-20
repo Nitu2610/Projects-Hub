@@ -7,7 +7,7 @@ const productController = {
     const response = await productService.addProduct({
       title: req.body.title,
       description: req.body.description,
-      image: req.body.image,
+      image: req.body.images,
       color: req.body.color,
       price: req.body.price,
       discountedPrice: req.body.discountedPrice,

@@ -3,6 +3,10 @@ import mongoose, { Schema, Types } from "mongoose";
 interface Specification {
   [key: string]: string;
 }
+interface ProductImage {
+  url: string;
+  publicId: string;
+}
 
 interface Product {
   title: string;
@@ -15,7 +19,25 @@ interface Product {
   specification: Specification;
   category: Types.ObjectId;
   active: boolean;
+  images: ProductImage[];
 }
+
+const productImageSchema = new Schema(
+  {
+    url: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    publicId: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+  },
+  { _id: false },
+);
 
 const productSchema = new mongoose.Schema<Product>(
   {
@@ -70,10 +92,14 @@ const productSchema = new mongoose.Schema<Product>(
       type: Boolean,
       default: true,
     },
+    images: {
+      type: [productImageSchema],
+      default: [],
+    },
   },
   { timestamps: true },
 );
 
 const Product = mongoose.model<Product>("Product", productSchema);
 
-module.exports= Product;
+module.exports = Product;
