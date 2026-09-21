@@ -1,4 +1,3 @@
-
 import {
   Box,
   Button,
@@ -18,18 +17,17 @@ import {
   FiUser,
 } from "react-icons/fi";
 import { NavLink, useNavigate } from "react-router-dom";
-import { useLogoutMutation } from "../redux/api/authApi";
-
+import { useUserLogoutMutation } from "../redux/api/authApi";
 
 export const Navbar = () => {
   const navigate = useNavigate();
 
-  const [logout, { isLoading }] = useLogoutMutation();
+  const [logout, { isLoading }] = useUserLogoutMutation();
 
   const handleLogout = async () => {
     try {
       await logout().unwrap();
-      navigate("/login");
+      navigate("/userLogin");
     } catch (err) {
       console.error("Logout failed:", err);
     }
@@ -73,32 +71,21 @@ export const Navbar = () => {
         </Text>
 
         {/* Main Navigation */}
-        <HStack
-          gap={2}
-          display={{ base: "none", md: "flex" }}
-        >
+        <HStack gap={2} display={{ base: "none", md: "flex" }}>
           <NavLink to="/" style={navLinkStyle}>
-            <Button variant="ghost">
-              Home
-            </Button>
+            <Button variant="ghost">Home</Button>
           </NavLink>
 
           <NavLink to="/products" style={navLinkStyle}>
-            <Button variant="ghost">
-              Products
-            </Button>
+            <Button variant="ghost">Products</Button>
           </NavLink>
 
           <NavLink to="/categories" style={navLinkStyle}>
-            <Button variant="ghost">
-              Categories
-            </Button>
+            <Button variant="ghost">Categories</Button>
           </NavLink>
 
           <NavLink to="/deals" style={navLinkStyle}>
-            <Button variant="ghost">
-              Deals
-            </Button>
+            <Button variant="ghost">Deals</Button>
           </NavLink>
         </HStack>
 
@@ -131,10 +118,7 @@ export const Navbar = () => {
           {/* Account Menu */}
           <Menu.Root>
             <Menu.Trigger asChild>
-              <Button
-                variant="ghost"
-                display={{ base: "none", sm: "flex" }}
-              >
+              <Button variant="ghost" display={{ base: "none", sm: "flex" }}>
                 <FiUser />
                 Account
                 <FiChevronDown />
@@ -152,10 +136,7 @@ export const Navbar = () => {
                     My Profile
                   </Menu.Item>
 
-                  <Menu.Item
-                    value="orders"
-                    onClick={() => navigate("/orders")}
-                  >
+                  <Menu.Item value="orders" onClick={() => navigate("/orders")}>
                     <FiPackage />
                     My Orders
                   </Menu.Item>

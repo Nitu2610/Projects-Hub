@@ -10,7 +10,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useState, type ChangeEvent, type FormEvent } from "react";
-import { useLoginMutation } from "../redux/api/authApi";
+import { useUserLoginMutation } from "../redux/api/authApi";
 import { useNavigate } from "react-router-dom";
 
 interface UserCredentials {
@@ -26,7 +26,7 @@ export const Login = () => {
 
   const navigate = useNavigate();
 
-  const [login, { isLoading, isError, error }] = useLoginMutation();
+  const [userLogin, { isLoading, isError, error }] = useUserLoginMutation();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -41,7 +41,7 @@ export const Login = () => {
     e.preventDefault();
 
     try {
-      await login(userCred).unwrap();
+      await userLogin(userCred).unwrap();
       navigate("/");
     } catch (err) {
       console.log(err);
@@ -137,8 +137,8 @@ export const Login = () => {
                 as="span"
                 color="blue.500"
                 fontWeight="medium"
-                 cursor="pointer"
-                onClick={() => navigate("/register")}
+                cursor="pointer"
+                onClick={() => navigate("/userRegister")}
               >
                 Sign up
               </Text>

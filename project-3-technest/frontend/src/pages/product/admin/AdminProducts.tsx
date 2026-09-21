@@ -1,7 +1,7 @@
 import { Box, Button, Heading, Spinner, Text } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { useGetProductsQuery } from "../../../redux/api/productApi";
-import { AdminProductTable } from "../../../components/admin/products/AdminProductTable";
+import { AdminProductTable } from "../../../components/products/admin/AdminProductTable";
 
 export const AdminProducts = () => {
   const navigate = useNavigate();

@@ -9,7 +9,7 @@ import {
 import {
   ProductForm,
   type ProductFormData,
-} from "../../../components/admin/products/ProductForm";
+} from "../../../components/products/admin/ProductForm";
 
 export const EditProduct = () => {
   const { productId } = useParams<{

@@ -54,7 +54,7 @@ interface RegisterResponse {
 
 export const authApi = apiSlice.injectEndpoints({
   endpoints: (build) => ({
-    register: build.mutation<RegisterResponse, RegisterRequest>({
+    userRegister: build.mutation<RegisterResponse, RegisterRequest>({
       query: (data) => ({
         url: "/users/register",
         method: "POST",
@@ -62,30 +62,56 @@ export const authApi = apiSlice.injectEndpoints({
       }),
     }),
 
-    login: build.mutation<LoginResponse, LoginRequest>({
+    userLogin: build.mutation<LoginResponse, LoginRequest>({
       query: (data) => ({
         url: "/users/login",
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["Auth"],
     }),
 
-    logout: build.mutation<{ success: boolean; message: string }, void>({
+    userLogout: build.mutation<{ success: boolean; message: string }, void>({
       query: () => ({
         url: "/users/logout",
         method: "POST",
       }),
+      invalidatesTags: ["Auth"],
     }),
 
-    getMe: build.query<GetMeResponse, void>({
-      query: () => "/users/me",
+    getUserProfile: build.query<GetMeResponse, void>({
+      query: () => "/users/profile",
+      providesTags: ["Auth"], 
+    }),
+
+    updateUserProfile: build.mutation({
+      query: (profileData: { fullName?: string; mobile?: string }) => ({
+        url: "/users/profile",
+        method: "PATCH",
+        body: profileData,
+      }),
+      invalidatesTags: ["Auth"],
+    }),
+
+    changeUserPassword: build.mutation({
+      query: (passwordData: {
+        currentPassword: string;
+        newPassword: string;
+        confirmPassword: string;
+      }) => ({
+        url: "/users/change-password",
+        method: "PATCH",
+        body: passwordData,
+      }),
     }),
   }),
 });
 
 export const {
-  useRegisterMutation,
-  useLoginMutation,
-  useLogoutMutation,
-  useGetMeQuery,
+  useUserRegisterMutation,
+  useUserLoginMutation,
+  useUserLogoutMutation,
+  useGetUserProfileQuery,
+  useUpdateUserProfileMutation,
+  useChangeUserPasswordMutation,
 } = authApi;

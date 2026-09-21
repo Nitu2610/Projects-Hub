@@ -1,15 +1,5 @@
 import { Box, Text } from "@chakra-ui/react";
-
-interface Address {
-  fullName: string;
-  phone: string;
-  addressLine1: string;
-  addressLine2?: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  country: string;
-}
+import { Address } from "../../redux/api/addressApi";
 
 interface AddressDetailsProps {
   address: Address;

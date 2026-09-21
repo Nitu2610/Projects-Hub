@@ -1,4 +1,3 @@
-
 import {
   Box,
   Button,
@@ -12,9 +11,9 @@ import {
 } from "@chakra-ui/react";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { useRegisterMutation } from "../redux/api/authApi";
+import { useUserRegisterMutation } from "../redux/api/authApi";
 
-interface RegisterFormData {
+interface userRegisterFormData {
   fullName: string;
   email: string;
   password: string;
@@ -31,7 +30,7 @@ interface FormErrors {
 }
 
 export const Register = () => {
-  const [formData, setFormData] = useState<RegisterFormData>({
+  const [formData, setFormData] = useState<userRegisterFormData>({
     fullName: "",
     email: "",
     password: "",
@@ -43,8 +42,8 @@ export const Register = () => {
 
   const navigate = useNavigate();
 
-  const [register, { isLoading, isError, error }] =
-    useRegisterMutation();
+  const [userRegister, { isLoading, isError, error }] =
+    useUserRegisterMutation();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -112,14 +111,14 @@ export const Register = () => {
     }
 
     try {
-      await register({
+      await userRegister({
         fullName: formData.fullName.trim(),
         email: formData.email.trim(),
         password: formData.password,
         mobile: formData.mobile.trim(),
       }).unwrap();
 
-      navigate("/login");
+      navigate("/userLogin");
     } catch (err) {
       console.log(err);
     }
@@ -190,9 +189,7 @@ export const Register = () => {
                   />
 
                   {formErrors.fullName && (
-                    <Field.ErrorText>
-                      {formErrors.fullName}
-                    </Field.ErrorText>
+                    <Field.ErrorText>{formErrors.fullName}</Field.ErrorText>
                   )}
                 </Field.Root>
 
@@ -213,9 +210,7 @@ export const Register = () => {
                   />
 
                   {formErrors.email && (
-                    <Field.ErrorText>
-                      {formErrors.email}
-                    </Field.ErrorText>
+                    <Field.ErrorText>{formErrors.email}</Field.ErrorText>
                   )}
                 </Field.Root>
 
@@ -236,16 +231,11 @@ export const Register = () => {
                   />
 
                   {formErrors.password && (
-                    <Field.ErrorText>
-                      {formErrors.password}
-                    </Field.ErrorText>
+                    <Field.ErrorText>{formErrors.password}</Field.ErrorText>
                   )}
                 </Field.Root>
 
-                <Field.Root
-                  required
-                  invalid={!!formErrors.confirmPassword}
-                >
+                <Field.Root required invalid={!!formErrors.confirmPassword}>
                   <Field.Label color="gray.500">
                     Confirm Password
                     <Field.RequiredIndicator />
@@ -285,9 +275,7 @@ export const Register = () => {
                   />
 
                   {formErrors.mobile && (
-                    <Field.ErrorText>
-                      {formErrors.mobile}
-                    </Field.ErrorText>
+                    <Field.ErrorText>{formErrors.mobile}</Field.ErrorText>
                   )}
                 </Field.Root>
 
@@ -313,7 +301,7 @@ export const Register = () => {
                 color="blue.500"
                 fontWeight="medium"
                 cursor="pointer"
-                onClick={() => navigate("/login")}
+                onClick={() => navigate("/userLogin")}
               >
                 Sign in
               </Text>

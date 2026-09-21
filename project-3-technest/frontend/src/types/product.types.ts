@@ -1,4 +1,4 @@
-import { ProductImage } from "../components/admin/products/ProductImageUpload";
+import { ProductImage } from "../components/products/admin/ProductImageUpload";
 
 export interface ProductCategory {
   _id: string;

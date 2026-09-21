@@ -6,7 +6,7 @@ import { useAddProductMutation } from "../../../redux/api/productApi";
 import {
   ProductForm,
   ProductFormData,
-} from "../../../components/admin/products/ProductForm";
+} from "../../../components/products/admin/ProductForm";
 
 export const AddProduct = () => {
   const navigate = useNavigate();
