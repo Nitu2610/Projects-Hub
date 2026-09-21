@@ -16,8 +16,7 @@ interface LoginCredentials {
 }
 
 const userService = {
-  
-  registerCustomer: async (userData: RegisterUserData) => {
+  userRegister: async (userData: RegisterUserData) => {
     try {
       const existsEmail = await User.findOne({ email: userData.email });
 
@@ -70,11 +69,11 @@ const userService = {
     }
   },
 
-  loginCustomer: async (userCreds: LoginCredentials) => {
+  userLogin: async (userCreds: LoginCredentials) => {
     const user = await User.findOne({ email: userCreds.email }).select(
       "+password",
     );
-    
+
     if (!user) {
       return {
         success: false,
@@ -122,7 +121,7 @@ const userService = {
     };
   },
 
-  customerProfile: async ({ userId }: AuthPayload) => {
+  userProfile: async ({ userId }: AuthPayload) => {
     const user = await User.findOne({ _id: userId });
     if (!user) {
       return {
@@ -133,11 +132,97 @@ const userService = {
     }
 
     const { password, ...safeData } = user.toObject();
-
+console.log(safeData)
     return {
       success: true,
       message: "Successfully found the profile details.",
       data: safeData,
+    };
+  },
+
+  updateUserProfile: async (
+    userId: string,
+    profileData: {
+      fullName?: string;
+      mobile?: string;
+    },
+  ) => {
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId, role: "customer" },
+      {
+        $set: {
+          ...(profileData.fullName !== undefined && {
+            fullName: profileData.fullName,
+          }),
+          ...(profileData.mobile !== undefined && {
+            mobile: profileData.mobile,
+          }),
+        },
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    ).select("-password");
+
+    if (!updatedUser) {
+      return {
+        success: false,
+        message: "Profile details not found.",
+        code: "NOT_FOUND",
+      };
+    }
+
+    return {
+      success: true,
+      message: "Profile updated successfully.",
+      data: updatedUser,
+    };
+  },
+
+  changeUserPassword: async (
+    userId: string,
+    currentPassword: string,
+    newPassword: string,
+  ) => {
+    const user = await User.findOne({
+      _id: userId,
+      role: "customer",
+    }).select("+password");
+
+    if (!user) {
+      return {
+        success: false,
+        message: "User not found.",
+        code: "NOT_FOUND",
+      };
+    }
+
+    const isPasswordValid = await bcrypt.compare(
+      currentPassword,
+      user.password,
+    );
+
+    if (!isPasswordValid) {
+      return {
+        success: false,
+        message: "Current password is incorrect.",
+        code: "INVALID_CURRENT_PASSWORD",
+      };
+    }
+
+    const hashedPassword = await bcrypt.hash(
+      newPassword,
+      Number(process.env.BCRYPT_SALT_ROUNDS),
+    );
+
+    user.password = hashedPassword;
+
+    await user.save();
+
+    return {
+      success: true,
+      message: "Password changed successfully.",
     };
   },
 };

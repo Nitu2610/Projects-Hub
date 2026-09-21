@@ -213,13 +213,15 @@ const productService = {
           code: "INACTIVE_CATEGORY",
         };
       }
-
-      productFilter.category = categoryId;
+      // When using aggregate need to convert to MongoDB Id format.
+      productFilter.category = new mongoose.Types.ObjectId(categoryId);
     }
 
     if (search) {
       productFilter.title = { $regex: search, $options: "i" };
     }
+
+    const res = await Product.find(productFilter);
 
     const pipeline = [
       {
@@ -250,7 +252,6 @@ const productService = {
         },
       },
     ];
-
     const result = await Product.aggregate(pipeline);
     const productsData = result[0].products;
     const total = result[0].totalCount[0]?.total ?? 0;

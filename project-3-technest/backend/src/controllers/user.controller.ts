@@ -2,9 +2,8 @@ import { Request, Response } from "express";
 const userService = require("../services/user.service");
 
 const userController = {
-
-  registerCustomer: async (req: Request, res: Response) => {
-    const response = await userService.registerCustomer(req.body);
+  userRegister: async (req: Request, res: Response) => {
+    const response = await userService.userRegister(req.body);
 
     if (!response.success) {
       if (response.code === "EMAIL_ALREADY_EXISTS") {
@@ -22,8 +21,8 @@ const userController = {
     });
   },
 
-  loginCustomer: async (req: Request, res: Response) => {
-    const response = await userService.loginCustomer(req.body);
+  userLogin: async (req: Request, res: Response) => {
+    const response = await userService.userLogin(req.body);
 
     if (!response.success) {
       if (
@@ -51,8 +50,8 @@ const userController = {
     });
   },
 
-  customerProfile: async (req: Request, res: Response) => {
-    const user = await userService.customerProfile(req.user);
+  userProfile: async (req: Request, res: Response) => {
+    const user = await userService.userProfile(req.user);
 
     if (!user.success) {
       if (user.code === "NOT_FOUND") {
@@ -83,11 +82,27 @@ const userController = {
     });
   },
 
-  checking: (req: Request, res: Response) => {
-    res.status(200).json({
-      success: true,
-      message: "Successfully reached the backend server.",
+  updateUserProfile: async (req: Request, res: Response) => {
+    const userId = req.user.userId;
+
+    const response = await userService.updateUserProfile(userId, {
+      fullName: req.body.fullName,
+      mobile: req.body.mobile,
     });
+
+    return res.status(response.success ? 200 : 404).json(response);
+  },
+
+  changeUserPassword: async (req: Request, res: Response) => {
+    const userId = req.user.userId;
+
+    const response = await userService.changeUserPassword(
+      userId,
+      req.body.currentPassword,
+      req.body.newPassword,
+    );
+
+    return res.status(response.success ? 200 : 400).json(response);
   },
 };
 

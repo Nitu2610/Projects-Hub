@@ -80,7 +80,6 @@ const adminOrderService = {
 
   const order = await Order.findById(orderId);
 
-  console.log(order)
   if (!order) {
     return {
       success: false,

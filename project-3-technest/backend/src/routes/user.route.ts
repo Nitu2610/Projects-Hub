@@ -2,8 +2,10 @@ const express = require("express");
 const userController = require("../controllers/user.controller");
 const asyncHandler = require("../utils/asyncHandler");
 const {
-  registerCustomerValidator,
-  loginCustomerValidator,
+  userRegisterValidator,
+  userLoginValidator,
+  updateUserProfileValidator,
+  changeUserPasswordValidator,
 } = require("../validators/user.validator");
 const validatorMiddleware = require("../middlewares/validator.middleware");
 const authMiddleware = require("../middlewares/authentication.middleware");
@@ -13,22 +15,45 @@ const userRoute = express.Router();
 //users
 userRoute.post(
   "/register",
-  registerCustomerValidator,
+  userRegisterValidator,
   validatorMiddleware,
-  asyncHandler(userController.registerCustomer),
+  asyncHandler(userController.userRegister),
 );
 
 userRoute.post(
   "/login",
-  loginCustomerValidator,
+  userLoginValidator,
   validatorMiddleware,
-  asyncHandler(userController.loginCustomer),
+  asyncHandler(userController.userLogin),
 );
 
-userRoute.get("/me", authMiddleware, asyncHandler(userController.customerProfile) );
+userRoute.get(
+  "/profile",
+  authMiddleware,
+  authorize(["customer", "admin"]),
+  asyncHandler(userController.userProfile),
+);
 
-userRoute.post("/logout",   asyncHandler(userController.logoutCustomer) );
+userRoute.patch(
+  "/profile",
+  authMiddleware,
+  authorize(["customer", "admin"]),
+  updateUserProfileValidator,
+  validatorMiddleware,
+  asyncHandler(userController.updateUserProfile),
+);
 
-userRoute.get("/check",   asyncHandler(userController.checking))
+userRoute.patch(
+  "/change-password",
+  authMiddleware,
+  authorize("customer"),
+  changeUserPasswordValidator,
+  validatorMiddleware,
+  asyncHandler(userController.changeUserPassword),
+);
+
+userRoute.post("/logout", asyncHandler(userController.logoutCustomer));
+
+userRoute.get("/check", asyncHandler(userController.checking));
 
 module.exports = userRoute;
