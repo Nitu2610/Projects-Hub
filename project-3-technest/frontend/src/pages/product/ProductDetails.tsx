@@ -1,46 +1,68 @@
-import { Box, Heading, Image, Text, Stack, Button } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Heading,
+  Image,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
-import { useGetProductDetailsQuery } from "../../redux/api/productApi";
+
 import { useAddToCartMutation } from "../../redux/api/cartApi";
+import { useGetProductDetailsQuery } from "../../redux/api/productApi";
+import { ReviewSection } from "../../components/review/ReviewSection";
+
 
 export const ProductDetails = () => {
-  const { productId } = useParams();
+  const { productId } = useParams<{ productId: string }>();
 
-  const { data, isLoading, isError, error } = useGetProductDetailsQuery(
-    productId!, // Typescript non-null assertion operation for typescript error.
-    {
-      skip: !productId,
-      //     RTK Query skip → frontend: don't execute the query when the required value isn't available.
-      // MongoDB $skip → backend/database aggregation: skip a specified number of documents, typically for pagination.
-    },
-  );
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+  } = useGetProductDetailsQuery(productId ?? "", {
+    skip: !productId,
+  });
 
-  const [addToCart, { isLoading: isAddingToCart, data: cartData }] =
-    useAddToCartMutation();
-
-  console.log(cartData);
+  const [
+    addToCart,
+    { isLoading: isAddingToCart },
+  ] = useAddToCartMutation();
 
   if (isLoading) {
-    return <Heading>Loading... </Heading>;
+    return <Heading>Loading...</Heading>;
   }
 
   if (isError || !data?.data) {
-    return (
-      <Heading>
-        {error && ( // To tackel the error - Type 'FetchBaseQueryError | SerializedError | undefined' is not assignable to type 'ReactNode'.
-          <Heading>
-            {"status" in error ? `Error: ${error.status}` : error.message}
-          </Heading>
-        )}
-      </Heading>
-    );
+    let errorMessage = "Unable to load product.";
+
+    if (error && "status" in error) {
+      errorMessage = `Error: ${String(error.status)}`;
+    }
+
+    return <Heading>{errorMessage}</Heading>;
   }
 
   const product = data.data;
 
+  const effectivePrice =
+    product.discountedPrice ?? product.price;
+
+  const handleAddToCart = async () => {
+    await addToCart({
+      productId: product._id,
+      quantity: 1,
+    });
+  };
+
   return (
     <Box maxW="1000px" mx="auto" p={6}>
-      <Stack direction={{ base: "column", md: "row" }} gap={8}>
+      {/* Product details */}
+      <Stack
+        direction={{ base: "column", md: "row" }}
+        gap={8}
+      >
         <Box flex="1">
           {product.images?.length > 0 && (
             <Image
@@ -54,39 +76,58 @@ export const ProductDetails = () => {
         </Box>
 
         <Box flex="1">
-          <Heading size="xl">{product.title}</Heading>
+          <Heading size="xl">
+            {product.title}
+          </Heading>
 
-          <Text mt={4}>{product.description}</Text>
-
-          <Text mt={4} fontSize="2xl" fontWeight="bold">
-            ₹{product.discountedPrice ?? product.price}
+          <Text mt={4}>
+            {product.description}
           </Text>
 
-          {product.discountedPrice && (
-            <Text textDecoration="line-through">₹{product.price}</Text>
-          )}
+          <Text
+            mt={4}
+            fontSize="2xl"
+            fontWeight="bold"
+          >
+            ₹{effectivePrice}
+          </Text>
 
-          <Text mt={4}>Category: {product.category.name}</Text>
+          {product.discountedPrice !== undefined &&
+            product.discountedPrice !== null && (
+              <Text textDecoration="line-through">
+                ₹{product.price}
+              </Text>
+            )}
 
-          <Text mt={2}>Stock: {product.stock}</Text>
+          <Text mt={4}>
+            Category: {product.category.name}
+          </Text>
+
+          <Text mt={2}>
+            Stock: {product.stock}
+          </Text>
+
+          <Button
+            mt={6}
+            onClick={handleAddToCart}
+            disabled={
+              product.stock === 0 ||
+              isAddingToCart
+            }
+          >
+            {product.stock === 0
+              ? "Out of Stock"
+              : isAddingToCart
+                ? "Adding..."
+                : "Add to Cart"}
+          </Button>
         </Box>
       </Stack>
-      <Button
-        mt={6}
-        onClick={() =>
-          addToCart({
-            productId: product._id,
-            quantity: 1,
-          })
-        }
-        disabled={product.stock === 0 || isAddingToCart}
-      >
-        {product.stock === 0
-          ? "Out of Stock"
-          : isAddingToCart
-            ? "Adding..."
-            : "Add to Cart"}
-      </Button>
+
+      {/* Customer reviews */}
+      <Box mt={12}>
+        <ReviewSection productId={product._id} />
+      </Box>
     </Box>
   );
 };
