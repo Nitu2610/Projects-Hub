@@ -1,5 +1,5 @@
 import { Box, Button, Heading, Stack, Text } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { useGetUserProfileQuery } from "../redux/api/authApi";
 
 export const Home = () => {
@@ -10,6 +10,7 @@ export const Home = () => {
     error,
   } = useGetUserProfileQuery();
   const userName = userData?.data?.fullName;
+  const role = userData?.data?.role;
 
   if (isLoading) return <Heading>Loading ....</Heading>;
   if (isError)
@@ -24,7 +25,9 @@ export const Home = () => {
           : "Something went wrong."}
       </Heading>
     );
-  return (
+  return role === "admin" ? (
+    <Navigate to="/admin/dashboard" replace />
+  ) : (
     <Box p={6}>
       <Box mb={8}>
         <Heading>Welcome to TechNest, {userName} </Heading>

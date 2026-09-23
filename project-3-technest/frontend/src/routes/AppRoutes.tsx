@@ -31,6 +31,7 @@ import { RoleRoute } from "./RoleRoute";
 import { Register } from "../pages/Register";
 import { Login } from "../pages/Login";
 import { Addresses } from "../components/address/Addresses";
+import { AdminDashboard } from "../pages/AdminDashboard";
 
 export const AppRoutes = () => {
   return (
@@ -61,6 +62,8 @@ export const AppRoutes = () => {
 
           {/* Admin Routes */}
           <Route element={<RoleRoute allowedRoles={["admin"]} />}>
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+
             <Route path="/admin/products" element={<AdminProducts />} />
 
             <Route
