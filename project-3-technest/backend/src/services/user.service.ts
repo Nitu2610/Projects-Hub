@@ -132,7 +132,6 @@ const userService = {
     }
 
     const { password, ...safeData } = user.toObject();
-console.log(safeData)
     return {
       success: true,
       message: "Successfully found the profile details.",

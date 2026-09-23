@@ -11,6 +11,7 @@ const addressRoute = require("./routes/address.route");
 const orderRoute = require("./routes/order.route");
 const adminOrderRoute = require("./routes/admin.order.route");
 const reviewRouter = require("./routes/review.route");
+const adminDashboardRoutes = require("./routes/admin.dashboard.route");
 
 const app = express();
 
@@ -42,6 +43,8 @@ app.use("/orders", orderRoute);
 app.use("/admin/orders", adminOrderRoute);
 
 app.use("/reviews", reviewRouter);
+
+app.use("/admin/dashboard/", adminDashboardRoutes);
 
 app.use(errorHandler);
 
