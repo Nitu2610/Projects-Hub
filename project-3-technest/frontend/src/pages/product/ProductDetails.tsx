@@ -57,11 +57,11 @@ export const ProductDetails = () => {
   };
 
   return (
-    <Box maxW="1000px" mx="auto" p={6}>
+    <Box maxW="1000px" mx="auto" p={6} >
       {/* Product details */}
       <Stack
         direction={{ base: "column", md: "row" }}
-        gap={8}
+        gap={8} 
       >
         <Box flex="1">
           {product.images?.length > 0 && (

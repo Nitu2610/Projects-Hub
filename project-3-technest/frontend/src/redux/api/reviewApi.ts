@@ -5,8 +5,9 @@ export interface Review {
   user: {
     _id: string;
     fullName: string;
+    email: string;
   };
-  product: string;
+  product: { title: string };
   rating: number;
   comment: string;
   createdAt: string;
@@ -23,7 +24,7 @@ interface ReviewsData {
 interface ReviewsResponse {
   success: boolean;
   message: string;
-  data: ReviewsData;
+  data: ReviewsData[];
 }
 
 interface CreateReviewRequest {
@@ -37,8 +38,6 @@ interface UpdateReviewRequest {
   rating?: number;
   comment?: string;
 }
-
-
 
 export const reviewApi = apiSlice.injectEndpoints({
   endpoints: (build) => ({
@@ -75,15 +74,19 @@ export const reviewApi = apiSlice.injectEndpoints({
       invalidatesTags: ["Review"],
     }),
 
-    deleteReview: build.mutation<
-      { success: boolean; message: string },
-      string
-    >({
-      query: (reviewId) => ({
-        url: `/reviews/${reviewId}`,
-        method: "DELETE",
-      }),
-      invalidatesTags: ["Review"],
+    deleteReview: build.mutation<{ success: boolean; message: string }, string>(
+      {
+        query: (reviewId) => ({
+          url: `/reviews/${reviewId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Review"],
+      },
+    ),
+
+    getAllReviews: build.query<ReviewsResponse, void>({
+      query: () => "/reviews/admin",
+      providesTags: ["Review"],
     }),
   }),
 });
@@ -93,4 +96,5 @@ export const {
   useCreateReviewMutation,
   useUpdateReviewMutation,
   useDeleteReviewMutation,
+  useGetAllReviewsQuery,
 } = reviewApi;

@@ -18,7 +18,7 @@ export const AdminProductRow = ({
     navigate(`/admin/products/${product._id}/edit`);
   };
   return (
-    <Table.Row>
+    <Table.Row color={"black"}> 
       <Table.Cell>{productIndex + 1}</Table.Cell>
       <Table.Cell>{product.title}</Table.Cell>
 

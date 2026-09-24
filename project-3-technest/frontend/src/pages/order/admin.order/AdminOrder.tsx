@@ -34,7 +34,7 @@ export const AdminOrders = () => {
       </Box>
     );
   }
-
+console.log(orders)
   return (
     <Box p={6}>
       <Heading size="lg" mb={6}>

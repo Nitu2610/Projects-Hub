@@ -20,10 +20,10 @@ export const AdminOrderRow = ({
   };
 
   return (
-    <Table.Row>
+    <Table.Row color={"black"} >
       <Table.Cell>{order._id}</Table.Cell>
 
-      <Table.Cell>{order.userId}</Table.Cell>
+      <Table.Cell>{order.userId.fullName}</Table.Cell>
 
       <Table.Cell>
         {new Date(order.createdAt).toLocaleDateString()}

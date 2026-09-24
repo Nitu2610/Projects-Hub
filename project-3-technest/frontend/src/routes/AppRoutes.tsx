@@ -31,7 +31,11 @@ import { RoleRoute } from "./RoleRoute";
 import { Register } from "../pages/Register";
 import { Login } from "../pages/Login";
 import { Addresses } from "../components/address/Addresses";
-import { AdminDashboard } from "../pages/AdminDashboard";
+import { AdminDashboard } from "../pages/dashboard/AdminDashboard";
+import { AdminLayout } from "../layouts/AdminLayout";
+import { AdminCategories } from "../pages/category/admin/AdminCategories";
+import { AdminCustomers } from "../components/admin/customers/AdminCustomers";
+import { AdminReviews } from "../pages/reviews/AdminReviews";
 
 export const AppRoutes = () => {
   return (
@@ -62,23 +66,31 @@ export const AppRoutes = () => {
 
           {/* Admin Routes */}
           <Route element={<RoleRoute allowedRoles={["admin"]} />}>
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route element={<AdminLayout />}>
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
 
-            <Route path="/admin/products" element={<AdminProducts />} />
+              <Route path="/admin/products" element={<AdminProducts />} />
 
-            <Route
-              path="/admin/products/:productId/edit"
-              element={<EditProduct />}
-            />
+              <Route path="/admin/categories" element={<AdminCategories />} />
 
-            <Route path="/admin/add-product" element={<AddProduct />} />
+              <Route path="/admin/customers" element={<AdminCustomers />} />
 
-            <Route path="/admin/orders" element={<AdminOrders />} />
+              <Route path="/admin/reviews" element={<AdminReviews />} />
 
-            <Route
-              path="/admin/orders/:orderId"
-              element={<AdminOrderDetails />}
-            />
+              <Route
+                path="/admin/products/:productId/edit"
+                element={<EditProduct />}
+              />
+
+              <Route path="/admin/add-product" element={<AddProduct />} />
+
+              <Route path="/admin/orders" element={<AdminOrders />} />
+
+              <Route
+                path="/admin/orders/:orderId"
+                element={<AdminOrderDetails />}
+              />
+            </Route>
           </Route>
         </Route>
       </Route>

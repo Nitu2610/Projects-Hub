@@ -35,9 +35,14 @@ export interface ShippingAddressSnapshot {
   country: string;
 }
 
+interface userIdDataFormat{
+  _id:string;
+  fullName:string;
+  email:string;
+}
 export interface Order {
-  _id: string;
-  userId: string;
+  _id: string ;
+  userId: userIdDataFormat;
   items: OrderItem[];
   shippingAddress: ShippingAddressSnapshot;
   totalAmount: number;
