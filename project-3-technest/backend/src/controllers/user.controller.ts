@@ -104,6 +104,17 @@ const userController = {
 
     return res.status(response.success ? 200 : 400).json(response);
   },
+
+  getAllCustomers: async (req: Request, res: Response) => {
+  const response = await userService.getAllCustomers();
+
+  return res.status(200).json({
+    success: response.success,
+    message: response.message,
+    data: response.data,
+  });
+},
+
 };
 
 module.exports = userController;

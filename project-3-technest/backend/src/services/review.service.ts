@@ -8,7 +8,7 @@ const reviewService = {
     userId: string,
     productId: string,
     rating: number,
-    comment: string,
+    comment: string
   ) => {
     const product = await Product.findById(productId);
 
@@ -29,7 +29,8 @@ const reviewService = {
     if (!deliveredOrder) {
       return {
         success: false,
-        message: "You can review this product only after receiving it.",
+        message:
+          "You can review this product only after receiving it.",
         code: "ORDER_NOT_DELIVERED",
       };
     }
@@ -61,8 +62,13 @@ const reviewService = {
     };
   },
 
-  getProductReviews: async (userId: string, productId: string) => {
-    const reviews = await Review.find({ product: productId })
+  getProductReviews: async (
+    userId: string,
+    productId: string
+  ) => {
+    const reviews = await Review.find({
+      product: productId,
+    })
       .populate("user", "fullName")
       .sort({ createdAt: -1 });
 
@@ -75,8 +81,12 @@ const reviewService = {
       {
         $group: {
           _id: null,
-          averageRating: { $avg: "$rating" },
-          reviewCount: { $sum: 1 },
+          averageRating: {
+            $avg: "$rating",
+          },
+          reviewCount: {
+            $sum: 1,
+          },
         },
       },
     ]);
@@ -105,8 +115,10 @@ const reviewService = {
       message: "Reviews fetched successfully.",
       data: {
         reviews,
-        averageRating: ratingSummary[0]?.averageRating ?? 0,
-        reviewCount: ratingSummary[0]?.reviewCount ?? 0,
+        averageRating:
+          ratingSummary[0]?.averageRating ?? 0,
+        reviewCount:
+          ratingSummary[0]?.reviewCount ?? 0,
         canReview,
       },
     };
@@ -116,7 +128,7 @@ const reviewService = {
     userId: string,
     reviewId: string,
     rating?: number,
-    comment?: string,
+    comment?: string
   ) => {
     const review = await Review.findOne({
       _id: reviewId,
@@ -148,7 +160,10 @@ const reviewService = {
     };
   },
 
-  deleteReview: async (userId: string, reviewId: string) => {
+  deleteReview: async (
+    userId: string,
+    reviewId: string
+  ) => {
     const review = await Review.findOneAndDelete({
       _id: reviewId,
       user: userId,
@@ -165,6 +180,20 @@ const reviewService = {
     return {
       success: true,
       message: "Review deleted successfully.",
+    };
+  },
+
+  // ADMIN
+  getAllReviews: async () => {
+    const reviews = await Review.find()
+      .populate("user", "fullName email")
+      .populate("product", "title")
+      .sort({ createdAt: -1 });
+
+    return {
+      success: true,
+      message: "Reviews fetched successfully.",
+      data: reviews,
     };
   },
 };

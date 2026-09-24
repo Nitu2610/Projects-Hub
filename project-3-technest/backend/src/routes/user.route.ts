@@ -54,6 +54,14 @@ userRoute.patch(
 
 userRoute.post("/logout", asyncHandler(userController.logoutCustomer));
 
+userRoute.get(
+  "/customers",
+  authMiddleware,
+  authorize("admin"),
+  asyncHandler(userController.getAllCustomers)
+);
+
+
 userRoute.get("/check", asyncHandler(userController.checking));
 
 module.exports = userRoute;

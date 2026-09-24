@@ -224,6 +224,19 @@ const userService = {
       message: "Password changed successfully.",
     };
   },
+
+  getAllCustomers: async () => {
+  const customers = await User.find({ role: "customer" })
+    .select("-password")
+    .sort({ createdAt: -1 });
+
+  return {
+    success: true,
+    message: "Customers fetched successfully.",
+    data: customers,
+  };
+},
+
 };
 
 module.exports = userService;

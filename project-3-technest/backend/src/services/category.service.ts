@@ -10,9 +10,19 @@ interface DatabaseCategoryDataFormat {
   normalizedName: string;
   parent: string | null;
   active: boolean;
-  _id?:string;
+  _id?: string;
 }
 
+interface AdminCategoryDataFormat {
+  _id: string;
+  name: string;
+  active: boolean;
+  productCount: number;
+  parent: {
+    _id: string;
+    name: string;
+  } | null;
+}
 interface UpdateCategoryDataFormat {
   categoryId: string;
   name: string;
@@ -24,7 +34,7 @@ interface UpdateCategoryStatusDataFormat {
 
 const categoryService = {
   addCategory: async (categoryDetails: CategoryDataFormat) => {
-    const normalizedName = categoryDetails.name.toLowerCase();
+    const normalizedName = categoryDetails.name.trim().toLowerCase();
 
     // Case 1: Create Parent Category
 
@@ -147,46 +157,83 @@ const categoryService = {
   },
 
   getCategories: async (role: string) => {
-    const allowedRole = ["customer", "admin"];
-    if (!allowedRole.includes(role)) {
-      return {
-        success: false,
-        message: "User doesn't have the authorized access.",
-        code: "FORBIDDEN",
-      };
+    let response: DatabaseCategoryDataFormat[] | AdminCategoryDataFormat[] = [];
+    
+    if (role === "customer") {
+      const data = await Category.find({
+        active: true,
+      });
+      response = data.map((item: DatabaseCategoryDataFormat) => ({
+        _id: item._id,
+        name: item.name,
+        parent: item.parent,
+      }));
     }
-    try {
-      let response: DatabaseCategoryDataFormat[] = [];
-      if (role === "customer") {
-        const data = await Category.find({
-          active: true,
-        });
-        response = data.map((item: DatabaseCategoryDataFormat) => ({
-          _id: item._id,
-          name: item.name,
-          parent: item.parent,
-        }));
-      }
-      if (role === "admin") {
-        response = await Category.find({parent:{$ne:null}});
-      }
+    if (role === "admin") {
+      response = await Category.aggregate([
+        {
+          $lookup: {
+            from: "products",
+            localField: "_id",
+            foreignField: "category",
+            as: "products",
+          },
+        },
+        {
+          $addFields: {
+            productCount: {
+              $size: "$products",
+            },
+          },
+        },
+        {
+          $lookup: {
+            from: "categories",
+            localField: "parent",
+            foreignField: "_id",
+            as: "parentCategory",
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            name: 1,
+            active: 1,
+            productCount: 1,
+            parent: {
+              $cond: [
+                { $eq: ["$parent", null] },
+                null,
+                {
+                  _id: {
+                    $arrayElemAt: ["$parentCategory._id", 0],
+                  },
+                  name: {
+                    $arrayElemAt: ["$parentCategory.name", 0],
+                  },
+                },
+              ],
+            },
+          },
+        },
+      ]);
 
-      if (response.length === 0) {
-        return {
-          success: true,
-          message: "No Category at present, need to add.",
-          data: [],
-        };
-      }
+      console.log(response);
+    }
 
+    if (response.length === 0) {
       return {
         success: true,
-        message: "Categories data fetched successfully.",
-        data: response,
+        message: "No Category at present, need to add.",
+        data: [],
       };
-    } catch (err: unknown) {
-      throw err;
     }
+
+    return {
+      success: true,
+      message: "Categories data fetched successfully.",
+      data: response,
+    };
   },
 
   updateCategory: async (updateCategory: UpdateCategoryDataFormat) => {
@@ -201,7 +248,7 @@ const categoryService = {
         };
       }
 
-      const normalizedName = updateCategory.name.toLowerCase();
+      const normalizedName = updateCategory.name.trim().toLowerCase();
 
       const existingCategory = await Category.findOne({
         parent: category.parent, // MongoDB search under one parent only i.e electronics.

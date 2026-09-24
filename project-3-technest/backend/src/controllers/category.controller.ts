@@ -1,15 +1,23 @@
 import { Request, Response } from "express";
-import { Category } from "../models/category.model";
 const categoryService = require("../services/category.service");
 
-interface CategoryRespond extends Category{
-_id:string;
-createdAt:string;
-updatedAt:string;
-__v:number
+interface CustomerCategoryRespond {
+  _id: string;
+  name: string;
+  active: boolean;
+  parent: string | null;
 }
 
-
+interface AdminCategoryRespond {
+  _id: string;
+  name: string;
+  active: boolean;
+  productCount: number;
+  parent: {
+    _id: string;
+    name: string;
+  } | null;
+}
 const categoryController = {
   addCategory: async (req: Request, res: Response) => {
     const categoryAdded = await categoryService.addCategory({
@@ -55,25 +63,39 @@ const categoryController = {
 
     const response = await categoryService.getCategories(role);
 
-    if (!response.success) {
-      if (response.code === "FORBIDDEN") {
-        return res.status(403).json({
-          success: response.success,
-          message: response.message,
-        });
-      }
+    let safeData;
+
+    if (role === "customer") {
+      safeData = response.data.map((data: CustomerCategoryRespond) => {
+        const { _id, name, active, parent } = data;
+
+        return {
+          _id,
+          name,
+          active,
+          parent,
+        };
+      });
     }
 
-    const safeData= response.data.map((data:CategoryRespond)=>{
-      const {_id,name,active, parent}=data;
-      return {
-        _id,name,active, parent
-      }
-    })
+    if (role === "admin") {
+      safeData = response.data.map((data: AdminCategoryRespond) => {
+        const { _id, name, active, parent, productCount } = data;
+
+        return {
+          _id,
+          name,
+          active,
+          parent,
+          productCount,
+        };
+      });
+    }
+
     return res.status(200).json({
       success: response.success,
       message: response.message,
-      data:safeData,
+      data: safeData,
     });
   },
 
@@ -100,10 +122,10 @@ const categoryController = {
     }
 
     return res.status(200).json({
-      success:response.success,
-      message:response.message,
-      data:response.data
-    })
+      success: response.success,
+      message: response.message,
+      data: response.data,
+    });
   },
 
   updateCategoryStatus: async (req: Request, res: Response) => {
@@ -123,12 +145,11 @@ const categoryController = {
     }
 
     return res.status(200).json({
-      success:response.success,
-      message:response.message,
-      data:response.data
-    })
+      success: response.success,
+      message: response.message,
+      data: response.data,
+    });
   },
-
 };
 
 module.exports = categoryController;

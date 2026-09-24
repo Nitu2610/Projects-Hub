@@ -9,7 +9,7 @@ const categoryValidator = [
     .isLength({ min: 3, max: 20 })
     .withMessage("The length must be 3 to 20 characters."),
   body("parent")
-    .optional()
+  .optional({ values: "null" })
     .isMongoId()
     .withMessage("The parent id is incorrect."),
 ];

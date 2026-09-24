@@ -116,6 +116,21 @@ const reviewController = {
       message: response.message,
     });
   },
+
+   getAllReviews: async (
+    req: Request,
+    res: Response
+  ) => {
+    const response =
+      await reviewService.getAllReviews();
+
+    return res.status(200).json({
+      success: response.success,
+      message: response.message,
+      data: response.data,
+    });
+  },
+  
 };
 
 module.exports = reviewController;

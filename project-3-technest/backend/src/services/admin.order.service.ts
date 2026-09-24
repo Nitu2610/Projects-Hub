@@ -31,7 +31,7 @@ const allowedOrderStatusTransitions: Record<
 const adminOrderService = {
 
   getOrders: async () => {
-    const orders = await Order.find({}).sort({ createdAt: -1 });
+    const orders = await Order.find({}).sort({ createdAt: -1 }).populate("userId", "fullName");
 
     return {
       success: true,
