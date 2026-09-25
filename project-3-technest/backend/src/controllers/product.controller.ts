@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
 
 const productService = require("../services/product.service");
 
@@ -7,7 +7,7 @@ const productController = {
     const response = await productService.addProduct({
       title: req.body.title,
       description: req.body.description,
-      image: req.body.images,
+      images: req.body.images,
       color: req.body.color,
       price: req.body.price,
       discountedPrice: req.body.discountedPrice,
@@ -19,14 +19,14 @@ const productController = {
     if (!response.success) {
       if (response.code === "NOT_FOUND") {
         return res.status(404).json({
-          success: response.success,
+          success: false,
           message: response.message,
         });
       }
 
       if (response.code === "INACTIVE_CATEGORY") {
         return res.status(409).json({
-          success: response.success,
+          success: false,
           message: response.message,
         });
       }
@@ -36,14 +36,14 @@ const productController = {
         response.code === "INVALID_CATEGORY"
       ) {
         return res.status(400).json({
-          success: response.success,
+          success: false,
           message: response.message,
         });
       }
     }
 
     return res.status(201).json({
-      success: response.success,
+      success: true,
       message: response.message,
       data: response.data,
     });
@@ -52,17 +52,30 @@ const productController = {
   getProducts: async (req: Request, res: Response) => {
     const role = req.user.role;
 
-    const categoryId = typeof req.query.categoryId
-      ? req.query.categoryId
-      : undefined;
-    const search = typeof req.query.search ? req.query.search : undefined;
+    const categoryId =
+      typeof req.query.categoryId === "string"
+        ? req.query.categoryId
+        : undefined;
+
+    const search =
+      typeof req.query.search === "string"
+        ? req.query.search
+        : undefined;
+
     const sort =
-      typeof req.query.sort === "string" ? req.query.sort : undefined;
+      typeof req.query.sort === "string"
+        ? req.query.sort
+        : undefined;
 
     const page =
-      typeof req.query.page === "string" ? Number(req.query.page) : 1;
+      typeof req.query.page === "string"
+        ? Number(req.query.page)
+        : 1;
+
     const limit =
-      typeof req.query.limit === "string" ? Number(req.query.limit) : 10;
+      typeof req.query.limit === "string"
+        ? Number(req.query.limit)
+        : 10;
 
     const response = await productService.getProducts(
       role,
@@ -70,38 +83,48 @@ const productController = {
       search,
       sort,
       page,
-      limit,
+      limit
     );
 
     if (!response.success) {
       if (response.code === "FORBIDDEN") {
         return res.status(403).json({
-          success: response.success,
+          success: false,
           message: response.message,
         });
       }
+
       if (response.code === "NOT_FOUND") {
         return res.status(404).json({
-          success: response.success,
+          success: false,
           message: response.message,
         });
       }
+
       if (response.code === "INVALID_REQUEST") {
         return res.status(400).json({
-          success: response.success,
+          success: false,
           message: response.message,
         });
       }
+
+      if (response.code === "INVALID_CATEGORY") {
+        return res.status(400).json({
+          success: false,
+          message: response.message,
+        });
+      }
+
       if (response.code === "INACTIVE_CATEGORY") {
         return res.status(409).json({
-          success: response.success,
+          success: false,
           message: response.message,
         });
       }
     }
 
     return res.status(200).json({
-      success: response.success,
+      success: true,
       message: response.message,
       data: response.data,
     });
@@ -111,31 +134,36 @@ const productController = {
     const role = req.user.role;
     const productId = req.params.productId;
 
-    const response = await productService.getProductDetails(role, productId);
+    const response = await productService.getProductDetails(
+      role,
+      productId
+    );
 
     if (!response.success) {
       if (response.code === "INVALID_PRODUCT_ID") {
         return res.status(400).json({
-          success: response.success,
+          success: false,
           message: response.message,
         });
       }
+
       if (response.code === "FORBIDDEN") {
         return res.status(403).json({
-          success: response.success,
+          success: false,
           message: response.message,
         });
       }
+
       if (response.code === "NOT_FOUND") {
         return res.status(404).json({
-          success: response.success,
+          success: false,
           message: response.message,
         });
       }
     }
 
     return res.status(200).json({
-      success: response.success,
+      success: true,
       message: response.message,
       data: response.data,
     });
@@ -144,18 +172,17 @@ const productController = {
   updateProduct: async (req: Request, res: Response) => {
     const productId = req.params.productId;
 
-    const response = await productService.updateProduct(productId, req.body);
+    const response = await productService.updateProduct(
+      productId,
+      req.body
+    );
 
     if (!response.success) {
-      if (response.code === "INVALID_PRODUCT_ID") {
-        return res.status(400).json(response);
-      }
-
-      if (response.code === "INVALID_CATEGORY") {
-        return res.status(400).json(response);
-      }
-
-      if (response.code === "INCORRECT_DISCOUNTED_PRICE") {
+      if (
+        response.code === "INVALID_PRODUCT_ID" ||
+        response.code === "INVALID_CATEGORY" ||
+        response.code === "INCORRECT_DISCOUNTED_PRICE"
+      ) {
         return res.status(400).json(response);
       }
 
@@ -169,7 +196,7 @@ const productController = {
     }
 
     return res.status(200).json({
-      success: response.success,
+      success: true,
       message: response.message,
       data: response.data,
     });
@@ -178,7 +205,9 @@ const productController = {
   deactivateProduct: async (req: Request, res: Response) => {
     const productId = req.params.productId;
 
-    const response = await productService.deactivateProduct(productId);
+    const response = await productService.deactivateProduct(
+      productId
+    );
 
     if (!response.success) {
       if (response.code === "INVALID_PRODUCT_ID") {
@@ -195,12 +224,11 @@ const productController = {
     }
 
     return res.status(200).json({
-      success: response.success,
+      success: true,
       message: response.message,
       data: response.data,
     });
   },
-  
 };
 
 module.exports = productController;

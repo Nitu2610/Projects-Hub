@@ -1,11 +1,11 @@
-import { body, param } from "express-validator";
-import mongoose from "mongoose";
+const { body, param } = require("express-validator");
+const mongoose = require("mongoose");
 
 const createReviewValidator = [
   body("productId")
     .notEmpty()
     .withMessage("Product ID is required.")
-    .custom((value) => mongoose.Types.ObjectId.isValid(value))
+    .custom((value: string) => mongoose.Types.ObjectId.isValid(value))
     .withMessage("Invalid product ID."),
 
   body("rating")
@@ -26,7 +26,7 @@ const updateReviewValidator = [
   param("reviewId")
     .notEmpty()
     .withMessage("Review ID is required.")
-    .custom((value) => mongoose.Types.ObjectId.isValid(value))
+    .custom((value: string) => mongoose.Types.ObjectId.isValid(value))
     .withMessage("Invalid review ID."),
 
   body("rating")
@@ -43,7 +43,7 @@ const updateReviewValidator = [
     .withMessage("Comment must be between 10 and 1000 characters."),
 ];
 
-module.exports = { 
+module.exports = {
   createReviewValidator,
-  updateReviewValidator
- };
+  updateReviewValidator,
+};

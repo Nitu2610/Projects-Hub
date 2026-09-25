@@ -1,4 +1,4 @@
-import { body, param } from "express-validator";
+const { body, param } = require("express-validator");
 
 const createProductValidator = [
   body("title")
@@ -22,13 +22,13 @@ const createProductValidator = [
 
   body("price")
     .notEmpty()
-    .isNumeric()
-    .withMessage("Enter a valid price."),
+    .isFloat({ gt: 0 })
+    .withMessage("Price must be greater than 0."),
 
   body("discountedPrice")
     .optional()
-    .isNumeric()
-    .withMessage("Enter a valid discounted price."),
+    .isFloat({ gt: 0 })
+    .withMessage("Discounted price must be greater than 0."),
 
   body("stock")
     .notEmpty()
@@ -81,6 +81,11 @@ const updateProductValidator = [
     .notEmpty()
     .withMessage("Product description cannot be empty."),
 
+  body("color")
+    .optional()
+    .isString()
+    .withMessage("Color must be a valid string."),
+
   body("price")
     .optional()
     .isFloat({ gt: 0 })
@@ -96,33 +101,37 @@ const updateProductValidator = [
     .isInt({ min: 0 })
     .withMessage("Stock cannot be negative."),
 
+  body("specification")
+    .optional()
+    .isObject()
+    .withMessage("Specification must be a valid object."),
+
   body("category")
     .optional()
     .isMongoId()
     .withMessage("Invalid category ID."),
 
   body("images")
-  .optional()
-  .isArray({ min: 1, max: 3 })
-  .withMessage("Product must have between 1 and 3 images."),
+    .optional()
+    .isArray({ min: 1, max: 3 })
+    .withMessage("Product must have between 1 and 3 images."),
 
-body("images.*.url")
-  .optional()
-  .isString()
-  .trim()
-  .notEmpty()
-  .withMessage("Image URL is required."),
+  body("images.*.url")
+    .optional()
+    .isString()
+    .trim()
+    .notEmpty()
+    .withMessage("Image URL is required."),
 
-body("images.*.publicId")
-  .optional()
-  .isString()
-  .trim()
-  .notEmpty()
-  .withMessage("Image public ID is required."),
-    
+  body("images.*.publicId")
+    .optional()
+    .isString()
+    .trim()
+    .notEmpty()
+    .withMessage("Image public ID is required."),
 ];
 
-module.exports={createProductValidator,
-   updateProductValidator,
-   
-  }
+module.exports = {
+  createProductValidator,
+  updateProductValidator,
+};

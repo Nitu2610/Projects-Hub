@@ -1,16 +1,26 @@
-import mongoose, { Types, Schema } from "mongoose";
+import mongoose, { Schema, Types } from "mongoose";
+import type { CartData } from "../types/cart.types";
 
-interface CartDataFormat {
-  userId: Types.ObjectId;
-  items: [
-    {
-      productId: Types.ObjectId;
-      quantity: number;
+const cartItemSchema = new Schema(
+  {
+    productId: {
+      type: Schema.Types.ObjectId,
+      ref: "Product",
+      required: true,
     },
-  ];
-}
 
-const cartSchema = new mongoose.Schema<CartDataFormat>(
+    quantity: {
+      type: Number,
+      required: true,
+      min: 1,
+    },
+  },
+  {
+    _id: false,
+  }
+);
+
+const cartSchema = new Schema<CartData>(
   {
     userId: {
       type: Schema.Types.ObjectId,
@@ -18,26 +28,17 @@ const cartSchema = new mongoose.Schema<CartDataFormat>(
       required: true,
       unique: true,
     },
-    items: [
-      {
-        productId: {
-          type: Schema.Types.ObjectId,
-          ref: "Product",
-          required: true,
-        },
-        quantity: {
-          type: Number,
-          min: 1,
-          required: true,
-        },
-      },
-    ],
+
+    items: {
+      type: [cartItemSchema],
+      default: [],
+    },
   },
   {
     timestamps: true,
-  },
+  }
 );
 
-const Cart = mongoose.model("Cart", cartSchema);
+const Cart = mongoose.model<CartData>("Cart", cartSchema);
 
 module.exports = Cart;

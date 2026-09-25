@@ -1,10 +1,16 @@
 const express = require("express");
-const { getOrderByIdValidation, updateOrderStatusValidation, cancelOrderValidation
- } = require("../validators/admin.order.validator");
+
+const {
+  getOrderByIdValidation,
+  updateOrderStatusValidation,
+  cancelOrderValidation,
+} = require("../validators/admin.order.validator");
+
 const validatorMiddleware = require("../middlewares/validator.middleware");
 const authMiddleware = require("../middlewares/authentication.middleware");
 const authorize = require("../middlewares/authorization.middleware");
 const asyncHandler = require("../utils/asyncHandler");
+
 const adminOrderController = require("../controllers/admin.order.controller");
 
 const adminOrderRoute = express.Router();
@@ -24,7 +30,6 @@ adminOrderRoute.get(
   validatorMiddleware,
   asyncHandler(adminOrderController.getOrderById)
 );
-
 
 adminOrderRoute.patch(
   "/:orderId/status",

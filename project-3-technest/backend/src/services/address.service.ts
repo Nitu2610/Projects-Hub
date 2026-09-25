@@ -1,32 +1,14 @@
+import type {
+  AddressData,
+  UpdateAddressData,
+} from "../types/address.types";
+
 const Address = require("../models/address.model");
-
-interface RequestAddressDataFormat {
-  label: "Home" | "Work" | "Other";
-  fullName: string;
-  phone: string;
-  addressLine1: string;
-  addressLine2?: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  country?: string;
-}
-
-interface UpdateAddressDetailsDataFormat {
-  label?: "Home" | "Work" | "Other";
-  fullName?: string;
-  phone?: string;
-  addressLine1?: string;
-  addressLine2?: string;
-  city?: string;
-  state?: string;
-  postalCode?: string;
-}
 
 const addressService = {
   addAddress: async (
-    addressDetails: RequestAddressDataFormat,
-    userId: string,
+    addressDetails: AddressData,
+    userId: string
   ) => {
     const addressCount = await Address.countDocuments({
       userId,
@@ -35,12 +17,17 @@ const addressService = {
     if (addressCount >= 3) {
       return {
         success: false,
-        message: "Can't save more than 3 address.",
-        code: "INVALID_REQUEST",
+        message: "Can't save more than 3 addresses.",
+        code: "ADDRESS_LIMIT_REACHED",
       };
     }
 
-    const addressAdded = await Address.create({ ...addressDetails, userId });
+    const addressAdded = await Address.create({
+      ...addressDetails,
+      userId,
+      country: "India",
+    });
+
     return {
       success: true,
       message: "Address added successfully.",
@@ -58,8 +45,14 @@ const addressService = {
     };
   },
 
-  getAddressById: async (addressId: string, userId: string) => {
-    const address = await Address.findOne({ _id: addressId, userId });
+  getAddressById: async (
+    addressId: string,
+    userId: string
+  ) => {
+    const address = await Address.findOne({
+      _id: addressId,
+      userId,
+    });
 
     if (!address) {
       return {
@@ -78,13 +71,22 @@ const addressService = {
 
   updateAddress: async (
     addressId: string,
-    updateAddressDetails: UpdateAddressDetailsDataFormat,
-    userId: string,
+    updateAddressDetails: UpdateAddressData,
+    userId: string
   ) => {
     const address = await Address.findOneAndUpdate(
-      { _id: addressId, userId },
-      { ...updateAddressDetails, country: "India" },
-      { new: true, runValidators: true },
+      {
+        _id: addressId,
+        userId,
+      },
+      {
+        ...updateAddressDetails,
+        country: "India",
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
     );
 
     if (!address) {
@@ -97,12 +99,15 @@ const addressService = {
 
     return {
       success: true,
-      message: "Address Details are updated.",
+      message: "Address details updated successfully.",
       data: address,
     };
   },
 
-  deleteAddress: async (addressId: string, userId: string) => {
+  deleteAddress: async (
+    addressId: string,
+    userId: string
+  ) => {
     const address = await Address.findOneAndDelete({
       _id: addressId,
       userId,

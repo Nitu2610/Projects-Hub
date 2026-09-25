@@ -2,11 +2,12 @@ const { body, param } = require("express-validator");
 
 const addToCartValidator = [
   body("productId")
-  .isMongoId()
-  .withMessage("Invalid product ID."),
+    .isMongoId()
+    .withMessage("Invalid product ID."),
+
   body("quantity")
-  .isInt({min:1})
-  .withMessage("Invalid quantity")
+    .isInt({ min: 1 })
+    .withMessage("Invalid quantity."),
 ];
 
 const updateCartItemValidator = [
@@ -19,7 +20,7 @@ const updateCartItemValidator = [
     .withMessage("Invalid quantity."),
 ];
 
-
-module.exports = { addToCartValidator,
+module.exports = {
+  addToCartValidator,
   updateCartItemValidator,
- };
+};

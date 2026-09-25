@@ -14,10 +14,8 @@ const userRegisterValidator = [
     .withMessage("Password must be between 8 and 20 characters."),
   body("mobile")
     .trim()
-    .isNumeric()
-    .withMessage("Please enter a valid mobile number")
-    .isLength({ min: 10, max: 10 })
-    .withMessage("Please enter a valid mobile number"),
+    .matches(/^[6-9]\d{9}$/)
+    .withMessage("Please provide a valid Indian mobile number."),
 ];
 
 const userLoginValidator = [

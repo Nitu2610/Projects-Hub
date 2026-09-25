@@ -1,28 +1,104 @@
 import { Types } from "mongoose";
 
+import type {
+  CreateOrderData,
+  OrderItem,
+  PaymentMethod,
+  PaymentStatus,
+} from "../types/order.types";
+
 const Address = require("../models/address.model");
 const Product = require("../models/product.model");
 const Cart = require("../models/cart.model");
 const Order = require("../models/order.model");
 
-interface createOrderRequestDataFormat {
-  addressId: Types.ObjectId;
-  paymentMethod: "COD" | "UPI" | "CARD";
-  paymentData?: {
-    upiId?: string;
-    cardType: "CREDIT" | "DEBIT";
-  };
-}
+const calculateShippingCharge = (subtotal: number) => {
+  if (subtotal <= 1000) {
+    return 0;
+  }
 
-interface CartItemDataFormat {
-  productId: Types.ObjectId;
-  quantity: number;
-}
+  if (subtotal < 50000) {
+    return 500;
+  }
+
+  return 1000;
+};
+
+const getPaymentStatus = (
+  paymentMethod: PaymentMethod,
+  paymentData?: CreateOrderData["paymentData"]
+): {
+  success: boolean;
+  paymentStatus?: PaymentStatus;
+  message?: string;
+  code?: string;
+} => {
+  if (paymentMethod === "COD") {
+    return {
+      success: true,
+      paymentStatus: "PENDING",
+    };
+  }
+
+  if (!paymentData) {
+    return {
+      success: false,
+      message: "Payment data is required.",
+      code: "INVALID_PAYMENT",
+    };
+  }
+
+  if (paymentMethod === "UPI") {
+    if (paymentData.upiId === "success@technest") {
+      return {
+        success: true,
+        paymentStatus: "PAID",
+      };
+    }
+
+    if (paymentData.upiId === "failed@technest") {
+      return {
+        success: true,
+        paymentStatus: "FAILED",
+      };
+    }
+
+    return {
+      success: false,
+      message: "Incorrect payment details.",
+      code: "INVALID_PAYMENT",
+    };
+  }
+
+  if (paymentMethod === "CARD") {
+    if (
+      paymentData.cardType === "CREDIT" ||
+      paymentData.cardType === "DEBIT"
+    ) {
+      return {
+        success: true,
+        paymentStatus: "PAID",
+      };
+    }
+
+    return {
+      success: false,
+      message: "Incorrect payment details.",
+      code: "INVALID_PAYMENT",
+    };
+  }
+
+  return {
+    success: false,
+    message: "Incorrect payment details.",
+    code: "INVALID_PAYMENT",
+  };
+};
 
 const orderService = {
   createOrder: async (
-    basicOrderDetails: createOrderRequestDataFormat,
-    userId: Types.ObjectId,
+    basicOrderDetails: CreateOrderData,
+    userId: Types.ObjectId
   ) => {
     const address = await Address.findOne({
       _id: basicOrderDetails.addressId,
@@ -61,175 +137,99 @@ const orderService = {
     if (cart.items.length === 0) {
       return {
         success: false,
-        message: "Cart is empty",
-        code: "Cart_EMPTY",
+        message: "Cart is empty.",
+        code: "CART_EMPTY",
       };
     }
 
-    // map(async ...) returns Promise[].
-    // Used Promise.all() before using the items.
-    const products = await Promise.all(
-      cart.items.map(async (cartItem:CartItemDataFormat) => {
-        const product = await Product.findById(cartItem.productId);
-        if (!product) {
-          return {
-            success: false,
-            message: "Product not found.",
-            code: "NOT_FOUND",
-          };
-        }
-        if (!product.active) {
-          return {
-            success: false,
-            message: "Product not active.",
-            code: "INACTIVE_PRODUCT",
-          };
-        }
+    const items: OrderItem[] = [];
 
-        if (cartItem.quantity > product.stock) {
-          return {
-            success: false,
-            message: "Product quantity should be within stock",
-            code: "INVALID_QUANTITY",
-          };
-        }
+    for (const cartItem of cart.items) {
+      const product = await Product.findById(
+        cartItem.productId
+      );
 
-        const purchasedPrice = product.discountedPrice ?? product.price;
-
-        const subtotal = cartItem.quantity * purchasedPrice;
-
-        let productDetails = {
-          productId: product._id,
-          productName: product.title,
-          quantity: cartItem.quantity,
-          purchasedPrice: product.discountedPrice ?? product.price,
-          subtotal,
+      if (!product) {
+        return {
+          success: false,
+          message: "Product not found.",
+          code: "NOT_FOUND",
         };
+      }
 
-        return productDetails;
-      }),
-    );
+      if (!product.active) {
+        return {
+          success: false,
+          message: "Product not active.",
+          code: "INACTIVE_PRODUCT",
+        };
+      }
 
-    // Your map callback can return either an error object
-    // or a product object. Therefore, you need to check
-    // whether one of the product validations failed.
-    const failedProduct = products.find(
-      (item) => "success" in item && item.success === false,
-    );
+      if (cartItem.quantity > product.stock) {
+        return {
+          success: false,
+          message: "Product quantity should be within stock.",
+          code: "INVALID_QUANTITY",
+        };
+      }
 
-    if (failedProduct) {
-      return failedProduct;
+      const purchasedPrice =
+        product.discountedPrice ?? product.price;
+
+      const subtotal =
+        cartItem.quantity * purchasedPrice;
+
+      items.push({
+        productId: product._id,
+        productName: product.title,
+        quantity: cartItem.quantity,
+        purchasedPrice,
+        subtotal,
+      });
     }
-
-    // After the validation above, TypeScript may still need
-    // help narrowing the union in a stricter configuration.
-    const items = products as {
-      productId: Types.ObjectId;
-      productName: string;
-      quantity: number;
-      purchasedPrice: number;
-      subtotal: number;
-    }[];
 
     const totalProductAmount = items.reduce(
       (total, item) => total + item.subtotal,
-      0,
+      0
     );
 
     const shippingCharge =
-      totalProductAmount <= 1000 ? 0 : totalProductAmount < 50000 ? 500 : 1000;
+      calculateShippingCharge(totalProductAmount);
 
-    const totalAmount = totalProductAmount + shippingCharge;
+    const totalAmount =
+      totalProductAmount + shippingCharge;
 
-    // You previously wrote:
-    // if (!basicOrderDetails.paymentData) return;
-    //
-    // That incorrectly rejects COD because paymentData
-    // is not required for COD.
-    //
-    // Payment data is required only for UPI/CARD.
-    if (
-      basicOrderDetails.paymentMethod !== "COD" &&
-      !basicOrderDetails.paymentData
-    ) {
-      return {
-        success: false,
-        message: "Payment data is required.",
-        code: "INVALID_PAYMENT",
-      };
+    const paymentResult = getPaymentStatus(
+      basicOrderDetails.paymentMethod,
+      basicOrderDetails.paymentData
+    );
+
+    if (!paymentResult.success) {
+      return paymentResult;
     }
 
-    let paymentStatus: "PENDING" | "PAID" | "FAILED";
-
-    if (basicOrderDetails.paymentMethod === "COD") {
-      paymentStatus = "PENDING";
-    } else if (basicOrderDetails.paymentMethod === "UPI") {
-      if (basicOrderDetails.paymentData?.upiId === "success@technest") {
-        paymentStatus = "PAID";
-      } else if (basicOrderDetails.paymentData?.upiId === "failed@technest") {
-        paymentStatus = "FAILED";
-      } else {
-        return {
-          success: false,
-          message: "Incorrect payment details.",
-          code: "INVALID_PAYMENT",
-        };
-      }
-    } else if (basicOrderDetails.paymentMethod === "CARD") {
-      if (
-        basicOrderDetails.paymentData?.cardType === "CREDIT" ||
-        basicOrderDetails.paymentData?.cardType === "DEBIT"
-      ) {
-        paymentStatus = "PAID";
-      } else {
-        return {
-          success: false,
-          message: "Incorrect payment details.",
-          code: "INVALID_PAYMENT",
-        };
-      }
-    } else {
-      return {
-        success: false,
-        message: "Incorrect payment details.",
-        code: "INVALID_PAYMENT",
-      };
-    }
-
-
-    // This part was conceptually correct, but your original
-    // success value was the string "false".
-    //
-    // success must be the boolean false.
-    if (paymentStatus === "FAILED") {
+    if (paymentResult.paymentStatus === "FAILED") {
       return {
         success: false,
         message: "Payment failed, cannot place the order.",
         code: "PAYMENT_FAILED",
       };
     }
+
     const orderStatus = "PLACED";
 
-    let orderDetails = {
+    const orderDetails = {
       userId,
       items,
       shippingAddress,
       totalAmount,
       paymentMethod: basicOrderDetails.paymentMethod,
-      paymentStatus,
+      paymentStatus: paymentResult.paymentStatus,
       orderStatus,
     };
 
-    // You don't need to search the cart again here.
-    // `items` already contains the exact quantity that
-    // must be deducted.
-    //
-    // Also, your previous code attempted:
-    // const { stock: updateStock, ...rest } = product.ObjectId;
-    //
-    // That does not update product.stock.
-    for (const productDetails of items) {
-      const product = await Product.findById(productDetails.productId);
+    for (const item of items) {
+      const product = await Product.findById(item.productId);
 
       if (!product) {
         return {
@@ -239,7 +239,7 @@ const orderService = {
         };
       }
 
-      product.stock = product.stock - productDetails.quantity;
+      product.stock -= item.quantity;
 
       await product.save();
     }
@@ -249,17 +249,20 @@ const orderService = {
     });
 
     const order = await Order.create(orderDetails);
+
     return {
       success: true,
-      message: "Order created.",
+      message: "Order created successfully.",
       data: order,
     };
   },
 
-    // Get all orders belonging to the logged-in customer
   getOrders: async (userId: Types.ObjectId) => {
-    const orders = await Order.find({ userId })
-      .sort({ createdAt: -1 });
+    const orders = await Order.find({
+      userId,
+    }).sort({
+      createdAt: -1,
+    });
 
     return {
       success: true,
@@ -268,7 +271,6 @@ const orderService = {
     };
   },
 
-  // Get one order belonging to the logged-in customer
   getOrderById: async (
     orderId: string,
     userId: Types.ObjectId
@@ -302,82 +304,70 @@ const orderService = {
   },
 
   cancelOrder: async (
-  orderId: string,
-  userId: Types.ObjectId,
-  cancellationReason: string
-) => {
-  // 1. Validate order ID
-  if (!Types.ObjectId.isValid(orderId)) {
-    return {
-      success: false,
-      message: "Invalid order ID.",
-      code: "INVALID_ORDER_ID",
-    };
-  }
-
-  // 2. Find order belonging to the authenticated customer
-  const order = await Order.findOne({
-    _id: orderId,
-    userId,
-  });
-
-  if (!order) {
-    return {
-      success: false,
-      message: "Order not found.",
-      code: "NOT_FOUND",
-    };
-  }
-
-  // 3. Check whether the current order status allows cancellation
-  if (
-    order.orderStatus !== "PLACED" &&
-    order.orderStatus !== "CONFIRMED"
-  ) {
-    return {
-      success: false,
-      message: "Order cannot be cancelled at this stage.",
-      code: "CANCELLATION_NOT_ALLOWED",
-    };
-  }
-
-  // 4. Restore stock for every ordered product
-  for (const item of order.items) {
-    const product = await Product.findById(item.productId);
-
-    if (!product) {
+    orderId: string,
+    userId: Types.ObjectId,
+    cancellationReason: string
+  ) => {
+    if (!Types.ObjectId.isValid(orderId)) {
       return {
         success: false,
-        message: `Product ${item.productName} no longer exists.`,
-        code: "PRODUCT_NOT_FOUND",
+        message: "Invalid order ID.",
+        code: "INVALID_ORDER_ID",
       };
     }
 
-    product.stock += item.quantity;
+    const order = await Order.findOne({
+      _id: orderId,
+      userId,
+    });
 
-    await product.save();
-  }
+    if (!order) {
+      return {
+        success: false,
+        message: "Order not found.",
+        code: "NOT_FOUND",
+      };
+    }
 
-  // 5. Update order cancellation details
-  order.orderStatus = "CANCELLED";
-  order.cancellationReason = cancellationReason as
-    | "CHANGED_MIND"
-    | "ORDERED_BY_MISTAKE"
-    | "FOUND_BETTER_PRICE"
-    | "DELIVERY_DELAY"
-    | "OTHER";
+    if (
+      order.orderStatus !== "PLACED" &&
+      order.orderStatus !== "CONFIRMED"
+    ) {
+      return {
+        success: false,
+        message: "Order cannot be cancelled at this stage.",
+        code: "CANCELLATION_NOT_ALLOWED",
+      };
+    }
 
-  order.cancelledAt = new Date();
+    for (const item of order.items) {
+      const product = await Product.findById(item.productId);
 
-  await order.save();
+      if (!product) {
+        return {
+          success: false,
+          message: `Product ${item.productName} no longer exists.`,
+          code: "PRODUCT_NOT_FOUND",
+        };
+      }
 
-  return {
-    success: true,
-    message: "Order cancelled successfully.",
-    data: order,
-  };
-},
+      product.stock += item.quantity;
 
+      await product.save();
+    }
+
+    order.orderStatus = "CANCELLED";
+    order.cancellationReason = cancellationReason;
+    order.cancelledAt = new Date();
+
+    await order.save();
+
+    return {
+      success: true,
+      message: "Order cancelled successfully.",
+      data: order,
+    };
+  },
 };
 
 module.exports = orderService;

@@ -3,6 +3,7 @@ import mongoose, { Schema, Types } from "mongoose";
 interface Specification {
   [key: string]: string;
 }
+
 interface ProductImage {
   url: string;
   publicId: string;
@@ -11,7 +12,6 @@ interface ProductImage {
 interface Product {
   title: string;
   description: string;
-  image?: string;
   color?: string;
   price: number;
   discountedPrice?: number;
@@ -22,41 +22,41 @@ interface Product {
   images: ProductImage[];
 }
 
-const productImageSchema = new Schema(
+const productImageSchema = new Schema<ProductImage>(
   {
     url: {
       type: String,
       required: true,
       trim: true,
     },
-
     publicId: {
       type: String,
       required: true,
       trim: true,
     },
   },
-  { _id: false },
+  {
+    _id: false,
+  }
 );
 
-const productSchema = new mongoose.Schema<Product>(
+const productSchema = new Schema<Product>(
   {
     title: {
       type: String,
       required: true,
+      trim: true,
     },
 
     description: {
       type: String,
       required: true,
-    },
-
-    image: {
-      type: String,
+      trim: true,
     },
 
     color: {
       type: String,
+      trim: true,
     },
 
     price: {
@@ -92,12 +92,15 @@ const productSchema = new mongoose.Schema<Product>(
       type: Boolean,
       default: true,
     },
+
     images: {
       type: [productImageSchema],
       default: [],
     },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+  }
 );
 
 const Product = mongoose.model<Product>("Product", productSchema);

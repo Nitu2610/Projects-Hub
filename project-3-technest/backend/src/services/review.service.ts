@@ -1,15 +1,20 @@
 const Review = require("../models/review.model");
 const Product = require("../models/product.model");
 const Order = require("../models/order.model");
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
+
+import type {
+  CreateReviewData,
+  UpdateReviewData,
+} from "../types/review.types";
 
 const reviewService = {
   createReview: async (
     userId: string,
-    productId: string,
-    rating: number,
-    comment: string
+    reviewData: CreateReviewData
   ) => {
+    const { productId, rating, comment } = reviewData;
+
     const product = await Product.findById(productId);
 
     if (!product) {
@@ -29,15 +34,14 @@ const reviewService = {
     if (!deliveredOrder) {
       return {
         success: false,
-        message:
-          "You can review this product only after receiving it.",
+        message: "You can review this product only after receiving it.",
         code: "ORDER_NOT_DELIVERED",
       };
     }
 
     const existingReview = await Review.findOne({
       user: userId,
-      product: new mongoose.Types.ObjectId(productId),
+      product: productId,
     });
 
     if (existingReview) {
@@ -81,12 +85,8 @@ const reviewService = {
       {
         $group: {
           _id: null,
-          averageRating: {
-            $avg: "$rating",
-          },
-          reviewCount: {
-            $sum: 1,
-          },
+          averageRating: { $avg: "$rating" },
+          reviewCount: { $sum: 1 },
         },
       },
     ]);
@@ -115,10 +115,8 @@ const reviewService = {
       message: "Reviews fetched successfully.",
       data: {
         reviews,
-        averageRating:
-          ratingSummary[0]?.averageRating ?? 0,
-        reviewCount:
-          ratingSummary[0]?.reviewCount ?? 0,
+        averageRating: ratingSummary[0]?.averageRating ?? 0,
+        reviewCount: ratingSummary[0]?.reviewCount ?? 0,
         canReview,
       },
     };
@@ -127,8 +125,7 @@ const reviewService = {
   updateReview: async (
     userId: string,
     reviewId: string,
-    rating?: number,
-    comment?: string
+    reviewData: UpdateReviewData
   ) => {
     const review = await Review.findOne({
       _id: reviewId,
@@ -142,6 +139,8 @@ const reviewService = {
         code: "NOT_FOUND",
       };
     }
+
+    const { rating, comment } = reviewData;
 
     if (rating !== undefined) {
       review.rating = rating;
@@ -172,7 +171,7 @@ const reviewService = {
     if (!review) {
       return {
         success: false,
-        message: "Review not found",
+        message: "Review not found.",
         code: "NOT_FOUND",
       };
     }
@@ -183,7 +182,6 @@ const reviewService = {
     };
   },
 
-  // ADMIN
   getAllReviews: async () => {
     const reviews = await Review.find()
       .populate("user", "fullName email")

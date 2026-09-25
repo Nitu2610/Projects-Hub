@@ -1,135 +1,121 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
+import type {
+  ProductData,
+  UpdateProductData,
+} from "../types/product.types";
+
 const Product = require("../models/product.model");
 const Category = require("../models/category.model");
 
-interface Specification {
-  [key: string]: string;
-}
-
-interface ProductImage {
-  url: string;
-  publicId: string;
-}
-
-interface ProductDataFormat {
-  title: string;
-  description: string;
-  images: ProductImage[];
-  color?: string;
-  price: number;
-  discountedPrice?: number;
-  stock: number;
-  specification: Specification;
-  category: string;
-}
-
-interface ProductFilterDataFormat {
+interface ProductFilter {
   active?: boolean;
-  category?: string;
-  title?: { $regex: string; $options: string };
-  price?: number;
-  stock?: number;
+  category?: mongoose.Types.ObjectId;
+  title?: {
+    $regex: string;
+    $options: string;
+  };
 }
+
+interface SortStage {
+  createdAt?: -1 | 1;
+  effectivePrice?: -1 | 1;
+}
+
+const validateProductCategory = async (categoryId: string) => {
+  const category = await Category.findById(categoryId);
+
+  if (!category) {
+    return {
+      success: false,
+      message: "Category doesn't exist.",
+      code: "NOT_FOUND",
+    };
+  }
+
+  if (!category.parent) {
+    return {
+      success: false,
+      message: "Product must belong to a child category.",
+      code: "INVALID_CATEGORY",
+    };
+  }
+
+  if (!category.active) {
+    return {
+      success: false,
+      message: "Category is inactive.",
+      code: "INACTIVE_CATEGORY",
+    };
+  }
+
+  const parentCategory = await Category.findById(category.parent);
+
+  if (!parentCategory) {
+    return {
+      success: false,
+      message: "Parent category not found.",
+      code: "NOT_FOUND",
+    };
+  }
+
+  if (!parentCategory.active) {
+    return {
+      success: false,
+      message: "Parent category is inactive.",
+      code: "INACTIVE_CATEGORY",
+    };
+  }
+
+  return {
+    success: true,
+    category,
+    parentCategory,
+  };
+};
+
+const escapeRegex = (value: string) => {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+};
 
 const productService = {
-  addProduct: async (productDetails: ProductDataFormat) => {
-    try {
-      // 1. Check whether the selected category exists
-      const category = await Category.findById(productDetails.category);
+  addProduct: async (productDetails: ProductData) => {
+    const categoryValidation = await validateProductCategory(
+      productDetails.category
+    );
 
-      if (!category) {
-        return {
-          success: false,
-          message: "Category doesn't exist.",
-          code: "NOT_FOUND",
-        };
-      }
-
-      // 2. Product must belong to a child category
-      if (!category.parent) {
-        return {
-          success: false,
-          message: "Incorrect category selected.",
-          code: "INVALID_REQUEST",
-        };
-      }
-
-      // 3. Child category must be active
-      if (!category.active) {
-        return {
-          success: false,
-          message: "Category is inactive.",
-          code: "INACTIVE_CATEGORY",
-        };
-      }
-
-      // 4. Find the parent category
-      const parentCategory = await Category.findById(category.parent);
-
-      if (!parentCategory) {
-        return {
-          success: false,
-          message: "Parent category not found.",
-          code: "NOT_FOUND",
-        };
-      }
-
-      // 5. Parent category must be active
-      if (!parentCategory.active) {
-        return {
-          success: false,
-          message: "Parent category is inactive.",
-          code: "INACTIVE_CATEGORY",
-        };
-      }
-
-      // 6. Validate discounted price
-      if (
-        typeof productDetails.discountedPrice === "number" &&
-        (productDetails.discountedPrice <= 0 ||
-          productDetails.discountedPrice >= productDetails.price)
-      ) {
-        return {
-          success: false,
-          message: "Discounted price is incorrect.",
-          code: "INCORRECT_DISCOUNTED_PRICE",
-        };
-      }
-
-      // 7. Create product
-      const response = await Product.create(productDetails);
-
-      // 8. Return successful response
-      return {
-        success: true,
-        message: "Product added successfully.",
-        data: response,
-      };
-    } catch (err) {
-      throw err;
+    if (!categoryValidation.success) {
+      return categoryValidation;
     }
+
+    if (
+      typeof productDetails.discountedPrice === "number" &&
+      productDetails.discountedPrice >= productDetails.price
+    ) {
+      return {
+        success: false,
+        message: "Discounted price must be lower than the product price.",
+        code: "INCORRECT_DISCOUNTED_PRICE",
+      };
+    }
+
+    const product = await Product.create(productDetails);
+
+    return {
+      success: true,
+      message: "Product added successfully.",
+      data: product,
+    };
   },
 
   getProducts: async (
     role: string,
-    categoryId: string,
-    search: string,
-    sort: string,
-    page: number,
-    limit: number,
+    categoryId?: string,
+    search?: string,
+    sort?: string,
+    page: number = 1,
+    limit: number = 10
   ) => {
-    let productFilter: ProductFilterDataFormat = {};
-    let sortStage: {
-      createdAt?: -1 | 1;
-      effectivePrice?: -1 | 1;
-    } = {
-      createdAt: -1,
-    };
-    const allowedSortValue = ["price_asc", "price_desc", "newest", "oldest"];
-
     if (
-      typeof page !== "number" ||
-      typeof limit !== "number" ||
       !Number.isInteger(page) ||
       !Number.isInteger(limit) ||
       page < 1 ||
@@ -142,13 +128,40 @@ const productService = {
       };
     }
 
-    const skip = (page - 1) * limit;
+    const allowedSortValues = [
+      "price_asc",
+      "price_desc",
+      "newest",
+      "oldest",
+    ];
 
-    if (sort && !allowedSortValue.includes(sort)) {
+    if (sort && !allowedSortValues.includes(sort)) {
       return {
         success: false,
         message: "Invalid sorting request.",
         code: "INVALID_REQUEST",
+      };
+    }
+
+    const skip = (page - 1) * limit;
+
+    let productFilter: ProductFilter = {};
+
+    let sortStage: SortStage = {
+      createdAt: -1,
+    };
+
+    if (role === "customer") {
+      productFilter = {
+        active: true,
+      };
+    } else if (role === "admin") {
+      productFilter = {};
+    } else {
+      return {
+        success: false,
+        message: "You don't have authority to access this data.",
+        code: "FORBIDDEN",
       };
     }
 
@@ -170,62 +183,26 @@ const productService = {
       };
     }
 
-    if (role === "customer") {
-      productFilter = { active: true };
-    } else if (role === "admin") {
-      productFilter = {};
-    } else {
-      return {
-        success: false,
-        message: "You don't have authority to access this data.",
-        code: "FORBIDDEN",
-      };
-    }
-
     if (categoryId) {
-      const existingCategory = await Category.findOne({
-        _id: categoryId,
-        active: true,
-      });
-      if (!existingCategory) {
-        return {
-          success: false,
-          message: "Category doesn't exist.",
-          code: "NOT_FOUND",
-        };
-      }
-      if (!existingCategory.parent) {
-        return {
-          success: false,
-          message: "Product can't be filtered with parent category",
-          code: "INVALID_CATEGORY",
-        };
+      const categoryValidation = await validateProductCategory(categoryId);
+
+      if (!categoryValidation.success) {
+        return categoryValidation;
       }
 
-      const parentCategory = await Category.findOne({
-        _id: existingCategory.parent,
-        active: true,
-      });
-      if (!parentCategory) {
-        return {
-          success: false,
-          message: "Parent category is inactive ",
-          code: "INACTIVE_CATEGORY",
-        };
-      }
-      // When using aggregate need to convert to MongoDB Id format.
       productFilter.category = new mongoose.Types.ObjectId(categoryId);
     }
 
     if (search) {
-      productFilter.title = { $regex: search, $options: "i" };
+      productFilter.title = {
+        $regex: escapeRegex(search),
+        $options: "i",
+      };
     }
-
-    const res = await Product.find(productFilter);
 
     const pipeline = [
       {
-        $match: productFilter, // This is basically the aggregation equivalent of: Product.find(productFilter)
+        $match: productFilter,
       },
       {
         $addFields: {
@@ -237,7 +214,6 @@ const productService = {
       {
         $sort: sortStage,
       },
-
       {
         $facet: {
           products: [
@@ -248,17 +224,27 @@ const productService = {
               $limit: limit,
             },
           ],
-          totalCount: [{ $count: "total" }],
+          totalCount: [
+            {
+              $count: "total",
+            },
+          ],
         },
       },
     ];
+
     const result = await Product.aggregate(pipeline);
-    const productsData = result[0].products;
-    const total = result[0].totalCount[0]?.total ?? 0;
+
+    const productsData = result[0]?.products ?? [];
+
+    const total = result[0]?.totalCount[0]?.total ?? 0;
 
     const totalPages = Math.ceil(total / limit);
 
-    await Product.populate(productsData, { path: "category", select: "name" });
+    await Product.populate(productsData, {
+      path: "category",
+      select: "name",
+    });
 
     return {
       success: true,
@@ -279,8 +265,7 @@ const productService = {
   },
 
   getProductDetails: async (role: string, productId: string) => {
-    const isProductIdValid = mongoose.Types.ObjectId.isValid(productId);
-    if (!isProductIdValid) {
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
       return {
         success: false,
         message: "Invalid product ID.",
@@ -288,24 +273,28 @@ const productService = {
       };
     }
 
-    let productDetailsFilter = {};
+    let productDetailsFilter: Record<string, unknown>;
 
     if (role === "customer") {
-      productDetailsFilter = { _id: productId, active: true };
+      productDetailsFilter = {
+        _id: productId,
+        active: true,
+      };
     } else if (role === "admin") {
-      productDetailsFilter = { _id: productId };
+      productDetailsFilter = {
+        _id: productId,
+      };
     } else {
       return {
         success: false,
-        message: "You  don't have the authority to access this data.",
+        message: "You don't have the authority to access this data.",
         code: "FORBIDDEN",
       };
     }
 
-    const productDetails = await Product.findOne(productDetailsFilter).populate(
-      "category",
-      "name",
-    );
+    const productDetails = await Product.findOne(
+      productDetailsFilter
+    ).populate("category", "name");
 
     if (!productDetails) {
       return {
@@ -324,7 +313,7 @@ const productService = {
 
   updateProduct: async (
     productId: string,
-    productDetails: Partial<ProductDataFormat>,
+    productDetails: UpdateProductData
   ) => {
     if (!mongoose.Types.ObjectId.isValid(productId)) {
       return {
@@ -344,51 +333,26 @@ const productService = {
       };
     }
 
-    // Validate category only if category is being changed
     if (productDetails.category) {
-      const category = await Category.findById(productDetails.category);
+      const categoryValidation = await validateProductCategory(
+        productDetails.category
+      );
 
-      if (!category) {
-        return {
-          success: false,
-          message: "Category doesn't exist.",
-          code: "NOT_FOUND",
-        };
-      }
-
-      if (!category.parent) {
-        return {
-          success: false,
-          message: "Product must belong to a child category.",
-          code: "INVALID_CATEGORY",
-        };
-      }
-
-      if (!category.active) {
-        return {
-          success: false,
-          message: "Category is inactive.",
-          code: "INACTIVE_CATEGORY",
-        };
-      }
-
-      const parentCategory = await Category.findById(category.parent);
-
-      if (!parentCategory || !parentCategory.active) {
-        return {
-          success: false,
-          message: "Parent category is inactive.",
-          code: "INACTIVE_CATEGORY",
-        };
+      if (!categoryValidation.success) {
+        return categoryValidation;
       }
     }
 
-    // Validate discounted price against the final price
-    const finalPrice = productDetails.price ?? existingProduct.price;
+    const finalPrice =
+      productDetails.price ?? existingProduct.price;
+
+    const finalDiscountedPrice =
+      productDetails.discountedPrice ??
+      existingProduct.discountedPrice;
 
     if (
-      typeof productDetails.discountedPrice === "number" &&
-      productDetails.discountedPrice >= finalPrice
+      typeof finalDiscountedPrice === "number" &&
+      finalDiscountedPrice >= finalPrice
     ) {
       return {
         success: false,
@@ -399,8 +363,13 @@ const productService = {
 
     const updatedProduct = await Product.findByIdAndUpdate(
       productId,
-      { $set: productDetails },
-      { new: true, runValidators: true },
+      {
+        $set: productDetails,
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
     ).populate("category", "name");
 
     return {
@@ -438,6 +407,7 @@ const productService = {
     }
 
     product.active = false;
+
     await product.save();
 
     return {

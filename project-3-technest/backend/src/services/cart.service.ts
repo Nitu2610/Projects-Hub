@@ -1,246 +1,247 @@
-import mongoose,{Types} from "mongoose";
+import type { CartItem } from "../types/cart.types";
 
 const Product = require("../models/product.model");
 const Cart = require("../models/cart.model");
 
-interface CartItemDataFormat {
-  productId: Types.ObjectId;
-  quantity: number;
-}
-
 const cartService = {
+  addToCart: async (
+    productId: string,
+    quantity: number,
+    userId: string
+  ) => {
+    const product = await Product.findById(productId);
 
-addToCart: async ( productId: Types.ObjectId,
-  quantity: number, userId: Types.ObjectId) => {
+    if (!product) {
+      return {
+        success: false,
+        message: "Product not found.",
+        code: "NOT_FOUND",
+      };
+    }
 
-  const product = await Product.findById(productId);
+    if (!product.active) {
+      return {
+        success: false,
+        message: "Product is inactive.",
+        code: "PRODUCT_INACTIVE",
+      };
+    }
 
-  if (!product) {
-    return {
-      success: false,
-      message: "Product not found.",
-      code: "NOT_FOUND",
-    };
-  }
+    if (quantity > product.stock) {
+      return {
+        success: false,
+        message: "Product quantity should be within stock.",
+        code: "INVALID_QUANTITY",
+      };
+    }
 
-  if (!product.active) {
-    return {
-      success: false,
-      message: "Product is inactive.",
-      code: "PRODUCT_INACTIVE",
-    };
-  }
+    const cart = await Cart.findOne({ userId });
 
-  if (quantity > product.stock) {
-    return {
-      success: false,
-      message: "Product quantity should be within stock",
-      code: "INVALID_QUANTITY",
-    };
-  }
-
-  const cart = await Cart.findOne({ userId });
-
-  if (!cart) {
-    const newCart = {
-      userId,
-      items: [{productId, quantity}],
-    };
-
-    const createdCart = await Cart.create(newCart);
-
-    return {
-      success: true,
-      message: "Product added to cart",
-      data: createdCart,
-    };
-  }
-
-  // If the product already exists in the cart, update its quantity.
-  const existingCartItem = cart.items.find(
-    (item: CartItemDataFormat) =>
-      item.productId.toString() === productId.toString(),
-  );
-
-  if (!existingCartItem) {
-    cart.items.push({productId,quantity});
-  } else {
-    existingCartItem.quantity = quantity;
-  }
-// Mongoose retrieves the MongoDB document and gives you a Mongoose document instance representing that same database document, on which you perform the modification and use .save() on the same data, so its automatically update the  data/doc on the mongoDB.
-  const updatedCart = await cart.save();
-
-  return {
-    success: true,
-    message: "Product quantity updated.",
-    data: updatedCart,
-  };
-},
-
-getCart: async (userId: Types.ObjectId) => {
-  const cart = await Cart.findOne({ userId }).populate("items.productId");
-
-  if (!cart) {
-    return {
-      success: true,
-      message: "Cart is empty.",
-      data: {
+    if (!cart) {
+      const createdCart = await Cart.create({
         userId,
-        items: [],
-      },
-    };
-  }
+        items: [
+          {
+            productId,
+            quantity,
+          },
+        ],
+      });
 
-  return {
-    success: true,
-    message: "Cart fetched successfully.",
-    data: cart,
-  };
-},
+      return {
+        success: true,
+        message: "Product added to cart.",
+        data: createdCart,
+      };
+    }
 
-updateCartItem: async (
-  productId: Types.ObjectId,
-  quantity: number,
-  userId: Types.ObjectId
-) => {
-  const productExist = await Product.findById(productId);
+    const existingCartItem = cart.items.find(
+      (item: CartItem) =>
+        item.productId.toString() === productId
+    );
 
-  if (!productExist) {
+    if (!existingCartItem) {
+      cart.items.push({
+        productId,
+        quantity,
+      });
+    } else {
+      existingCartItem.quantity = quantity;
+    }
+
+    const updatedCart = await cart.save();
+
     return {
-      success: false,
-      message: "Product not found.",
-      code: "NOT_FOUND",
+      success: true,
+      message: existingCartItem
+        ? "Product quantity updated."
+        : "Product added to cart.",
+      data: updatedCart,
     };
-  }
+  },
 
-  if (!productExist.active) {
+  getCart: async (userId: string) => {
+    const cart = await Cart.findOne({ userId }).populate(
+      "items.productId"
+    );
+
+    if (!cart) {
+      return {
+        success: true,
+        message: "Cart is empty.",
+        data: {
+          userId,
+          items: [],
+        },
+      };
+    }
+
     return {
-      success: false,
-      message: "Product is inactive, can't update cart.",
-      code: "PRODUCT_INACTIVE",
+      success: true,
+      message: "Cart fetched successfully.",
+      data: cart,
     };
-  }
+  },
 
-  const cartExist = await Cart.findOne({ userId });
+  updateCartItem: async (
+    productId: string,
+    quantity: number,
+    userId: string
+  ) => {
+    const product = await Product.findById(productId);
 
-  if (!cartExist) {
+    if (!product) {
+      return {
+        success: false,
+        message: "Product not found.",
+        code: "NOT_FOUND",
+      };
+    }
+
+    if (!product.active) {
+      return {
+        success: false,
+        message: "Product is inactive, can't update cart.",
+        code: "PRODUCT_INACTIVE",
+      };
+    }
+
+    const cart = await Cart.findOne({ userId });
+
+    if (!cart) {
+      return {
+        success: false,
+        message: "Cart item not found.",
+        code: "CART_ITEM_NOT_FOUND",
+      };
+    }
+
+    const itemIndex = cart.items.findIndex(
+      (item: CartItem) =>
+        item.productId.toString() === productId
+    );
+
+    if (itemIndex === -1) {
+      return {
+        success: false,
+        message: "Cart item not found.",
+        code: "CART_ITEM_NOT_FOUND",
+      };
+    }
+
+    if (quantity > product.stock) {
+      return {
+        success: false,
+        message: "Invalid quantity.",
+        code: "INVALID_QUANTITY",
+      };
+    }
+
+    if (quantity === 0) {
+      cart.items.splice(itemIndex, 1);
+
+      const updatedCart = await cart.save();
+
+      return {
+        success: true,
+        message: "Product removed from cart.",
+        data: updatedCart,
+      };
+    }
+
+    cart.items[itemIndex].quantity = quantity;
+
+    const updatedCart = await cart.save();
+
     return {
-      success: false,
-      message: "Cart item not found.",
-      code: "CART_ITEM_NOT_FOUND",
+      success: true,
+      message: "Cart quantity updated successfully.",
+      data: updatedCart,
     };
-  }
+  },
 
-  const itemIndex = cartExist.items.findIndex(
-    (item: CartItemDataFormat) =>
-      item.productId.toString() === productId.toString()
-  );
+  deleteCartItem: async (
+    productId: string,
+    userId: string
+  ) => {
+    const cart = await Cart.findOne({ userId });
 
-  if (itemIndex === -1) {
-    return {
-      success: false,
-      message: "Cart item not found.",
-      code: "CART_ITEM_NOT_FOUND",
-    };
-  }
+    if (!cart) {
+      return {
+        success: false,
+        message: "Cart item not found.",
+        code: "CART_ITEM_NOT_FOUND",
+      };
+    }
 
-  if (quantity > productExist.stock) {
-    return {
-      success: false,
-      message: "Invalid quantity.",
-      code: "INVALID_QUANTITY",
-    };
-  }
+    const itemIndex = cart.items.findIndex(
+      (item: CartItem) =>
+        item.productId.toString() === productId
+    );
 
-// As soon as the quantity reaches 0, we need to delete that particular cart details.
-  if (quantity === 0) {
-    cartExist.items.splice(itemIndex, 1);
+    if (itemIndex === -1) {
+      return {
+        success: false,
+        message: "Cart item not found.",
+        code: "CART_ITEM_NOT_FOUND",
+      };
+    }
 
-    const updatedCart = await cartExist.save();
+    cart.items.splice(itemIndex, 1);
+
+    const updatedCart = await cart.save();
 
     return {
       success: true,
       message: "Product removed from cart.",
       data: updatedCart,
     };
-  }
+  },
 
-  cartExist.items[itemIndex].quantity = quantity;
+  clearCart: async (userId: string) => {
+    const cart = await Cart.findOne({ userId });
 
-  const updatedCart = await cartExist.save();
+    if (!cart) {
+      return {
+        success: true,
+        message: "Cart is already empty.",
+        data: {
+          userId,
+          items: [],
+        },
+      };
+    }
 
-  return {
-    success: true,
-    message: "Cart quantity updated successfully.",
-    data: updatedCart,
-  };
-},
+    cart.items = [];
 
-deleteCartItem: async (
-  productId: Types.ObjectId,
-  userId: Types.ObjectId
-) => {
-  const cartExist = await Cart.findOne({ userId });
+    const clearedCart = await cart.save();
 
-  if (!cartExist) {
-    return {
-      success: false,
-      message: "Cart item not found.",
-      code: "CART_ITEM_NOT_FOUND",
-    };
-  }
-
-  const itemIndex = cartExist.items.findIndex(
-    (item: CartItemDataFormat) =>
-      item.productId.toString() === productId.toString()
-  );
-
-  if (itemIndex === -1) {
-    return {
-      success: false,
-      message: "Cart item not found.",
-      code: "CART_ITEM_NOT_FOUND",
-    };
-  }
-
-  cartExist.items.splice(itemIndex, 1);
-
-  const updatedCart = await cartExist.save();
-
-  return {
-    success: true,
-    message: "Product removed from cart.",
-    data: updatedCart,
-  };
-},
-
-clearCart: async (userId: Types.ObjectId) => {
-  const cartExist = await Cart.findOne({ userId });
-
-  if (!cartExist) {
     return {
       success: true,
-      message: "Cart is already empty.",
-      data: {
-        userId,
-        items: [],
-      },
+      message: "Cart cleared successfully.",
+      data: clearedCart,
     };
-  }
-
-  cartExist.items = [];
-
-  const clearedCart = await cartExist.save();
-
-  return {
-    success: true,
-    message: "Cart cleared successfully.",
-    data: clearedCart,
-  };
-},
-
+  },
 };
 
 module.exports = cartService;
-
-

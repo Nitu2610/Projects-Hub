@@ -1,23 +1,7 @@
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
+
 const categoryService = require("../services/category.service");
 
-interface CustomerCategoryRespond {
-  _id: string;
-  name: string;
-  active: boolean;
-  parent: string | null;
-}
-
-interface AdminCategoryRespond {
-  _id: string;
-  name: string;
-  active: boolean;
-  productCount: number;
-  parent: {
-    _id: string;
-    name: string;
-  } | null;
-}
 const categoryController = {
   addCategory: async (req: Request, res: Response) => {
     const categoryAdded = await categoryService.addCategory({
@@ -28,31 +12,32 @@ const categoryController = {
     if (!categoryAdded.success) {
       if (categoryAdded.code === "ALREADY_EXIST") {
         return res.status(409).json({
-          success: categoryAdded.success,
+          success: false,
           message: categoryAdded.message,
         });
       }
+
       if (categoryAdded.code === "PARENT_NOT_FOUND") {
         return res.status(404).json({
-          success: categoryAdded.success,
+          success: false,
           message: categoryAdded.message,
         });
       }
-      if (categoryAdded.code === "PARENT_CATEGORY_INACTIVE") {
+
+      if (
+        categoryAdded.code ===
+          "PARENT_CATEGORY_INACTIVE" ||
+        categoryAdded.code === "INVALID_PARENT"
+      ) {
         return res.status(400).json({
-          success: categoryAdded.success,
-          message: categoryAdded.message,
-        });
-      }
-      if (categoryAdded.code === "INVALID_PARENT") {
-        return res.status(400).json({
-          success: categoryAdded.success,
+          success: false,
           message: categoryAdded.message,
         });
       }
     }
+
     return res.status(201).json({
-      success: categoryAdded.success,
+      success: true,
       message: categoryAdded.message,
       data: categoryAdded.data,
     });
@@ -61,91 +46,80 @@ const categoryController = {
   getCategories: async (req: Request, res: Response) => {
     const role = req.user.role;
 
-    const response = await categoryService.getCategories(role);
-
-    let safeData;
-
-    if (role === "customer") {
-      safeData = response.data.map((data: CustomerCategoryRespond) => {
-        const { _id, name, active, parent } = data;
-
-        return {
-          _id,
-          name,
-          active,
-          parent,
-        };
-      });
-    }
-
-    if (role === "admin") {
-      safeData = response.data.map((data: AdminCategoryRespond) => {
-        const { _id, name, active, parent, productCount } = data;
-
-        return {
-          _id,
-          name,
-          active,
-          parent,
-          productCount,
-        };
-      });
-    }
-
-    return res.status(200).json({
-      success: response.success,
-      message: response.message,
-      data: safeData,
-    });
-  },
-
-  updateCategory: async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const response = await categoryService.updateCategory({
-      categoryId: id,
-      name: req.body.name,
-    });
+    const response =
+      await categoryService.getCategories(role);
 
     if (!response.success) {
-      if (response.code === "NOT_FOUND") {
-        return res.status(404).json({
-          success: response.success,
-          message: response.message,
-        });
-      }
-      if (response.code === "ALREADY_EXIST") {
-        return res.status(409).json({
-          success: response.success,
+      if (response.code === "FORBIDDEN") {
+        return res.status(403).json({
+          success: false,
           message: response.message,
         });
       }
     }
 
     return res.status(200).json({
-      success: response.success,
+      success: true,
       message: response.message,
       data: response.data,
     });
   },
 
-  updateCategoryStatus: async (req: Request, res: Response) => {
+  updateCategory: async (req: Request, res: Response) => {
     const { id } = req.params;
-    const response = await categoryService.updateCategoryStatus({
-      categoryId: id,
-      active: req.body.active,
-    });
+
+    const response =
+      await categoryService.updateCategory({
+        categoryId: id,
+        name: req.body.name,
+      });
 
     if (!response.success) {
       if (response.code === "NOT_FOUND") {
         return res.status(404).json({
-          success: response.success,
+          success: false,
+          message: response.message,
+        });
+      }
+
+      if (response.code === "ALREADY_EXIST") {
+        return res.status(409).json({
+          success: false,
           message: response.message,
         });
       }
     }
 
     return res.status(200).json({
-      success: response.success,
+      success: true,
+      message: response.message,
+      data: response.data,
+    });
+  },
+
+  updateCategoryStatus: async (
+    req: Request,
+    res: Response
+  ) => {
+    const { id } = req.params;
+
+    const response =
+      await categoryService.updateCategoryStatus({
+        categoryId: id,
+        active: req.body.active,
+      });
+
+    if (!response.success) {
+      if (response.code === "NOT_FOUND") {
+        return res.status(404).json({
+          success: false,
+          message: response.message,
+        });
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
       message: response.message,
       data: response.data,
     });

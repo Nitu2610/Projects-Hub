@@ -5,6 +5,7 @@ const PaymentMethods = {
   UPI: "UPI",
   CARD: "CARD",
 };
+
 const CardTypes = {
   CREDIT: "CREDIT",
   DEBIT: "DEBIT",
@@ -19,19 +20,25 @@ const CancellationReasons = {
 };
 
 const createOrderValidation = [
-  body("addressId").isMongoId().withMessage("Invalid address ID."),
-  ,
+  body("addressId")
+    .isMongoId()
+    .withMessage("Invalid address ID."),
+
   body("paymentMethod")
     .isString()
     .trim()
     .notEmpty()
     .withMessage("Payment method can't be empty.")
     .isIn(Object.values(PaymentMethods))
-    .withMessage("Invalid payment method, select COD/UPI/Card mode."),
+    .withMessage(
+      "Invalid payment method, select COD/UPI/Card mode."
+    ),
+
   body("paymentData")
     .optional()
     .isObject()
     .withMessage("Payment data must be an object."),
+
   body("paymentData.upiId")
     .if(body("paymentMethod").equals(PaymentMethods.UPI))
     .exists()
@@ -40,14 +47,13 @@ const createOrderValidation = [
     .trim()
     .notEmpty()
     .withMessage("Please provide a valid UPI ID."),
-  ,
-  body("paymentData.card")
+
+  body("paymentData.cardType")
     .if(body("paymentMethod").equals(PaymentMethods.CARD))
     .exists()
     .withMessage("Card type is required for card payment.")
     .isIn(Object.values(CardTypes))
     .withMessage("Card type must be CREDIT or DEBIT."),
-  ,
 ];
 
 const cancelOrderValidation = [
@@ -65,5 +71,6 @@ const cancelOrderValidation = [
 ];
 
 module.exports = {
-  createOrderValidation, cancelOrderValidation
+  createOrderValidation,
+  cancelOrderValidation,
 };

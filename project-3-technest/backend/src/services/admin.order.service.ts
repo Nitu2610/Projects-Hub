@@ -1,21 +1,14 @@
-import { Types } from "mongoose";
-import { OrderStatus } from "../models/order.model";
+import type { OrderStatus } from "../types/order.types";
 
-const Address = require("../models/address.model");
 const Product = require("../models/product.model");
-const Cart = require("../models/cart.model");
 const Order = require("../models/order.model");
 
-
-  interface Order {
-  orderStatus: OrderStatus;
-}
- type OrderCancellationReason= 
-    | "CHANGED_MIND"
-    | "ORDERED_BY_MISTAKE"
-    | "FOUND_BETTER_PRICE"
-    | "DELIVERY_DELAY"
-    | "OTHER";
+type OrderCancellationReason =
+  | "CHANGED_MIND"
+  | "ORDERED_BY_MISTAKE"
+  | "FOUND_BETTER_PRICE"
+  | "DELIVERY_DELAY"
+  | "OTHER";
 
 const allowedOrderStatusTransitions: Record<
   OrderStatus,
@@ -23,15 +16,16 @@ const allowedOrderStatusTransitions: Record<
 > = {
   PLACED: ["CONFIRMED", "CANCELLED"],
   CONFIRMED: ["SHIPPED", "CANCELLED"],
-  SHIPPED: ["DELIVERED", "CANCELLED"],
+  SHIPPED: ["DELIVERED"],
   DELIVERED: [],
   CANCELLED: [],
 };
 
 const adminOrderService = {
-
   getOrders: async () => {
-    const orders = await Order.find({}).sort({ createdAt: -1 }).populate("userId", "fullName");
+    const orders = await Order.find({})
+      .sort({ createdAt: -1 })
+      .populate("userId", "fullName");
 
     return {
       success: true,
@@ -41,14 +35,6 @@ const adminOrderService = {
   },
 
   getOrderById: async (orderId: string) => {
-    if (!Types.ObjectId.isValid(orderId)) {
-      return {
-        success: false,
-        message: "Invalid order ID.",
-        code: "INVALID_ORDER_ID",
-      };
-    }
-
     const order = await Order.findById(orderId);
 
     if (!order) {
@@ -67,112 +53,96 @@ const adminOrderService = {
   },
 
   updateOrderStatus: async (
-  orderId: string,
-  orderStatus: OrderStatus
-) => {
-  if (!Types.ObjectId.isValid(orderId)) {
-    return {
-      success: false,
-      message: "Invalid order ID.",
-      code: "INVALID_ORDER_ID",
-    };
-  }
+    orderId: string,
+    orderStatus: OrderStatus
+  ) => {
+    const order = await Order.findById(orderId);
 
-  const order = await Order.findById(orderId);
-
-  if (!order) {
-    return {
-      success: false,
-      message: "Order not found.",
-      code: "NOT_FOUND",
-    };
-  } 
-const requestOrderStatus : OrderStatus= order.orderStatus;
-
-  const allowedStatuses=
-    allowedOrderStatusTransitions[requestOrderStatus] ;
-
-  if (!allowedStatuses.includes(orderStatus)) {
-    return {
-      success: false,
-      message: `Order cannot be changed from ${order.orderStatus} to ${orderStatus}.`,
-      code: "INVALID_STATUS_TRANSITION",
-    };
-  }
-
-  order.orderStatus = orderStatus;
-
-  await order.save();
-
-  return {
-    success: true,
-    message: "Order status updated successfully.",
-    data: order,
-  };
-},
-
-cancelOrder: async (
-  orderId: string,
-  cancellationReason: OrderCancellationReason
-) => {
-  if (!Types.ObjectId.isValid(orderId)) {
-    return {
-      success: false,
-      message: "Invalid order ID.",
-      code: "INVALID_ORDER_ID",
-    };
-  }
-
-  const order = await Order.findById(orderId);
-
-  if (!order) {
-    return {
-      success: false,
-      message: "Order not found.",
-      code: "NOT_FOUND",
-    };
-  }
-
-  if (
-    order.orderStatus !== "PLACED" &&
-    order.orderStatus !== "CONFIRMED" &&
-    order.orderStatus !== "SHIPPED"
-  ) {
-    return {
-      success: false,
-      message: "Order cannot be cancelled at this stage.",
-      code: "CANCELLATION_NOT_ALLOWED",
-    };
-  }
-
-  for (const item of order.items) {
-    const product = await Product.findById(item.productId);
-
-    if (!product) {
+    if (!order) {
       return {
         success: false,
-        message: `Product ${item.productName} no longer exists.`,
-        code: "PRODUCT_NOT_FOUND",
+        message: "Order not found.",
+        code: "NOT_FOUND",
       };
     }
 
-    product.stock += item.quantity;
-    await product.save();
-  }
+    const currentStatus: OrderStatus = order.orderStatus;
 
-  order.orderStatus = "CANCELLED";
-  order.cancellationReason = cancellationReason;
-  order.cancelledAt = new Date();
+    const allowedStatuses =
+      allowedOrderStatusTransitions[currentStatus];
 
-  await order.save();
+    if (!allowedStatuses.includes(orderStatus)) {
+      return {
+        success: false,
+        message: `Order cannot be changed from ${currentStatus} to ${orderStatus}.`,
+        code: "INVALID_STATUS_TRANSITION",
+      };
+    }
 
-  return {
-    success: true,
-    message: "Order cancelled successfully.",
-    data: order,
-  };
-},
+    order.orderStatus = orderStatus;
 
+    await order.save();
+
+    return {
+      success: true,
+      message: "Order status updated successfully.",
+      data: order,
+    };
+  },
+
+  cancelOrder: async (
+    orderId: string,
+    cancellationReason: OrderCancellationReason
+  ) => {
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return {
+        success: false,
+        message: "Order not found.",
+        code: "NOT_FOUND",
+      };
+    }
+
+    if (
+      order.orderStatus !== "PLACED" &&
+      order.orderStatus !== "CONFIRMED"
+    ) {
+      return {
+        success: false,
+        message: "Order cannot be cancelled at this stage.",
+        code: "CANCELLATION_NOT_ALLOWED",
+      };
+    }
+
+    for (const item of order.items) {
+      const product = await Product.findById(item.productId);
+
+      if (!product) {
+        return {
+          success: false,
+          message: `Product ${item.productName} no longer exists.`,
+          code: "PRODUCT_NOT_FOUND",
+        };
+      }
+
+      product.stock += item.quantity;
+
+      await product.save();
+    }
+
+    order.orderStatus = "CANCELLED";
+    order.cancellationReason = cancellationReason;
+    order.cancelledAt = new Date();
+
+    await order.save();
+
+    return {
+      success: true,
+      message: "Order cancelled successfully.",
+      data: order,
+    };
+  },
 };
 
 module.exports = adminOrderService;

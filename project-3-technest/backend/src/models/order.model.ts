@@ -1,104 +1,149 @@
 import mongoose, { Schema, Types } from "mongoose";
 
-interface OrderItem {
-  productId: Types.ObjectId;
-  productName: string;
-  quantity: number;
-  purchasedPrice: number;
-  subtotal: number;
-}
+import type {
+  CancellationReason,
+  OrderStatus,
+  PaymentMethod,
+  PaymentStatus,
+  OrderItem,
+  ShippingAddressSnapshot,
+} from "../types/order.types";
 
-interface ShippingAddressSnapshot {
-  fullName: string;
-  phone: string;
-  addressLine1: string;
-  addressLine2?: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  country: string;
-}
-
-export type OrderStatus =
-  | "PLACED"
-  | "CONFIRMED"
-  | "SHIPPED"
-  | "DELIVERED"
-  | "CANCELLED";
-
-  
-interface OrderDataFormat {
+interface OrderData {
   userId: Types.ObjectId;
   items: OrderItem[];
   shippingAddress: ShippingAddressSnapshot;
   totalAmount: number;
-  paymentMethod: "COD" | "UPI" | "CARD";
-  paymentStatus: "PENDING" | "PAID" | "FAILED";
-  orderStatus:OrderStatus;
-  cancellationReason?:
-    | "CHANGED_MIND"
-    | "ORDERED_BY_MISTAKE"
-    | "FOUND_BETTER_PRICE"
-    | "DELIVERY_DELAY"
-    | "OTHER";
-
+  paymentMethod: PaymentMethod;
+  paymentStatus: PaymentStatus;
+  orderStatus: OrderStatus;
+  cancellationReason?: CancellationReason;
   cancelledAt?: Date;
 }
 
-const orderSchema = new mongoose.Schema<OrderDataFormat>(
+const orderItemSchema = new Schema<OrderItem>(
+  {
+    productId: {
+      type: Schema.Types.ObjectId,
+      ref: "Product",
+      required: true,
+    },
+
+    productName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    quantity: {
+      type: Number,
+      required: true,
+      min: 1,
+    },
+
+    purchasedPrice: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+
+    subtotal: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+  },
+  {
+    _id: false,
+  }
+);
+
+const shippingAddressSchema =
+  new Schema<ShippingAddressSnapshot>(
+    {
+      fullName: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+
+      phone: {
+        type: String,
+        required: true,
+        match: [
+          /^[6-9]\d{9}$/,
+          "Please provide a valid Indian mobile number",
+        ],
+      },
+
+      addressLine1: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+
+      addressLine2: {
+        type: String,
+        trim: true,
+      },
+
+      city: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+
+      state: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+
+      postalCode: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+
+      country: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+    },
+    {
+      _id: false,
+    }
+  );
+
+const orderSchema = new Schema<OrderData>(
   {
     userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    items: [
-      {
-        productId: {
-          type: Schema.Types.ObjectId,
-          ref: "Product",
-          required: true,
-        },
-        productName: {
-          type: String,
-          required: true,
-        },
-        quantity: {
-          type: Number,
-          required: true,
-          min: 1,
-        },
-        purchasedPrice: {
-          type: Number,
-          required: true,
-          min: 0,
-        },
-        subtotal: {
-          type: Number,
-          required: true,
-          min: 0,
-        },
+
+    items: {
+      type: [orderItemSchema],
+      required: true,
+      validate: {
+        validator: (items: OrderItem[]) => items.length > 0,
+        message: "Order must contain at least one item.",
       },
-    ],
-    shippingAddress: {
-      fullName: { type: String, required: true },
-      phone: {
-        type: String,
-        required: true,
-        match: [/^[6-9]\d{9}$/, "Please provide a valid Indian mobile number"],
-      },
-      addressLine1: { type: String, required: true },
-      addressLine2: { type: String, required: true },
-      city: { type: String, required: true },
-      state: { type: String, required: true },
-      postalCode: { type: String, required: true },
-      country: { type: String, required: true },
     },
+
+    shippingAddress: {
+      type: shippingAddressSchema,
+      required: true,
+    },
+
     totalAmount: {
       type: Number,
       required: true,
       min: 0,
     },
+
     paymentMethod: {
       type: String,
       enum: ["COD", "UPI", "CARD"],
@@ -113,9 +158,16 @@ const orderSchema = new mongoose.Schema<OrderDataFormat>(
 
     orderStatus: {
       type: String,
-      enum: ["PLACED", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED"],
+      enum: [
+        "PLACED",
+        "CONFIRMED",
+        "SHIPPED",
+        "DELIVERED",
+        "CANCELLED",
+      ],
       required: true,
     },
+
     cancellationReason: {
       type: String,
       enum: [
@@ -126,13 +178,16 @@ const orderSchema = new mongoose.Schema<OrderDataFormat>(
         "OTHER",
       ],
     },
+
     cancelledAt: {
       type: Date,
     },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+  }
 );
 
-const Order = mongoose.model<OrderDataFormat>("Order", orderSchema);
+const Order = mongoose.model<OrderData>("Order", orderSchema);
 
 module.exports = Order;

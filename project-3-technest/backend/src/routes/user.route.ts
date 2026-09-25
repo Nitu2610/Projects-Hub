@@ -1,17 +1,23 @@
 const express = require("express");
+
 const userController = require("../controllers/user.controller");
 const asyncHandler = require("../utils/asyncHandler");
+
 const {
   userRegisterValidator,
   userLoginValidator,
   updateUserProfileValidator,
   changeUserPasswordValidator,
 } = require("../validators/user.validator");
+
 const validatorMiddleware = require("../middlewares/validator.middleware");
+
 const authMiddleware = require("../middlewares/authentication.middleware");
+
 const authorize = require("../middlewares/authorization.middleware");
 
 const userRoute = express.Router();
+
 //users
 userRoute.post(
   "/register",
@@ -61,7 +67,5 @@ userRoute.get(
   asyncHandler(userController.getAllCustomers)
 );
 
-
-userRoute.get("/check", asyncHandler(userController.checking));
 
 module.exports = userRoute;

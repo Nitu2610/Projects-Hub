@@ -1,14 +1,12 @@
 const { body, param } = require("express-validator");
 
-
-export const OrderStatuses = {
+const OrderStatuses = {
   PLACED: "PLACED",
   CONFIRMED: "CONFIRMED",
   SHIPPED: "SHIPPED",
   DELIVERED: "DELIVERED",
   CANCELLED: "CANCELLED",
 };
-
 
 const AdminCancellationReasons = {
   CHANGED_MIND: "CHANGED_MIND",
@@ -23,8 +21,6 @@ const getOrderByIdValidation = [
     .isMongoId()
     .withMessage("Invalid order ID."),
 ];
-
-
 
 const updateOrderStatusValidation = [
   param("orderId")
@@ -55,7 +51,7 @@ const cancelOrderValidation = [
 ];
 
 module.exports = {
- getOrderByIdValidation,
- updateOrderStatusValidation, 
- cancelOrderValidation
+  getOrderByIdValidation,
+  updateOrderStatusValidation,
+  cancelOrderValidation,
 };

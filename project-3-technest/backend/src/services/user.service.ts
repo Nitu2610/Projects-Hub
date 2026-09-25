@@ -1,19 +1,13 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import type { AuthPayload } from "../types/auth.types";
+import {
+  ChangeUserPasswordData,
+  LoginCredentials,
+  RegisterUserData,
+  UpdateUserProfileData,
+} from "../types/user.types";
 const User = require("../models/user.model");
-
-interface RegisterUserData {
-  fullName: string;
-  email: string;
-  password: string;
-  mobile: string;
-}
-
-interface LoginCredentials {
-  email: string;
-  password: string;
-}
 
 const userService = {
   userRegister: async (userData: RegisterUserData) => {
@@ -28,14 +22,14 @@ const userService = {
         };
       }
 
-      const hashPassword = await bcrypt.hash(
-        userData.password,
-        Number(process.env.BCRYPT_SALT_ROUNDS) || 8,
-      );
+      const saltRounds = Number(process.env.BCRYPT_SALT_ROUNDS) || 8;
+      const newPassword = userData.password;
+
+      const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
       const newUser = {
         fullName: userData.fullName,
         email: userData.email,
-        password: hashPassword,
+        password: hashedPassword,
         mobile: userData.mobile,
         role: "customer",
       };
@@ -95,15 +89,19 @@ const userService = {
       };
     }
 
-    const jwtScretKey = process.env.JWT_SECRET_KEY;
+    const jwtSecretKey = process.env.JWT_SECRET_KEY;
 
-    if (!jwtScretKey) {
-      throw new Error("JWT_SECREWT_KEY is missing.");
+    if (!jwtSecretKey) {
+      throw new Error("JWT_SECRET_KEY is missing.");
     }
 
-    const token = jwt.sign({ userId: user._id, role: user.role }, jwtScretKey, {
-      expiresIn: "1d",
-    });
+    const token = jwt.sign(
+      { userId: user._id, role: user.role },
+      jwtSecretKey,
+      {
+        expiresIn: "1d",
+      },
+    );
 
     const safeData = {
       token,
@@ -122,7 +120,7 @@ const userService = {
   },
 
   userProfile: async ({ userId }: AuthPayload) => {
-    const user = await User.findOne({ _id: userId });
+    const user = await User.findById(userId);
     if (!user) {
       return {
         success: false,
@@ -141,10 +139,7 @@ const userService = {
 
   updateUserProfile: async (
     userId: string,
-    profileData: {
-      fullName?: string;
-      mobile?: string;
-    },
+    profileData: UpdateUserProfileData,
   ) => {
     const updatedUser = await User.findOneAndUpdate(
       { _id: userId, role: "customer" },
@@ -181,9 +176,10 @@ const userService = {
 
   changeUserPassword: async (
     userId: string,
-    currentPassword: string,
-    newPassword: string,
+    passwordData: ChangeUserPasswordData,
   ) => {
+    const { currentPassword, newPassword } = passwordData;
+
     const user = await User.findOne({
       _id: userId,
       role: "customer",
@@ -210,10 +206,9 @@ const userService = {
       };
     }
 
-    const hashedPassword = await bcrypt.hash(
-      newPassword,
-      Number(process.env.BCRYPT_SALT_ROUNDS),
-    );
+    const saltRounds = Number(process.env.BCRYPT_SALT_ROUNDS) || 8;
+
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
 
     user.password = hashedPassword;
 
@@ -226,17 +221,16 @@ const userService = {
   },
 
   getAllCustomers: async () => {
-  const customers = await User.find({ role: "customer" })
-    .select("-password")
-    .sort({ createdAt: -1 });
+    const customers = await User.find({ role: "customer" })
+      .select("-password")
+      .sort({ createdAt: -1 });
 
-  return {
-    success: true,
-    message: "Customers fetched successfully.",
-    data: customers,
-  };
-},
-
+    return {
+      success: true,
+      message: "Customers fetched successfully.",
+      data: customers,
+    };
+  },
 };
 
 module.exports = userService;

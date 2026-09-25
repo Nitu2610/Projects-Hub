@@ -1,10 +1,15 @@
 const express = require("express");
-const { createOrderValidation,cancelOrderValidation
- } = require("../validators/order.validator");
+
+const {
+  createOrderValidation,
+  cancelOrderValidation,
+} = require("../validators/order.validator");
+
 const validatorMiddleware = require("../middlewares/validator.middleware");
 const authMiddleware = require("../middlewares/authentication.middleware");
 const authorize = require("../middlewares/authorization.middleware");
 const asyncHandler = require("../utils/asyncHandler");
+
 const orderController = require("../controllers/order.controller");
 
 const orderRoute = express.Router();
@@ -15,9 +20,8 @@ orderRoute.post(
   authorize("customer"),
   createOrderValidation,
   validatorMiddleware,
-  asyncHandler(orderController.createOrder),
+  asyncHandler(orderController.createOrder)
 );
-
 
 orderRoute.get(
   "/",
@@ -42,7 +46,4 @@ orderRoute.patch(
   asyncHandler(orderController.cancelOrder)
 );
 
-
 module.exports = orderRoute;
-
-

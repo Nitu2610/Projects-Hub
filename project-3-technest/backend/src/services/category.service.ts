@@ -1,50 +1,32 @@
+import type {
+  CategoryData,
+  UpdateCategoryData,
+  UpdateCategoryStatusData,
+} from "../types/category.types";
+
 const Category = require("../models/category.model");
 
-interface CategoryDataFormat {
-  name: string;
-  parent?: string | null;
-}
-
-interface DatabaseCategoryDataFormat {
-  name: string;
-  normalizedName: string;
-  parent: string | null;
-  active: boolean;
-  _id?: string;
-}
-
-interface AdminCategoryDataFormat {
-  _id: string;
-  name: string;
-  active: boolean;
-  productCount: number;
-  parent: {
-    _id: string;
-    name: string;
-  } | null;
-}
-interface UpdateCategoryDataFormat {
-  categoryId: string;
-  name: string;
-}
-interface UpdateCategoryStatusDataFormat {
-  categoryId: string;
-  active: boolean;
-}
+const isDuplicateKeyError = (error: unknown): boolean => {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    error.code === 11000
+  );
+};
 
 const categoryService = {
-  addCategory: async (categoryDetails: CategoryDataFormat) => {
+  addCategory: async (categoryDetails: CategoryData) => {
     const normalizedName = categoryDetails.name.trim().toLowerCase();
 
-    // Case 1: Create Parent Category
-
+    // Create parent category
     if (!categoryDetails.parent) {
-      const exisitingCategory = await Category.findOne({
+      const existingCategory = await Category.findOne({
         normalizedName,
         parent: null,
       });
 
-      if (exisitingCategory) {
+      if (existingCategory) {
         return {
           success: false,
           message: "Category already exists.",
@@ -64,28 +46,22 @@ const categoryService = {
           message: "Parent category created successfully.",
           data: newCategory,
         };
-      } catch (err: unknown) {
-        if (
-          typeof err === "object" &&
-          err !== null &&
-          "code" in err &&
-          err.code === 11000
-        ) {
+      } catch (error: unknown) {
+        if (isDuplicateKeyError(error)) {
           return {
             success: false,
             message: "Category already exists.",
             code: "ALREADY_EXIST",
           };
         }
-        throw err;
+
+        throw error;
       }
     }
 
-    // Case 2: Create Child Category
-
+    // Create child category
     const parentCategory = await Category.findById(categoryDetails.parent);
 
-    // Parent doesnt exist
     if (!parentCategory) {
       return {
         success: false,
@@ -94,25 +70,22 @@ const categoryService = {
       };
     }
 
-    // Parent is inactive
     if (!parentCategory.active) {
       return {
         success: false,
-        message: "Parent category is inactive",
+        message: "Parent category is inactive.",
         code: "PARENT_CATEGORY_INACTIVE",
       };
     }
 
-    // Referenced category is itself a child
     if (parentCategory.parent) {
       return {
         success: false,
-        message: "A childcategory cannot have another child category",
+        message: "A child category cannot have another child category.",
         code: "INVALID_PARENT",
       };
     }
 
-    // check duplicate within the same parent and child category
     const existingCategory = await Category.findOne({
       normalizedName,
       parent: parentCategory._id,
@@ -121,7 +94,7 @@ const categoryService = {
     if (existingCategory) {
       return {
         success: false,
-        message: "Category already exists under the parent",
+        message: "Category already exists under the parent.",
         code: "ALREADY_EXIST",
       };
     }
@@ -138,39 +111,37 @@ const categoryService = {
         message: "Category created successfully.",
         data: newCategory,
       };
-    } catch (err: unknown) {
-      if (
-        typeof err === "object" &&
-        err !== null &&
-        "code" in err &&
-        err.code === 11000
-      ) {
-        console.log(err);
+    } catch (error: unknown) {
+      if (isDuplicateKeyError(error)) {
         return {
           success: false,
           message: "Category already exists under this parent.",
           code: "ALREADY_EXIST",
         };
       }
-      throw err;
+
+      throw error;
     }
   },
 
   getCategories: async (role: string) => {
-    let response: DatabaseCategoryDataFormat[] | AdminCategoryDataFormat[] = [];
-    
     if (role === "customer") {
-      const data = await Category.find({
-        active: true,
-      });
-      response = data.map((item: DatabaseCategoryDataFormat) => ({
-        _id: item._id,
-        name: item.name,
-        parent: item.parent,
-      }));
+      const categories = await Category.find({ active: true }).select(
+        "_id name parent",
+      );
+
+      return {
+        success: true,
+        message:
+          categories.length === 0
+            ? "No Category at present, need to add."
+            : "Categories data fetched successfully.",
+        data: categories,
+      };
     }
+
     if (role === "admin") {
-      response = await Category.aggregate([
+      const categories = await Category.aggregate([
         {
           $lookup: {
             from: "products",
@@ -218,87 +189,25 @@ const categoryService = {
         },
       ]);
 
-      console.log(response);
-    }
-
-    if (response.length === 0) {
       return {
         success: true,
-        message: "No Category at present, need to add.",
-        data: [],
+        message:
+          categories.length === 0
+            ? "No Category at present, need to add."
+            : "Categories data fetched successfully.",
+        data: categories,
       };
     }
 
     return {
-      success: true,
-      message: "Categories data fetched successfully.",
-      data: response,
+      success: false,
+      message: "Invalid role.",
+      code: "INVALID_ROLE",
     };
   },
 
-  updateCategory: async (updateCategory: UpdateCategoryDataFormat) => {
-    try {
-      const category = await Category.findById(updateCategory.categoryId);
-
-      if (!category) {
-        return {
-          success: false,
-          message: "Category not found to update.",
-          code: "NOT_FOUND",
-        };
-      }
-
-      const normalizedName = updateCategory.name.trim().toLowerCase();
-
-      const existingCategory = await Category.findOne({
-        parent: category.parent, // MongoDB search under one parent only i.e electronics.
-        normalizedName,
-        _id: { $ne: category._id }, // Find another category with this name, but ignore the category currently being updated.
-      });
-
-      if (existingCategory) {
-        return {
-          success: false,
-          message: "Category already exists under this parent.",
-          code: "ALREADY_EXIST",
-        };
-      }
-
-      const response = await Category.findByIdAndUpdate(
-        updateCategory.categoryId,
-        {
-          name: updateCategory.name,
-          normalizedName,
-        },
-        { new: true },
-      );
-
-      return {
-        success: true,
-        message: "Category details updated.",
-        data: response,
-      };
-    } catch (err: unknown) {
-      if (
-        typeof err === "object" &&
-        err !== null &&
-        "code" in err &&
-        err.code === 11000
-      ) {
-        return {
-          success: false,
-          message: "Category already exist under this parent.",
-          code: "ALREADY_EXIST",
-        };
-      }
-      throw err;
-    }
-  },
-
-  updateCategoryStatus: async (
-    updateCategoryStatus: UpdateCategoryStatusDataFormat,
-  ) => {
-    const category = await Category.findById(updateCategoryStatus.categoryId);
+  updateCategory: async (updateCategory: UpdateCategoryData) => {
+    const category = await Category.findById(updateCategory.categoryId);
 
     if (!category) {
       return {
@@ -308,18 +217,77 @@ const categoryService = {
       };
     }
 
-    const response = await Category.findByIdAndUpdate(
+    const normalizedName = updateCategory.name.trim().toLowerCase();
+
+    const existingCategory = await Category.findOne({
+      parent: category.parent,
+      normalizedName,
+      _id: { $ne: category._id },
+    });
+
+    if (existingCategory) {
+      return {
+        success: false,
+        message: "Category already exists under this parent.",
+        code: "ALREADY_EXIST",
+      };
+    }
+
+    try {
+      const updatedCategory = await Category.findByIdAndUpdate(
+        updateCategory.categoryId,
+        {
+          name: updateCategory.name,
+          normalizedName,
+        },
+        { new: true, runValidators: true },
+      );
+
+      return {
+        success: true,
+        message: "Category details updated.",
+        data: updatedCategory,
+      };
+    } catch (error: unknown) {
+      if (isDuplicateKeyError(error)) {
+        return {
+          success: false,
+          message: "Category already exists under this parent.",
+          code: "ALREADY_EXIST",
+        };
+      }
+
+      throw error;
+    }
+  },
+
+  updateCategoryStatus: async (
+    updateCategoryStatus: UpdateCategoryStatusData,
+  ) => {
+    const category = await Category.findById(
+      updateCategoryStatus.categoryId,
+    );
+
+    if (!category) {
+      return {
+        success: false,
+        message: "Category not found to update.",
+        code: "NOT_FOUND",
+      };
+    }
+
+    const updatedCategory = await Category.findByIdAndUpdate(
       updateCategoryStatus.categoryId,
       {
         active: updateCategoryStatus.active,
       },
-      { new: true },
+      { new: true, runValidators: true },
     );
 
     return {
       success: true,
       message: "Category status updated.",
-      data: response,
+      data: updatedCategory,
     };
   },
 };
