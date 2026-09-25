@@ -35,14 +35,14 @@ export interface ShippingAddressSnapshot {
   country: string;
 }
 
-interface userIdDataFormat{
+interface UserIdDataFormat{
   _id:string;
   fullName:string;
   email:string;
 }
 export interface Order {
   _id: string ;
-  userId: userIdDataFormat;
+  userId: UserIdDataFormat;
   items: OrderItem[];
   shippingAddress: ShippingAddressSnapshot;
   totalAmount: number;
@@ -53,4 +53,33 @@ export interface Order {
   cancelledAt?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+
+export interface PaymentData {
+  upiId?: string;
+  cardType?: "CREDIT" | "DEBIT";
+}
+
+export interface CreateOrderRequest {
+  addressId: string;
+  paymentMethod: PaymentMethod;
+  paymentData?: PaymentData;
+}
+
+export interface CancelOrderRequest {
+  orderId: string;
+  cancellationReason: CancellationReason;
+}
+
+
+
+export interface UpdateOrderStatusRequest {
+  orderId: string;
+  orderStatus: OrderStatus;
+}
+
+export interface AdminCancelOrderRequest {
+  orderId: string;
+  cancellationReason: CancellationReason;
 }

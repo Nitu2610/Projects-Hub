@@ -2,40 +2,38 @@ import { Route, Routes } from "react-router-dom";
 
 import { MainLayout } from "../layouts/MainLayout";
 
-import { Home } from "../pages/Home";
-
 import { Unauthorized } from "../pages/Unauthorized";
 
-import Products from "../pages/product/Products";
-import { ProductDetails } from "../pages/product/ProductDetails";
+import Products from "../features/products/pages/Products";
+import { ProductDetails } from "../features/products/pages/ProductDetails";
 
-import { Cart } from "../pages/cart/Cart";
+import { Orders } from "../features/orders/pages/Orders";
 
-import { Checkout } from "../pages/Checkout";
-import { Payment } from "../pages/Payment";
+import { AdminOrders } from "../features/orders/pages/admin/AdminOrder";
+import { AdminOrderDetails } from "../features/orders/pages/admin/AdminOrderDetails";
 
-import { Orders } from "../pages/order/Orders";
-import { OrderDetails } from "../pages/order/OrderDetails";
-
-import { AdminOrders } from "../pages/order/admin.order/AdminOrder";
-import { AdminOrderDetails } from "../pages/order/admin.order/AdminOrderDetails";
-
-import { AdminProducts } from "../pages/product/admin/AdminProducts";
-import { AddProduct } from "../pages/product/admin/AddProduct";
-import { EditProduct } from "../pages/product/admin/EditProducts";
-
-import { Profile } from "../pages/Profile";
+import { AdminProducts } from "../features/products/pages/admin/AdminProducts";
+import { AddProduct } from "../features/products/pages/admin/AddProduct";
+import { EditProduct } from "../features/products/pages/admin/EditProduct";
 
 import { PrivateRoute } from "./PrivateRoute";
 import { RoleRoute } from "./RoleRoute";
-import { Register } from "../pages/Register";
-import { Login } from "../pages/Login";
-import { Addresses } from "../components/address/Addresses";
-import { AdminDashboard } from "../pages/dashboard/AdminDashboard";
-import { AdminLayout } from "../layouts/AdminLayout";
-import { AdminCategories } from "../pages/category/admin/AdminCategories";
-import { AdminCustomers } from "../components/admin/customers/AdminCustomers";
-import { AdminReviews } from "../pages/reviews/AdminReviews";
+import { Register } from "../features/auth/pages/Register";
+import { Login } from "../features/auth/pages/Login";
+import { Addresses } from "../features/address/components/Addresses";
+
+import { AdminCustomers } from "../features/customers/pages/AdminCustomers";
+
+import { AdminCategories } from "../features/categories/pages/AdminCategories";
+import { AdminReviews } from "../features/reviews/pages/AdminReviews";
+import { Cart } from "../features/cart/pages/Cart";
+import { OrderDetails } from "../features/orders/pages/OrderDetails";
+import { AdminLayout } from "../layouts/admin/AdminLayout";
+import { AdminDashboard } from "../features/admin-dashboard/pages/AdminDashboard";
+import { Checkout } from "../features/checkout/pages/Checkout";
+import { Payment } from "../features/payments/pages/Payment";
+import { Home } from "../features/customers/pages/Home";
+import { Profile } from "../features/customers/pages/Profile";
 
 export const AppRoutes = () => {
   return (

@@ -1,4 +1,7 @@
-import { ProductImage } from "../components/products/admin/ProductImageUpload";
+export interface ProductImage {
+  url: string;
+  publicId: string;
+}
 
 export interface ProductCategory {
   _id: string;
@@ -19,6 +22,32 @@ export interface Product {
   active: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface ProductQueryParams {
+  search?: string;
+  categoryId?: string;
+  sort?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface ProductFormData {
+  title: string;
+  description: string;
+  price: number;
+  discountedPrice?: number;
+  category: string;
+  active: boolean;
+  color?: string;
+  specification?: Record<string, string>;
+}
+
+// ---------------------------------
+
+export interface ProductCategory {
+  _id: string;
+  name: string;
 }
 
 export interface ProductPagination {

@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useGetUserProfileQuery } from "../redux/api/authApi";
+import { useGetUserProfileQuery } from "../features/customers/api/customerApi";
+
 
 interface RoleRouteProps {
   allowedRoles: string[];
