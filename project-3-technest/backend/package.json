@@ -8,7 +8,9 @@
     "start": "node dist/server.js",
     "server": "nodemon dist/server.js",
     "build":"tsc",
-    "watch":"npx tsc --watch"
+    "watch":"npx tsc --watch",
+    "seed:categories": "tsx src/scripts/seed.categories.ts",
+    "seed:products": "tsx src/scripts/seed.products.ts"
   },
   "keywords": [],
   "author": "",
