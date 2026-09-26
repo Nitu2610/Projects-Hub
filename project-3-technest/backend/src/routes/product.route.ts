@@ -25,15 +25,11 @@ productRoute.post(
 
 productRoute.get(
   "/",
-  authMiddleware,
-  authorize(["admin", "customer"]),
   asyncHandler(productController.getProducts)
 );
 
 productRoute.get(
   "/:productId",
-  authMiddleware,
-  authorize(["admin", "customer"]),
   asyncHandler(productController.getProductDetails)
 );
 

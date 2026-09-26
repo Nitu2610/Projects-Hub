@@ -246,6 +246,7 @@ const productService = {
       select: "name",
     });
 
+    console.log("Products Data:", productsData);
     return {
       success: true,
       message:

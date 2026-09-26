@@ -15,6 +15,15 @@ const createProductValidator = [
     .isString()
     .withMessage("Enter a valid product description."),
 
+  body("brand")
+    .trim()
+    .notEmpty()
+    .withMessage("Product brand is required.")
+    .isString()
+    .withMessage("Enter a valid product brand.")
+    .isLength({ min: 2, max: 50 })
+    .withMessage("Product brand must be between 2 and 50 characters."),
+
   body("color")
     .optional()
     .isString()
@@ -80,6 +89,16 @@ const updateProductValidator = [
     .trim()
     .notEmpty()
     .withMessage("Product description cannot be empty."),
+
+  body("brand")
+    .optional()
+    .trim()
+    .notEmpty()
+    .withMessage("Product brand cannot be empty.")
+    .isString()
+    .withMessage("Enter a valid product brand.")
+    .isLength({ min: 2, max: 50 })
+    .withMessage("Product brand must be between 2 and 50 characters."),
 
   body("color")
     .optional()

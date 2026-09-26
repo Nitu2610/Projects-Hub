@@ -125,6 +125,7 @@ const categoryService = {
   },
 
   getCategories: async (role: string) => {
+
     if (role === "customer") {
       const categories = await Category.find({ active: true }).select(
         "_id name parent",
@@ -264,9 +265,7 @@ const categoryService = {
   updateCategoryStatus: async (
     updateCategoryStatus: UpdateCategoryStatusData,
   ) => {
-    const category = await Category.findById(
-      updateCategoryStatus.categoryId,
-    );
+    const category = await Category.findById(updateCategoryStatus.categoryId);
 
     if (!category) {
       return {

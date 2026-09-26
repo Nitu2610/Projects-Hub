@@ -1,9 +1,6 @@
 const electronicsProducts = [
-  // =========================================================
-  // MOBILES
-  // =========================================================
-
   {
+    brand: "Samsung",
     title: "Samsung Galaxy S25 5G",
     description:
       "Premium 5G smartphone with a Dynamic AMOLED display, flagship Snapdragon processor and advanced camera system.",
@@ -13,7 +10,6 @@ const electronicsProducts = [
     stock: 18,
     category: "mobiles",
     specification: {
-      Brand: "Samsung",
       Model: "Galaxy S25",
       Display: "6.2-inch Dynamic AMOLED 2X",
       Processor: "Snapdragon 8 Elite",
@@ -25,6 +21,7 @@ const electronicsProducts = [
     },
   },
   {
+    brand: "Samsung",
     title: "Samsung Galaxy A56 5G",
     description:
       "Mid-range 5G smartphone with a Super AMOLED display, capable cameras and a large battery for everyday performance.",
@@ -34,7 +31,6 @@ const electronicsProducts = [
     stock: 25,
     category: "mobiles",
     specification: {
-      Brand: "Samsung",
       Model: "Galaxy A56 5G",
       Display: "6.7-inch Super AMOLED 120Hz",
       Processor: "Exynos 1580",
@@ -45,8 +41,8 @@ const electronicsProducts = [
       OperatingSystem: "Android 15",
     },
   },
-
   {
+    brand: "Realme",
     title: "Realme GT 7 5G",
     description:
       "Performance-oriented 5G smartphone with a high-refresh-rate AMOLED display, flagship-grade processor and fast charging.",
@@ -56,7 +52,6 @@ const electronicsProducts = [
     stock: 20,
     category: "mobiles",
     specification: {
-      Brand: "Realme",
       Model: "GT 7",
       Display: "6.78-inch AMOLED 120Hz",
       Processor: "MediaTek Dimensity 9400e",
@@ -67,8 +62,8 @@ const electronicsProducts = [
       OperatingSystem: "Realme UI",
     },
   },
-
   {
+    brand: "iQOO",
     title: "iQOO Neo 10 5G",
     description:
       "High-performance smartphone designed for gaming and demanding workloads with a high-refresh-rate AMOLED display.",
@@ -78,7 +73,6 @@ const electronicsProducts = [
     stock: 23,
     category: "mobiles",
     specification: {
-      Brand: "iQOO",
       Model: "Neo 10",
       Display: "6.78-inch AMOLED 144Hz",
       Processor: "Snapdragon 8s Gen 4",
@@ -89,8 +83,8 @@ const electronicsProducts = [
       OperatingSystem: "Funtouch OS",
     },
   },
-
   {
+    brand: "OPPO",
     title: "OPPO Reno 13 5G",
     description:
       "Stylish 5G smartphone featuring an AMOLED display, AI-powered camera features and fast charging support.",
@@ -100,7 +94,6 @@ const electronicsProducts = [
     stock: 18,
     category: "mobiles",
     specification: {
-      Brand: "OPPO",
       Model: "Reno 13",
       Display: "6.59-inch AMOLED 120Hz",
       Processor: "MediaTek Dimensity 8350",
@@ -111,8 +104,8 @@ const electronicsProducts = [
       OperatingSystem: "ColorOS 15",
     },
   },
-
   {
+    brand: "Realme",
     title: "Realme P3 Pro 5G",
     description:
       "Affordable performance smartphone with a curved AMOLED display, large battery and gaming-focused processor.",
@@ -122,7 +115,6 @@ const electronicsProducts = [
     stock: 31,
     category: "mobiles",
     specification: {
-      Brand: "Realme",
       Model: "P3 Pro",
       Display: "6.83-inch AMOLED 120Hz",
       Processor: "Snapdragon 7s Gen 3",
@@ -133,8 +125,8 @@ const electronicsProducts = [
       OperatingSystem: "Realme UI 6",
     },
   },
-
   {
+    brand: "Apple",
     title: "Apple iPhone 16",
     description:
       "Powerful smartphone featuring the A18 chip, advanced dual-camera system and Super Retina XDR display.",
@@ -144,7 +136,6 @@ const electronicsProducts = [
     stock: 15,
     category: "mobiles",
     specification: {
-      Brand: "Apple",
       Model: "iPhone 16",
       Display: "6.1-inch Super Retina XDR",
       Processor: "Apple A18",
@@ -155,8 +146,8 @@ const electronicsProducts = [
       OperatingSystem: "iOS 18",
     },
   },
-
   {
+    brand: "OnePlus",
     title: "OnePlus 13 5G",
     description:
       "Flagship 5G smartphone with a high-refresh-rate AMOLED display, powerful processor and large battery.",
@@ -166,7 +157,6 @@ const electronicsProducts = [
     stock: 21,
     category: "mobiles",
     specification: {
-      Brand: "OnePlus",
       Model: "OnePlus 13",
       Display: "6.82-inch AMOLED 2K",
       Processor: "Snapdragon 8 Elite",
@@ -177,8 +167,8 @@ const electronicsProducts = [
       OperatingSystem: "OxygenOS 15",
     },
   },
-
   {
+    brand: "Google",
     title: "Google Pixel 9",
     description:
       "AI-powered smartphone with an advanced camera system, bright OLED display and clean Android experience.",
@@ -188,7 +178,6 @@ const electronicsProducts = [
     stock: 11,
     category: "mobiles",
     specification: {
-      Brand: "Google",
       Model: "Pixel 9",
       Display: "6.3-inch OLED",
       Processor: "Google Tensor G4",
@@ -199,8 +188,8 @@ const electronicsProducts = [
       OperatingSystem: "Android 14",
     },
   },
-
   {
+    brand: "Nothing",
     title: "Nothing Phone (3a) Pro",
     description:
       "Distinctive mid-range smartphone with a smooth AMOLED display, capable camera system and clean Nothing OS experience.",
@@ -210,7 +199,6 @@ const electronicsProducts = [
     stock: 26,
     category: "mobiles",
     specification: {
-      Brand: "Nothing",
       Model: "Phone (3a) Pro",
       Display: "6.77-inch AMOLED",
       Processor: "Snapdragon 7s Gen 3",
@@ -221,8 +209,8 @@ const electronicsProducts = [
       OperatingSystem: "Nothing OS",
     },
   },
-
   {
+    brand: "Xiaomi",
     title: "Xiaomi 14 Civi",
     description:
       "Slim smartphone with a high-resolution AMOLED display, Leica camera system and fast charging support.",
@@ -232,7 +220,6 @@ const electronicsProducts = [
     stock: 19,
     category: "mobiles",
     specification: {
-      Brand: "Xiaomi",
       Model: "14 Civi",
       Display: "6.55-inch AMOLED",
       Processor: "Snapdragon 8s Gen 3",
@@ -244,6 +231,7 @@ const electronicsProducts = [
     },
   },
   {
+    brand: "OnePlus",
     title: "OnePlus Nord 5 5G",
     description:
       "Performance-focused 5G smartphone with a high-refresh-rate AMOLED display, large battery and fast charging.",
@@ -253,7 +241,6 @@ const electronicsProducts = [
     stock: 24,
     category: "mobiles",
     specification: {
-      Brand: "OnePlus",
       Model: "Nord 5",
       Display: "6.83-inch AMOLED 144Hz",
       Processor: "Snapdragon 8s Gen 3",
@@ -264,8 +251,8 @@ const electronicsProducts = [
       OperatingSystem: "OxygenOS",
     },
   },
-
   {
+    brand: "Motorola",
     title: "Motorola Edge 60 Fusion",
     description:
       "Slim 5G smartphone featuring a curved display, capable camera system and large battery for everyday use.",
@@ -275,7 +262,6 @@ const electronicsProducts = [
     stock: 29,
     category: "mobiles",
     specification: {
-      Brand: "Motorola",
       Model: "Edge 60 Fusion",
       Display: "6.67-inch pOLED 120Hz",
       Processor: "MediaTek Dimensity 7400",
@@ -286,8 +272,8 @@ const electronicsProducts = [
       OperatingSystem: "Android 15",
     },
   },
-
   {
+    brand: "Vivo",
     title: "Vivo V50 5G",
     description:
       "Stylish 5G smartphone with a high-resolution AMOLED display, portrait photography features and fast charging.",
@@ -297,7 +283,6 @@ const electronicsProducts = [
     stock: 22,
     category: "mobiles",
     specification: {
-      Brand: "Vivo",
       Model: "V50",
       Display: "6.77-inch AMOLED 120Hz",
       Processor: "Snapdragon 7 Gen 3",
@@ -308,12 +293,8 @@ const electronicsProducts = [
       OperatingSystem: "Funtouch OS 15",
     },
   },
-
-  // =========================================================
-  // LAPTOPS
-  // =========================================================
-
   {
+    brand: "Apple",
     title: "Apple MacBook Air 13 M4",
     description:
       "Lightweight laptop powered by the Apple M4 chip with a high-resolution Liquid Retina display and long battery life.",
@@ -323,7 +304,6 @@ const electronicsProducts = [
     stock: 12,
     category: "laptops",
     specification: {
-      Brand: "Apple",
       Model: "MacBook Air 13 M4",
       Processor: "Apple M4",
       RAM: "16 GB",
@@ -335,6 +315,7 @@ const electronicsProducts = [
     },
   },
   {
+    brand: "Apple",
     title: "Apple MacBook Pro 14 M4",
     description:
       "Professional laptop powered by the Apple M4 chip with a Liquid Retina XDR display and strong performance for development and creative workloads.",
@@ -344,7 +325,6 @@ const electronicsProducts = [
     stock: 6,
     category: "laptops",
     specification: {
-      Brand: "Apple",
       Model: "MacBook Pro 14 M4",
       Processor: "Apple M4",
       RAM: "16 GB",
@@ -355,8 +335,8 @@ const electronicsProducts = [
       OperatingSystem: "macOS",
     },
   },
-
   {
+    brand: "Lenovo",
     title: "Lenovo LOQ 15 Gaming Laptop",
     description:
       "Gaming laptop with a dedicated RTX graphics card, high-refresh-rate display and upgraded thermal system.",
@@ -366,7 +346,6 @@ const electronicsProducts = [
     stock: 10,
     category: "laptops",
     specification: {
-      Brand: "Lenovo",
       Model: "LOQ 15",
       Processor: "Intel Core i7 13th Gen",
       RAM: "16 GB",
@@ -378,8 +357,8 @@ const electronicsProducts = [
       OperatingSystem: "Windows 11",
     },
   },
-
   {
+    brand: "Acer",
     title: "Acer Nitro V Gaming Laptop",
     description:
       "Gaming-focused laptop with dedicated NVIDIA graphics, high-refresh-rate display and performance-oriented cooling.",
@@ -389,7 +368,6 @@ const electronicsProducts = [
     stock: 11,
     category: "laptops",
     specification: {
-      Brand: "Acer",
       Model: "Nitro V",
       Processor: "Intel Core i5 13th Gen",
       RAM: "16 GB",
@@ -401,8 +379,8 @@ const electronicsProducts = [
       OperatingSystem: "Windows 11",
     },
   },
-
   {
+    brand: "Dell",
     title: "Dell Inspiron 15",
     description:
       "Reliable everyday laptop with a large Full HD display, Intel processor and fast SSD storage for productivity.",
@@ -412,7 +390,6 @@ const electronicsProducts = [
     stock: 21,
     category: "laptops",
     specification: {
-      Brand: "Dell",
       Model: "Inspiron 15",
       Processor: "Intel Core i5 13th Gen",
       RAM: "16 GB",
@@ -424,8 +401,8 @@ const electronicsProducts = [
       OperatingSystem: "Windows 11",
     },
   },
-
   {
+    brand: "MSI",
     title: "MSI Modern 14",
     description:
       "Portable productivity laptop with a lightweight design, efficient Intel processor and fast SSD storage.",
@@ -435,7 +412,6 @@ const electronicsProducts = [
     stock: 17,
     category: "laptops",
     specification: {
-      Brand: "MSI",
       Model: "Modern 14",
       Processor: "Intel Core i5 13th Gen",
       RAM: "16 GB",
@@ -447,8 +423,8 @@ const electronicsProducts = [
       OperatingSystem: "Windows 11",
     },
   },
-
   {
+    brand: "Dell",
     title: "Dell Inspiron 14",
     description:
       "Compact productivity laptop with an Intel Core processor, Full HD display and fast SSD storage for work and study.",
@@ -458,7 +434,6 @@ const electronicsProducts = [
     stock: 14,
     category: "laptops",
     specification: {
-      Brand: "Dell",
       Model: "Inspiron 14",
       Processor: "Intel Core i5 13th Gen",
       RAM: "16 GB",
@@ -469,8 +444,8 @@ const electronicsProducts = [
       OperatingSystem: "Windows 11",
     },
   },
-
   {
+    brand: "Acer",
     title: "Acer Aspire 5",
     description:
       "Everyday laptop offering a balanced combination of performance, storage and connectivity for office and home use.",
@@ -480,7 +455,6 @@ const electronicsProducts = [
     stock: 18,
     category: "laptops",
     specification: {
-      Brand: "Acer",
       Model: "Aspire 5",
       Processor: "Intel Core i5 13th Gen",
       RAM: "16 GB",
@@ -491,8 +465,8 @@ const electronicsProducts = [
       OperatingSystem: "Windows 11",
     },
   },
-
   {
+    brand: "HP",
     title: "HP Victus Gaming 15",
     description:
       "Gaming laptop with dedicated NVIDIA graphics, high-refresh-rate display and efficient cooling for modern games.",
@@ -502,7 +476,6 @@ const electronicsProducts = [
     stock: 9,
     category: "laptops",
     specification: {
-      Brand: "HP",
       Model: "Victus Gaming 15",
       Processor: "AMD Ryzen 7",
       RAM: "16 GB",
@@ -513,8 +486,8 @@ const electronicsProducts = [
       OperatingSystem: "Windows 11",
     },
   },
-
   {
+    brand: "ASUS",
     title: "ASUS Vivobook 15",
     description:
       "Slim everyday laptop designed for productivity with a bright display, efficient processor and fast SSD storage.",
@@ -524,7 +497,6 @@ const electronicsProducts = [
     stock: 23,
     category: "laptops",
     specification: {
-      Brand: "ASUS",
       Model: "Vivobook 15",
       Processor: "Intel Core i5 13th Gen",
       RAM: "16 GB",
@@ -535,8 +507,8 @@ const electronicsProducts = [
       OperatingSystem: "Windows 11",
     },
   },
-
   {
+    brand: "HP",
     title: "HP Pavilion 14",
     description:
       "Versatile everyday laptop with a compact design, Intel processor, fast SSD storage and Full HD display.",
@@ -546,7 +518,6 @@ const electronicsProducts = [
     stock: 16,
     category: "laptops",
     specification: {
-      Brand: "HP",
       Model: "Pavilion 14",
       Processor: "Intel Core i5 13th Gen",
       RAM: "16 GB",
@@ -557,8 +528,8 @@ const electronicsProducts = [
       OperatingSystem: "Windows 11",
     },
   },
-
   {
+    brand: "Lenovo",
     title: "Lenovo IdeaPad Slim 5",
     description:
       "Slim productivity laptop with an AMD processor, high-resolution display and ample memory for everyday work.",
@@ -568,7 +539,6 @@ const electronicsProducts = [
     stock: 20,
     category: "laptops",
     specification: {
-      Brand: "Lenovo",
       Model: "IdeaPad Slim 5",
       Processor: "AMD Ryzen 7 7730U",
       RAM: "16 GB",
@@ -579,8 +549,8 @@ const electronicsProducts = [
       OperatingSystem: "Windows 11",
     },
   },
-
   {
+    brand: "ASUS",
     title: "ASUS TUF Gaming F15",
     description:
       "Gaming laptop designed for demanding games with a high-refresh-rate display, dedicated graphics and upgraded cooling.",
@@ -590,7 +560,6 @@ const electronicsProducts = [
     stock: 8,
     category: "laptops",
     specification: {
-      Brand: "ASUS",
       Model: "TUF Gaming F15",
       Processor: "Intel Core i7 13th Gen",
       RAM: "16 GB",
@@ -602,12 +571,8 @@ const electronicsProducts = [
       OperatingSystem: "Windows 11",
     },
   },
-
-  // =========================================================
-  // TABLETS
-  // =========================================================
-
   {
+    brand: "Apple",
     title: "Apple iPad Air M3",
     description:
       "Powerful tablet with the Apple M3 chip, Liquid Retina display and support for productivity and creative workloads.",
@@ -617,7 +582,6 @@ const electronicsProducts = [
     stock: 13,
     category: "tablets",
     specification: {
-      Brand: "Apple",
       Model: "iPad Air M3",
       Display: "11-inch Liquid Retina",
       Processor: "Apple M3",
@@ -629,6 +593,7 @@ const electronicsProducts = [
     },
   },
   {
+    brand: "Samsung",
     title: "Samsung Galaxy Tab S9 FE",
     description:
       "Versatile Android tablet with a high-resolution display, S Pen support and large battery for entertainment and productivity.",
@@ -638,7 +603,6 @@ const electronicsProducts = [
     stock: 15,
     category: "tablets",
     specification: {
-      Brand: "Samsung",
       Model: "Galaxy Tab S9 FE",
       Display: "10.9-inch LCD 90Hz",
       Processor: "Exynos 1380",
@@ -649,8 +613,8 @@ const electronicsProducts = [
       OperatingSystem: "Android",
     },
   },
-
   {
+    brand: "Apple",
     title: "Apple iPad 10th Generation",
     description:
       "Versatile iPad with a vibrant Liquid Retina display, capable processor and support for everyday productivity and entertainment.",
@@ -660,7 +624,6 @@ const electronicsProducts = [
     stock: 19,
     category: "tablets",
     specification: {
-      Brand: "Apple",
       Model: "iPad 10th Generation",
       Display: "10.9-inch Liquid Retina",
       Processor: "Apple A14 Bionic",
@@ -671,8 +634,8 @@ const electronicsProducts = [
       OperatingSystem: "iPadOS",
     },
   },
-
   {
+    brand: "OnePlus",
     title: "OnePlus Pad Go 2",
     description:
       "Large-screen tablet designed for entertainment and everyday productivity with a high-resolution display and long battery life.",
@@ -682,7 +645,6 @@ const electronicsProducts = [
     stock: 22,
     category: "tablets",
     specification: {
-      Brand: "OnePlus",
       Model: "Pad Go 2",
       Display: "11.6-inch LCD",
       Processor: "MediaTek Dimensity",
@@ -693,8 +655,8 @@ const electronicsProducts = [
       OperatingSystem: "OxygenOS",
     },
   },
-
   {
+    brand: "Lenovo",
     title: "Lenovo Tab M11",
     description:
       "Affordable Android tablet with a large display, quad speakers and stylus support for learning and entertainment.",
@@ -704,7 +666,6 @@ const electronicsProducts = [
     stock: 28,
     category: "tablets",
     specification: {
-      Brand: "Lenovo",
       Model: "Tab M11",
       Display: "11-inch 90Hz LCD",
       Processor: "MediaTek Helio G88",
@@ -715,8 +676,8 @@ const electronicsProducts = [
       Stylus: "Lenovo Tab Pen Supported",
     },
   },
-
   {
+    brand: "HONOR",
     title: "Honor Pad X9",
     description:
       "Entertainment-oriented tablet with a large 2K display, slim body and multi-speaker audio system.",
@@ -726,7 +687,6 @@ const electronicsProducts = [
     stock: 32,
     category: "tablets",
     specification: {
-      Brand: "HONOR",
       Model: "Pad X9",
       Display: "11.5-inch 2K LCD 120Hz",
       Processor: "Snapdragon 685",
@@ -737,8 +697,8 @@ const electronicsProducts = [
       OperatingSystem: "MagicOS",
     },
   },
-
   {
+    brand: "Xiaomi",
     title: "Xiaomi Pad 7",
     description:
       "Large-screen Android tablet with a high-refresh-rate display, powerful processor and long-lasting battery.",
@@ -748,7 +708,6 @@ const electronicsProducts = [
     stock: 25,
     category: "tablets",
     specification: {
-      Brand: "Xiaomi",
       Model: "Pad 7",
       Display: "11.2-inch LCD 144Hz",
       Processor: "Snapdragon 7+ Gen 3",
@@ -759,8 +718,8 @@ const electronicsProducts = [
       OperatingSystem: "HyperOS",
     },
   },
-
   {
+    brand: "Lenovo",
     title: "Lenovo Tab P12",
     description:
       "Productivity-focused tablet with a large 12.7-inch display, stereo speakers and support for a digital pen.",
@@ -770,7 +729,6 @@ const electronicsProducts = [
     stock: 16,
     category: "tablets",
     specification: {
-      Brand: "Lenovo",
       Model: "Tab P12",
       Display: "12.7-inch 3K LCD",
       Processor: "MediaTek Dimensity 7050",
@@ -781,8 +739,8 @@ const electronicsProducts = [
       Stylus: "Lenovo Tab Pen Plus Supported",
     },
   },
-
   {
+    brand: "Redmi",
     title: "Redmi Pad Pro",
     description:
       "Entertainment-focused tablet featuring a large high-resolution display, quad speakers and a high-capacity battery.",
@@ -792,7 +750,6 @@ const electronicsProducts = [
     stock: 27,
     category: "tablets",
     specification: {
-      Brand: "Redmi",
       Model: "Pad Pro",
       Display: "12.1-inch LCD 120Hz",
       Processor: "Snapdragon 7s Gen 2",
@@ -803,8 +760,8 @@ const electronicsProducts = [
       OperatingSystem: "HyperOS",
     },
   },
-
   {
+    brand: "Samsung",
     title: "Samsung Galaxy Tab S10 FE",
     description:
       "Feature-rich Android tablet with a high-resolution display, large battery and S Pen support for productivity.",
@@ -814,7 +771,6 @@ const electronicsProducts = [
     stock: 17,
     category: "tablets",
     specification: {
-      Brand: "Samsung",
       Model: "Galaxy Tab S10 FE",
       Display: "10.9-inch LCD",
       Processor: "Exynos 1580",
@@ -825,8 +781,8 @@ const electronicsProducts = [
       OperatingSystem: "Android",
     },
   },
-
   {
+    brand: "OnePlus",
     title: "OnePlus Pad 2",
     description:
       "Large-screen Android tablet designed for entertainment and productivity with a high-refresh-rate display and powerful processor.",
@@ -836,7 +792,6 @@ const electronicsProducts = [
     stock: 14,
     category: "tablets",
     specification: {
-      Brand: "OnePlus",
       Model: "OnePlus Pad 2",
       Display: "12.1-inch LCD 144Hz",
       Processor: "Snapdragon 8 Gen 3",
@@ -847,12 +802,8 @@ const electronicsProducts = [
       OperatingSystem: "OxygenOS",
     },
   },
-
-  // =========================================================
-  // POWER BANKS
-  // =========================================================
-
   {
+    brand: "Ambrane",
     title: "Ambrane Powermax 20000mAh Power Bank",
     description:
       "High-capacity power bank with fast charging support and multiple charging ports for smartphones and other devices.",
@@ -862,7 +813,6 @@ const electronicsProducts = [
     stock: 35,
     category: "power banks",
     specification: {
-      Brand: "Ambrane",
       Model: "Powermax 20000",
       Capacity: "20000 mAh",
       Output: "22.5 W",
@@ -873,6 +823,7 @@ const electronicsProducts = [
     },
   },
   {
+    brand: "Anker",
     title: "Anker PowerCore 20000",
     description:
       "High-capacity portable power bank designed for reliable everyday charging with multiple safety protections.",
@@ -882,7 +833,6 @@ const electronicsProducts = [
     stock: 30,
     category: "power banks",
     specification: {
-      Brand: "Anker",
       Model: "PowerCore 20000",
       Capacity: "20000 mAh",
       Output: "20 W",
@@ -892,8 +842,8 @@ const electronicsProducts = [
       Protection: "MultiProtect Safety System",
     },
   },
-
   {
+    brand: "Portronics",
     title: "Portronics Power PRO 20000",
     description:
       "High-capacity power bank with fast charging support, digital battery indication and multiple charging ports.",
@@ -903,7 +853,6 @@ const electronicsProducts = [
     stock: 41,
     category: "power banks",
     specification: {
-      Brand: "Portronics",
       Model: "Power PRO 20000",
       Capacity: "20000 mAh",
       Output: "22.5 W",
@@ -913,8 +862,8 @@ const electronicsProducts = [
       Display: "Digital Battery Indicator",
     },
   },
-
   {
+    brand: "URBN",
     title: "URBN 10000mAh MagTag Power Bank",
     description:
       "Compact magnetic power bank designed for convenient wireless charging and portable everyday use.",
@@ -924,7 +873,6 @@ const electronicsProducts = [
     stock: 27,
     category: "power banks",
     specification: {
-      Brand: "URBN",
       Model: "MagTag 10000",
       Capacity: "10000 mAh",
       Output: "20 W",
@@ -935,8 +883,8 @@ const electronicsProducts = [
       Compatibility: "Compatible Smartphones",
     },
   },
-
   {
+    brand: "Xiaomi",
     title: "Mi Power Bank 3i 20000mAh",
     description:
       "Large-capacity power bank offering fast charging and multiple output ports for smartphones and tablets.",
@@ -946,7 +894,6 @@ const electronicsProducts = [
     stock: 36,
     category: "power banks",
     specification: {
-      Brand: "Xiaomi",
       Model: "Power Bank 3i",
       Capacity: "20000 mAh",
       Output: "18 W",
@@ -956,8 +903,8 @@ const electronicsProducts = [
       Protection: "Multiple Safety Protection",
     },
   },
-
   {
+    brand: "Stuffcool",
     title: "Stuffcool Snap 10000mAh Power Bank",
     description:
       "Portable wireless power bank with magnetic charging support and USB-C connectivity for everyday convenience.",
@@ -967,7 +914,6 @@ const electronicsProducts = [
     stock: 18,
     category: "power banks",
     specification: {
-      Brand: "Stuffcool",
       Model: "Snap 10000",
       Capacity: "10000 mAh",
       Output: "20 W",
@@ -978,8 +924,8 @@ const electronicsProducts = [
       Compatibility: "Magnetic Charging Devices",
     },
   },
-
   {
+    brand: "Xiaomi",
     title: "Mi Power Bank 3i 10000mAh",
     description:
       "Compact 10000mAh power bank with dual USB output and convenient Type-C charging support.",
@@ -989,7 +935,6 @@ const electronicsProducts = [
     stock: 42,
     category: "power banks",
     specification: {
-      Brand: "Xiaomi",
       Model: "Power Bank 3i",
       Capacity: "10000 mAh",
       Output: "18 W",
@@ -1000,6 +945,7 @@ const electronicsProducts = [
     },
   },
   {
+    brand: "Portronics",
     title: "Portronics Luxcell 20K Power Bank",
     description:
       "High-capacity power bank with fast charging, multiple outputs and a compact design for travel.",
@@ -1009,7 +955,6 @@ const electronicsProducts = [
     stock: 38,
     category: "power banks",
     specification: {
-      Brand: "Portronics",
       Model: "Luxcell 20K",
       Capacity: "20000 mAh",
       Output: "22.5 W",
@@ -1019,8 +964,8 @@ const electronicsProducts = [
       Protection: "Multi-Layer Safety Protection",
     },
   },
-
   {
+    brand: "Stuffcool",
     title: "Stuffcool Mega 100W Power Bank",
     description:
       "High-output power bank designed to charge smartphones, tablets and compatible laptops through USB-C.",
@@ -1030,7 +975,6 @@ const electronicsProducts = [
     stock: 13,
     category: "power banks",
     specification: {
-      Brand: "Stuffcool",
       Model: "Mega 100W",
       Capacity: "25000 mAh",
       Output: "100 W",
@@ -1040,8 +984,8 @@ const electronicsProducts = [
       Display: "Digital Battery Display",
     },
   },
-
   {
+    brand: "Zebronics",
     title: "Zebronics ZEB-PG20000 Power Bank",
     description:
       "Affordable high-capacity power bank with dual USB outputs for charging multiple portable devices.",
@@ -1051,7 +995,6 @@ const electronicsProducts = [
     stock: 45,
     category: "power banks",
     specification: {
-      Brand: "Zebronics",
       Model: "ZEB-PG20000",
       Capacity: "20000 mAh",
       Output: "22.5 W",
@@ -1061,8 +1004,8 @@ const electronicsProducts = [
       Compatibility: "Smartphones and Tablets",
     },
   },
-
   {
+    brand: "URBN",
     title: "URBN 20000mAh Nano Power Bank",
     description:
       "Slim high-capacity power bank offering fast charging and compact portability for daily travel and mobile use.",
@@ -1072,7 +1015,6 @@ const electronicsProducts = [
     stock: 28,
     category: "power banks",
     specification: {
-      Brand: "URBN",
       Model: "Nano 20000",
       Capacity: "20000 mAh",
       Output: "22.5 W",
@@ -1082,12 +1024,8 @@ const electronicsProducts = [
       Compatibility: "Smartphones, tablets and earbuds",
     },
   },
-
-  // =========================================================
-  // WEARABLES
-  // =========================================================
-
   {
+    brand: "Samsung",
     title: "Samsung Galaxy Watch7",
     description:
       "Premium smartwatch with health tracking, fitness features, AMOLED display and seamless Android integration.",
@@ -1097,7 +1035,6 @@ const electronicsProducts = [
     stock: 10,
     category: "wearables",
     specification: {
-      Brand: "Samsung",
       Model: "Galaxy Watch7",
       Display: "1.5-inch Super AMOLED",
       Connectivity: "Bluetooth",
@@ -1109,6 +1046,7 @@ const electronicsProducts = [
     },
   },
   {
+    brand: "Google",
     title: "Google Pixel Watch 3",
     description:
       "Premium smartwatch with advanced health tracking, bright AMOLED display and integrated GPS for fitness activities.",
@@ -1118,7 +1056,6 @@ const electronicsProducts = [
     stock: 7,
     category: "wearables",
     specification: {
-      Brand: "Google",
       Model: "Pixel Watch 3",
       Display: "41mm AMOLED",
       Connectivity: "Bluetooth, Wi-Fi",
@@ -1129,8 +1066,8 @@ const electronicsProducts = [
       OperatingSystem: "Wear OS",
     },
   },
-
   {
+    brand: "Garmin",
     title: "Garmin Forerunner 165",
     description:
       "Fitness-focused smartwatch designed for runners with GPS tracking, health monitoring and detailed workout metrics.",
@@ -1140,7 +1077,6 @@ const electronicsProducts = [
     stock: 9,
     category: "wearables",
     specification: {
-      Brand: "Garmin",
       Model: "Forerunner 165",
       Display: "1.2-inch AMOLED",
       Connectivity: "Bluetooth",
@@ -1151,8 +1087,8 @@ const electronicsProducts = [
       Battery: "Up to 11 days",
     },
   },
-
   {
+    brand: "Amazfit",
     title: "Amazfit Active 2",
     description:
       "Smart fitness watch with AMOLED display, health monitoring, GPS tracking and multiple sports modes.",
@@ -1162,7 +1098,6 @@ const electronicsProducts = [
     stock: 21,
     category: "wearables",
     specification: {
-      Brand: "Amazfit",
       Model: "Active 2",
       Display: "1.32-inch AMOLED",
       Connectivity: "Bluetooth",
@@ -1173,8 +1108,8 @@ const electronicsProducts = [
       Battery: "Up to 10 days",
     },
   },
-
   {
+    brand: "Fire-Boltt",
     title: "Fire-Boltt Phoenix Ultra",
     description:
       "Affordable smartwatch featuring a large AMOLED display, Bluetooth calling and multiple health tracking functions.",
@@ -1184,7 +1119,6 @@ const electronicsProducts = [
     stock: 39,
     category: "wearables",
     specification: {
-      Brand: "Fire-Boltt",
       Model: "Phoenix Ultra",
       Display: "1.39-inch AMOLED",
       Connectivity: "Bluetooth",
@@ -1195,8 +1129,8 @@ const electronicsProducts = [
       Battery: "Up to 7 days",
     },
   },
-
   {
+    brand: "CMF",
     title: "CMF Watch Pro 2",
     description:
       "Minimalist smartwatch with a high-resolution AMOLED display, GPS tracking and health monitoring features.",
@@ -1206,7 +1140,6 @@ const electronicsProducts = [
     stock: 26,
     category: "wearables",
     specification: {
-      Brand: "CMF",
       Model: "Watch Pro 2",
       Display: "1.32-inch AMOLED",
       Connectivity: "Bluetooth",
@@ -1217,8 +1150,8 @@ const electronicsProducts = [
       Battery: "Up to 11 days",
     },
   },
-
   {
+    brand: "Apple",
     title: "Apple Watch Series 10",
     description:
       "Advanced smartwatch with a thin design, health monitoring features, fitness tracking and seamless iPhone integration.",
@@ -1228,7 +1161,6 @@ const electronicsProducts = [
     stock: 8,
     category: "wearables",
     specification: {
-      Brand: "Apple",
       Model: "Watch Series 10",
       Display: "46mm Always-On Retina",
       Connectivity: "Bluetooth, Wi-Fi",
@@ -1239,8 +1171,8 @@ const electronicsProducts = [
       OperatingSystem: "watchOS",
     },
   },
-
   {
+    brand: "boAt",
     title: "boAt Lunar Pro Smartwatch",
     description:
       "Affordable smartwatch with an AMOLED display, health tracking features and multiple sports modes.",
@@ -1250,7 +1182,6 @@ const electronicsProducts = [
     stock: 34,
     category: "wearables",
     specification: {
-      Brand: "boAt",
       Model: "Lunar Pro",
       Display: "1.43-inch AMOLED",
       Connectivity: "Bluetooth",
@@ -1261,8 +1192,8 @@ const electronicsProducts = [
       Battery: "Up to 7 days",
     },
   },
-
   {
+    brand: "Noise",
     title: "Noise ColorFit Pro 6",
     description:
       "Feature-packed smartwatch with a bright AMOLED display, health monitoring and multiple sports tracking modes.",
@@ -1272,7 +1203,6 @@ const electronicsProducts = [
     stock: 30,
     category: "wearables",
     specification: {
-      Brand: "Noise",
       Model: "ColorFit Pro 6",
       Display: "1.96-inch AMOLED",
       Connectivity: "Bluetooth",
@@ -1283,12 +1213,8 @@ const electronicsProducts = [
       Battery: "Up to 7 days",
     },
   },
-
-  // =========================================================
-  // CABLES & ADAPTERS
-  // =========================================================
-
   {
+    brand: "Anker",
     title: "Anker 543 USB-C to USB-C Cable",
     description:
       "Durable USB-C charging and data cable designed for smartphones, tablets, laptops and other USB-C devices.",
@@ -1298,7 +1224,6 @@ const electronicsProducts = [
     stock: 50,
     category: "cables & adapters",
     specification: {
-      Brand: "Anker",
       Model: "543 USB-C Cable",
       Length: "1.8 m",
       Connector: "USB-C to USB-C",
@@ -1309,6 +1234,7 @@ const electronicsProducts = [
     },
   },
   {
+    brand: "Portronics",
     title: "Portronics Konnect USB-C Cable",
     description:
       "Braided USB-C cable designed for fast charging and reliable data transfer across compatible devices.",
@@ -1318,7 +1244,6 @@ const electronicsProducts = [
     stock: 65,
     category: "cables & adapters",
     specification: {
-      Brand: "Portronics",
       Model: "Konnect",
       Length: "1.2 m",
       Connector: "USB-C to USB-C",
@@ -1328,8 +1253,8 @@ const electronicsProducts = [
       Compatibility: "USB-C Smartphones, Tablets and Laptops",
     },
   },
-
   {
+    brand: "UGREEN",
     title: "UGREEN 100W USB-C GaN Charger",
     description:
       "Compact multi-port GaN charger capable of powering laptops, smartphones and tablets simultaneously.",
@@ -1339,7 +1264,6 @@ const electronicsProducts = [
     stock: 19,
     category: "cables & adapters",
     specification: {
-      Brand: "UGREEN",
       Model: "100W GaN Charger",
       Output: "100 W",
       Ports: "3 USB-C + 1 USB-A",
@@ -1349,8 +1273,8 @@ const electronicsProducts = [
       InputVoltage: "100-240 V",
     },
   },
-
   {
+    brand: "Belkin",
     title: "Belkin 65W USB-C GaN Charger",
     description:
       "Compact GaN wall charger capable of fast charging smartphones, tablets and compatible laptops through USB-C.",
@@ -1360,7 +1284,6 @@ const electronicsProducts = [
     stock: 24,
     category: "cables & adapters",
     specification: {
-      Brand: "Belkin",
       Model: "65W GaN Charger",
       Output: "65 W",
       Ports: "2 USB-C",
@@ -1371,6 +1294,7 @@ const electronicsProducts = [
     },
   },
   {
+    brand: "Anker",
     title: "Anker 735 65W GaN Charger",
     description:
       "Compact multi-port GaN charger designed to fast charge laptops, tablets and smartphones from a single adapter.",
@@ -1380,7 +1304,6 @@ const electronicsProducts = [
     stock: 20,
     category: "cables & adapters",
     specification: {
-      Brand: "Anker",
       Model: "735 Charger",
       Output: "65 W",
       Ports: "2 USB-C + 1 USB-A",
@@ -1390,8 +1313,8 @@ const electronicsProducts = [
       InputVoltage: "100-240 V",
     },
   },
-
   {
+    brand: "Belkin",
     title: "Belkin BoostCharge USB-C Cable",
     description:
       "Durable USB-C charging cable designed for fast charging compatible smartphones, tablets and other devices.",
@@ -1401,7 +1324,6 @@ const electronicsProducts = [
     stock: 55,
     category: "cables & adapters",
     specification: {
-      Brand: "Belkin",
       Model: "BoostCharge USB-C Cable",
       Length: "1 m",
       Connector: "USB-C to USB-C",
@@ -1411,8 +1333,8 @@ const electronicsProducts = [
       Compatibility: "USB-C Devices",
     },
   },
-
   {
+    brand: "UGREEN",
     title: "UGREEN USB-C to HDMI Adapter",
     description:
       "Compact adapter that connects USB-C devices to HDMI displays for high-resolution video output.",
@@ -1422,7 +1344,6 @@ const electronicsProducts = [
     stock: 33,
     category: "cables & adapters",
     specification: {
-      Brand: "UGREEN",
       Model: "USB-C HDMI Adapter",
       Connector: "USB-C to HDMI",
       VideoOutput: "Up to 4K",
@@ -1432,8 +1353,8 @@ const electronicsProducts = [
       Material: "Aluminium Alloy",
     },
   },
-
   {
+    brand: "boAt",
     title: "boAt Type-C Fast Charging Cable",
     description:
       "Affordable braided Type-C cable supporting fast charging and reliable data transfer for compatible devices.",
@@ -1443,7 +1364,6 @@ const electronicsProducts = [
     stock: 70,
     category: "cables & adapters",
     specification: {
-      Brand: "boAt",
       Model: "Type-C Fast Charging Cable",
       Length: "1.5 m",
       Connector: "USB-A to USB-C",
@@ -1453,8 +1373,8 @@ const electronicsProducts = [
       Compatibility: "Android Smartphones and Accessories",
     },
   },
-
   {
+    brand: "Stuffcool",
     title: "Stuffcool 100W USB-C Cable",
     description:
       "High-power USB-C cable designed for fast charging laptops, tablets and smartphones with compatible chargers.",
@@ -1464,7 +1384,6 @@ const electronicsProducts = [
     stock: 44,
     category: "cables & adapters",
     specification: {
-      Brand: "Stuffcool",
       Model: "100W USB-C Cable",
       Length: "2 m",
       Connector: "USB-C to USB-C",
@@ -1475,8 +1394,5 @@ const electronicsProducts = [
     },
   },
 ];
-
-console.log(electronicsProducts.length);
-
 
 module.exports = electronicsProducts;

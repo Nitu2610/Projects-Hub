@@ -12,6 +12,7 @@ interface ProductImage {
 interface Product {
   title: string;
   description: string;
+  brand: string;
   color?: string;
   price: number;
   discountedPrice?: number;
@@ -53,7 +54,11 @@ const productSchema = new Schema<Product>(
       required: true,
       trim: true,
     },
-
+brand: {
+  type: String,
+  required: true,
+  trim: true,
+},
     color: {
       type: String,
       trim: true,

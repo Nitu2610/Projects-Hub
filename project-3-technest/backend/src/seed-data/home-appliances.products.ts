@@ -1,9 +1,6 @@
 const homeAppliancesProducts = [
-      // =========================================================
-  // REFRIGERATORS
-  // =========================================================
-
   {
+    brand: "LG",
     title: "LG 655L Side-by-Side Refrigerator",
     description:
       "Large-capacity side-by-side refrigerator with inverter technology, multi-airflow cooling and frost-free operation.",
@@ -13,7 +10,6 @@ const homeAppliancesProducts = [
     stock: 7,
     category: "refrigerators",
     specification: {
-      Brand: "LG",
       Model: "GL-S262APZX",
       Capacity: "655 L",
       Type: "Side-by-Side",
@@ -24,8 +20,8 @@ const homeAppliancesProducts = [
       Warranty: "1 Year Product + 10 Years Compressor",
     },
   },
-
   {
+    brand: "Samsung",
     title: "Samsung 653L Side-by-Side Refrigerator",
     description:
       "Premium side-by-side refrigerator offering spacious storage, digital inverter technology and all-around cooling.",
@@ -35,7 +31,6 @@ const homeAppliancesProducts = [
     stock: 6,
     category: "refrigerators",
     specification: {
-      Brand: "Samsung",
       Model: "RS76CG8113B1",
       Capacity: "653 L",
       Type: "Side-by-Side",
@@ -46,8 +41,8 @@ const homeAppliancesProducts = [
       Warranty: "1 Year Product + 20 Years Compressor",
     },
   },
-
   {
+    brand: "Whirlpool",
     title: "Whirlpool 265L Frost Free Refrigerator",
     description:
       "Double-door refrigerator with frost-free cooling, inverter compressor and flexible storage for medium-sized households.",
@@ -57,7 +52,6 @@ const homeAppliancesProducts = [
     stock: 14,
     category: "refrigerators",
     specification: {
-      Brand: "Whirlpool",
       Model: "IF INV CNV 278 ELT",
       Capacity: "265 L",
       Type: "Double Door",
@@ -68,8 +62,8 @@ const homeAppliancesProducts = [
       Warranty: "1 Year Product + 10 Years Compressor",
     },
   },
-
   {
+    brand: "Godrej",
     title: "Godrej 244L Double Door Refrigerator",
     description:
       "Energy-efficient double-door refrigerator with frost-free operation and spacious compartments for everyday household use.",
@@ -79,7 +73,6 @@ const homeAppliancesProducts = [
     stock: 17,
     category: "refrigerators",
     specification: {
-      Brand: "Godrej",
       Model: "EON Vogue 244B",
       Capacity: "244 L",
       Type: "Double Door",
@@ -90,8 +83,8 @@ const homeAppliancesProducts = [
       Warranty: "1 Year Product + 10 Years Compressor",
     },
   },
-
   {
+    brand: "Haier",
     title: "Haier 237L Double Door Refrigerator",
     description:
       "Compact double-door refrigerator with frost-free cooling, inverter technology and practical storage compartments.",
@@ -101,7 +94,6 @@ const homeAppliancesProducts = [
     stock: 13,
     category: "refrigerators",
     specification: {
-      Brand: "Haier",
       Model: "HEF-252TS-P",
       Capacity: "237 L",
       Type: "Double Door",
@@ -112,8 +104,8 @@ const homeAppliancesProducts = [
       Warranty: "1 Year Product + 10 Years Compressor",
     },
   },
-
   {
+    brand: "IFB",
     title: "IFB 197L Direct Cool Refrigerator",
     description:
       "Compact single-door refrigerator designed for smaller households with efficient cooling and practical storage.",
@@ -123,7 +115,6 @@ const homeAppliancesProducts = [
     stock: 20,
     category: "refrigerators",
     specification: {
-      Brand: "IFB",
       Model: "197L Direct Cool",
       Capacity: "197 L",
       Type: "Single Door",
@@ -134,12 +125,8 @@ const homeAppliancesProducts = [
       Warranty: "1 Year Product + 10 Years Compressor",
     },
   },
-
-  // =========================================================
-  // WASHING MACHINES
-  // =========================================================
-
   {
+    brand: "LG",
     title: "LG 9kg Front Load Washing Machine",
     description:
       "Fully automatic front-load washing machine with inverter motor, multiple wash programs and steam technology.",
@@ -149,7 +136,6 @@ const homeAppliancesProducts = [
     stock: 10,
     category: "washing machines",
     specification: {
-      Brand: "LG",
       Model: "FHP1209Z5M",
       Capacity: "9 kg",
       Type: "Front Load",
@@ -161,8 +147,8 @@ const homeAppliancesProducts = [
       Warranty: "2 Years Product + 10 Years Motor",
     },
   },
-
   {
+    brand: "Samsung",
     title: "Samsung 8kg Front Load Washing Machine",
     description:
       "Smart front-load washing machine featuring EcoBubble technology, digital inverter motor and multiple wash programs.",
@@ -172,7 +158,6 @@ const homeAppliancesProducts = [
     stock: 12,
     category: "washing machines",
     specification: {
-      Brand: "Samsung",
       Model: "WW80T504DAX",
       Capacity: "8 kg",
       Type: "Front Load",
@@ -184,8 +169,8 @@ const homeAppliancesProducts = [
       Warranty: "3 Years Product + 10 Years Motor",
     },
   },
-
   {
+    brand: "IFB",
     title: "IFB 8kg Front Load Washing Machine",
     description:
       "Fully automatic front-load washing machine with Aqua Energie technology, steam wash and high-speed spinning.",
@@ -195,7 +180,6 @@ const homeAppliancesProducts = [
     stock: 11,
     category: "washing machines",
     specification: {
-      Brand: "IFB",
       Model: "Executive ZXS 8 kg",
       Capacity: "8 kg",
       Type: "Front Load",
@@ -207,8 +191,8 @@ const homeAppliancesProducts = [
       Warranty: "4 Years Product + 10 Years Motor",
     },
   },
-
   {
+    brand: "Whirlpool",
     title: "Whirlpool 7.5kg Top Load Washing Machine",
     description:
       "Fully automatic top-load washing machine with multiple wash programs, inverter technology and convenient digital controls.",
@@ -218,7 +202,6 @@ const homeAppliancesProducts = [
     stock: 16,
     category: "washing machines",
     specification: {
-      Brand: "Whirlpool",
       Model: "360 BW PRO",
       Capacity: "7.5 kg",
       Type: "Top Load",
@@ -230,8 +213,8 @@ const homeAppliancesProducts = [
       Warranty: "2 Years Product + 10 Years Motor",
     },
   },
-
   {
+    brand: "Godrej",
     title: "Godrej 7kg Fully Automatic Washing Machine",
     description:
       "Compact fully automatic washing machine with efficient motor, multiple wash programs and easy-to-use controls.",
@@ -241,7 +224,6 @@ const homeAppliancesProducts = [
     stock: 19,
     category: "washing machines",
     specification: {
-      Brand: "Godrej",
       Model: "WT EON 701",
       Capacity: "7 kg",
       Type: "Top Load",
@@ -253,8 +235,8 @@ const homeAppliancesProducts = [
       Warranty: "2 Years Product + 10 Years Motor",
     },
   },
-
   {
+    brand: "Bosch",
     title: "Bosch 8kg Front Load Washing Machine",
     description:
       "Premium front-load washing machine with inverter motor, anti-vibration design and a wide range of washing programs.",
@@ -264,7 +246,6 @@ const homeAppliancesProducts = [
     stock: 8,
     category: "washing machines",
     specification: {
-      Brand: "Bosch",
       Model: "WAJ2426WIN",
       Capacity: "8 kg",
       Type: "Front Load",
@@ -276,12 +257,8 @@ const homeAppliancesProducts = [
       Warranty: "2 Years Product + 10 Years Motor",
     },
   },
-
-  // =========================================================
-  // AIR CONDITIONERS
-  // =========================================================
-
   {
+    brand: "LG",
     title: "LG 1.5 Ton 5 Star Split AC",
     description:
       "Energy-efficient split air conditioner with dual inverter technology, HD filter and fast cooling performance.",
@@ -291,7 +268,6 @@ const homeAppliancesProducts = [
     stock: 9,
     category: "air conditioners",
     specification: {
-      Brand: "LG",
       Model: "PS-Q19YNZE",
       Capacity: "1.5 Ton",
       Type: "Split AC",
@@ -303,8 +279,8 @@ const homeAppliancesProducts = [
       Warranty: "1 Year Product + 10 Years Compressor",
     },
   },
-
   {
+    brand: "Daikin",
     title: "Daikin 1.5 Ton 5 Star Split AC",
     description:
       "High-efficiency split air conditioner with inverter compressor, PM 2.5 filter and powerful cooling performance.",
@@ -314,7 +290,6 @@ const homeAppliancesProducts = [
     stock: 8,
     category: "air conditioners",
     specification: {
-      Brand: "Daikin",
       Model: "FTKM50UV16",
       Capacity: "1.5 Ton",
       Type: "Split AC",
@@ -326,8 +301,8 @@ const homeAppliancesProducts = [
       Warranty: "1 Year Product + 10 Years Compressor",
     },
   },
-
   {
+    brand: "Voltas",
     title: "Voltas 1.5 Ton 5 Star Split AC",
     description:
       "Efficient split AC with inverter compressor, multiple cooling modes and air purification features for everyday comfort.",
@@ -337,7 +312,6 @@ const homeAppliancesProducts = [
     stock: 13,
     category: "air conditioners",
     specification: {
-      Brand: "Voltas",
       Model: "1.5 Ton 5 Star Inverter AC",
       Capacity: "1.5 Ton",
       Type: "Split AC",
@@ -349,8 +323,8 @@ const homeAppliancesProducts = [
       Warranty: "1 Year Product + 10 Years Compressor",
     },
   },
-
   {
+    brand: "Samsung",
     title: "Samsung 1.5 Ton 5 Star WindFree AC",
     description:
       "Premium split air conditioner with WindFree cooling technology, inverter compressor and smart connectivity.",
@@ -360,7 +334,6 @@ const homeAppliancesProducts = [
     stock: 7,
     category: "air conditioners",
     specification: {
-      Brand: "Samsung",
       Model: "AR18CY5AMWK",
       Capacity: "1.5 Ton",
       Type: "Split AC",
@@ -372,8 +345,8 @@ const homeAppliancesProducts = [
       Connectivity: "Wi-Fi",
     },
   },
-
   {
+    brand: "Blue Star",
     title: "Blue Star 1.5 Ton 3 Star Split AC",
     description:
       "Reliable split air conditioner offering efficient cooling, inverter technology and convenient comfort settings.",
@@ -383,7 +356,6 @@ const homeAppliancesProducts = [
     stock: 15,
     category: "air conditioners",
     specification: {
-      Brand: "Blue Star",
       Model: "IA318DNU",
       Capacity: "1.5 Ton",
       Type: "Split AC",
@@ -395,8 +367,8 @@ const homeAppliancesProducts = [
       Warranty: "1 Year Product + 10 Years Compressor",
     },
   },
-
   {
+    brand: "Carrier",
     title: "Carrier 1.5 Ton 5 Star Split AC",
     description:
       "Energy-efficient inverter split AC with advanced air filtration and multiple operating modes for comfortable cooling.",
@@ -406,7 +378,6 @@ const homeAppliancesProducts = [
     stock: 11,
     category: "air conditioners",
     specification: {
-      Brand: "Carrier",
       Model: "Estra 1.5 Ton",
       Capacity: "1.5 Ton",
       Type: "Split AC",
@@ -418,12 +389,8 @@ const homeAppliancesProducts = [
       Warranty: "1 Year Product + 10 Years Compressor",
     },
   },
-
-  // =========================================================
-  // MICROWAVES
-  // =========================================================
-
   {
+    brand: "LG",
     title: "LG 28L Convection Microwave Oven",
     description:
       "Versatile convection microwave oven suitable for reheating, grilling and baking with multiple automatic cooking programs.",
@@ -433,7 +400,6 @@ const homeAppliancesProducts = [
     stock: 14,
     category: "microwaves",
     specification: {
-      Brand: "LG",
       Model: "MC2846SL",
       Capacity: "28 L",
       Type: "Convection",
@@ -445,8 +411,8 @@ const homeAppliancesProducts = [
       Warranty: "1 Year Product",
     },
   },
-
   {
+    brand: "Samsung",
     title: "Samsung 28L Convection Microwave Oven",
     description:
       "Multi-functional convection microwave designed for baking, grilling and everyday cooking with preset cooking menus.",
@@ -456,7 +422,6 @@ const homeAppliancesProducts = [
     stock: 18,
     category: "microwaves",
     specification: {
-      Brand: "Samsung",
       Model: "MC28A5013AK",
       Capacity: "28 L",
       Type: "Convection",
@@ -468,8 +433,8 @@ const homeAppliancesProducts = [
       Warranty: "1 Year Product",
     },
   },
-
   {
+    brand: "IFB",
     title: "IFB 30L Convection Microwave Oven",
     description:
       "Large-capacity convection microwave with multiple cooking functions, preset menus and easy digital controls.",
@@ -479,7 +444,6 @@ const homeAppliancesProducts = [
     stock: 12,
     category: "microwaves",
     specification: {
-      Brand: "IFB",
       Model: "30BRC2",
       Capacity: "30 L",
       Type: "Convection",
@@ -491,8 +455,8 @@ const homeAppliancesProducts = [
       Warranty: "1 Year Product",
     },
   },
-
   {
+    brand: "Whirlpool",
     title: "Whirlpool 20L Solo Microwave Oven",
     description:
       "Compact solo microwave oven designed for quick reheating, defrosting and everyday cooking.",
@@ -502,7 +466,6 @@ const homeAppliancesProducts = [
     stock: 23,
     category: "microwaves",
     specification: {
-      Brand: "Whirlpool",
       Model: "MAGICOOK PRO 20SE",
       Capacity: "20 L",
       Type: "Solo",
@@ -514,8 +477,8 @@ const homeAppliancesProducts = [
       Warranty: "1 Year Product",
     },
   },
-
   {
+    brand: "Panasonic",
     title: "Panasonic 27L Convection Microwave Oven",
     description:
       "Convection microwave with baking, grilling and microwave functions designed for versatile home cooking.",
@@ -525,7 +488,6 @@ const homeAppliancesProducts = [
     stock: 16,
     category: "microwaves",
     specification: {
-      Brand: "Panasonic",
       Model: "NN-CT645B",
       Capacity: "27 L",
       Type: "Convection",
@@ -537,8 +499,8 @@ const homeAppliancesProducts = [
       Warranty: "1 Year Product",
     },
   },
-
   {
+    brand: "Godrej",
     title: "Godrej 20L Solo Microwave Oven",
     description:
       "Compact solo microwave designed for simple reheating, cooking and defrosting with easy-to-use controls.",
@@ -548,7 +510,6 @@ const homeAppliancesProducts = [
     stock: 25,
     category: "microwaves",
     specification: {
-      Brand: "Godrej",
       Model: "GMX 20SA2",
       Capacity: "20 L",
       Type: "Solo",
@@ -560,12 +521,8 @@ const homeAppliancesProducts = [
       Warranty: "1 Year Product",
     },
   },
-
-  // =========================================================
-  // STABILIZERS
-  // =========================================================
-
   {
+    brand: "V-Guard",
     title: "V-Guard VG 400 Voltage Stabilizer",
     description:
       "Automatic voltage stabilizer designed to protect compatible refrigerators and home appliances from voltage fluctuations.",
@@ -575,7 +532,6 @@ const homeAppliancesProducts = [
     stock: 30,
     category: "stabilizers",
     specification: {
-      Brand: "V-Guard",
       Model: "VG 400",
       Capacity: "3 A",
       InputRange: "90-290 V",
@@ -586,8 +542,8 @@ const homeAppliancesProducts = [
       Mounting: "Wall Mount",
     },
   },
-
   {
+    brand: "V-Guard",
     title: "V-Guard VWI 400 Voltage Stabilizer",
     description:
       "Digital voltage stabilizer providing protection against voltage fluctuations for compatible refrigerators and appliances.",
@@ -597,7 +553,6 @@ const homeAppliancesProducts = [
     stock: 27,
     category: "stabilizers",
     specification: {
-      Brand: "V-Guard",
       Model: "VWI 400",
       Capacity: "4 A",
       InputRange: "90-290 V",
@@ -608,8 +563,8 @@ const homeAppliancesProducts = [
       Mounting: "Wall Mount",
     },
   },
-
   {
+    brand: "Microtek",
     title: "Microtek EMR 2013 Voltage Stabilizer",
     description:
       "Automatic voltage stabilizer designed for protecting air conditioners from unstable voltage conditions.",
@@ -619,7 +574,6 @@ const homeAppliancesProducts = [
     stock: 21,
     category: "stabilizers",
     specification: {
-      Brand: "Microtek",
       Model: "EMR 2013",
       Capacity: "6 A",
       InputRange: "90-300 V",
@@ -630,8 +584,8 @@ const homeAppliancesProducts = [
       Mounting: "Wall Mount",
     },
   },
-
   {
+    brand: "V-Guard",
     title: "V-Guard ID4 2KVA Voltage Stabilizer",
     description:
       "High-capacity stabilizer designed to provide voltage protection for larger home appliances and equipment.",
@@ -641,7 +595,6 @@ const homeAppliancesProducts = [
     stock: 15,
     category: "stabilizers",
     specification: {
-      Brand: "V-Guard",
       Model: "ID4 2KVA",
       Capacity: "2 KVA",
       InputRange: "90-300 V",
@@ -652,8 +605,8 @@ const homeAppliancesProducts = [
       Mounting: "Wall Mount",
     },
   },
-
   {
+    brand: "Microtek",
     title: "Microtek EM4160 Voltage Stabilizer",
     description:
       "Automatic stabilizer designed for air conditioners with wide input voltage range and built-in safety protection.",
@@ -663,7 +616,6 @@ const homeAppliancesProducts = [
     stock: 18,
     category: "stabilizers",
     specification: {
-      Brand: "Microtek",
       Model: "EM4160",
       Capacity: "6 KVA",
       InputRange: "90-300 V",
@@ -674,8 +626,8 @@ const homeAppliancesProducts = [
       Mounting: "Wall Mount",
     },
   },
-
   {
+    brand: "Syspro",
     title: "Syspro Voltsafe 4KVA Stabilizer",
     description:
       "Automatic voltage stabilizer designed for large appliances with wide input range and protection against electrical fluctuations.",
@@ -685,7 +637,6 @@ const homeAppliancesProducts = [
     stock: 16,
     category: "stabilizers",
     specification: {
-      Brand: "Syspro",
       Model: "Voltsafe 4KVA",
       Capacity: "4 KVA",
       InputRange: "90-300 V",
@@ -696,7 +647,6 @@ const homeAppliancesProducts = [
       Mounting: "Wall Mount",
     },
   },
-]
-
+];
 
 module.exports = homeAppliancesProducts;

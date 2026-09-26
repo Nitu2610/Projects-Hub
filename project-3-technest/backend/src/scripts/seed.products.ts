@@ -136,49 +136,50 @@ const seedProducts = async () => {
     // 7. Resolve category names to MongoDB ObjectIds
     // ------------------------------------------------
 
-    const productsToInsert = allProducts.map(
-      (product: any) => {
-        const categoryId = categoryMap.get(
-          product.category
-            .toLowerCase()
-            .trim()
-        );
-
-        if (!categoryId) {
-          throw new Error(
-            `Category not found for product: ${product.title}. Category: ${product.category}`
-          );
-        }
-
-        return {
-          title: product.title,
-          description: product.description,
-          color: product.color,
-          price: product.price,
-          discountedPrice: product.discountedPrice,
-          stock: product.stock,
-
-          // Specification must be an object containing
-          // string key/value pairs.
-          //
-          // Every seeded product will contain Brand.
-
-          specification: product.specification,
-
-          // Replace the human-readable category name
-          // with the actual MongoDB ObjectId.
-          category: categoryId,
-
-          active: true,
-
-          // Images are intentionally empty during seeding.
-          // They will be added later through the admin UI
-          // after Cloudinary production setup.
-
-          images: [],
-        };
-      }
+   
+const productsToInsert = allProducts.map(
+  (product: any) => {
+    const categoryId = categoryMap.get(
+      product.category
+        .toLowerCase()
+        .trim()
     );
+
+    if (!categoryId) {
+      throw new Error(
+        `Category not found for product: ${product.title}. Category: ${product.category}`
+      );
+    }
+
+    return {
+      title: product.title,
+      description: product.description,
+
+      // Brand is a first-class product field.
+      brand: product.brand,
+
+      color: product.color,
+      price: product.price,
+      discountedPrice: product.discountedPrice,
+      stock: product.stock,
+
+      // Specification contains only product-specific
+      // technical attributes.
+      specification: product.specification,
+
+      // Replace the human-readable category name
+      // with the actual MongoDB ObjectId.
+      category: categoryId,
+
+      active: true,
+
+      // Images will be added later through the
+      // admin UI after Cloudinary setup.
+      images: [],
+    };
+  }
+);
+
 
     // ------------------------------------------------
     // 8. Insert products

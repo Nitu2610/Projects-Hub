@@ -50,8 +50,8 @@ const productController = {
   },
 
   getProducts: async (req: Request, res: Response) => {
-    const role = req.user.role;
-
+    const role = req?.user?.role ?? "customer"; // Default to "customer" if role is undefined
+   console.log("User Role:", role);
     const categoryId =
       typeof req.query.categoryId === "string"
         ? req.query.categoryId
@@ -123,6 +123,7 @@ const productController = {
       }
     }
 
+    console.log(response.data);
     return res.status(200).json({
       success: true,
       message: response.message,
@@ -131,7 +132,7 @@ const productController = {
   },
 
   getProductDetails: async (req: Request, res: Response) => {
-    const role = req.user.role;
+    const role = req?.user?.role ?? "customer"; // Default to "customer" if role is undefined
     const productId = req.params.productId;
 
     const response = await productService.getProductDetails(

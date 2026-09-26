@@ -44,7 +44,9 @@ const categoryController = {
   },
 
   getCategories: async (req: Request, res: Response) => {
-    const role = req.user.role;
+  
+    const role = req?.user?.role ?? "customer";
+
 
     const response =
       await categoryService.getCategories(role);
