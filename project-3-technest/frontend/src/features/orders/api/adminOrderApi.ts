@@ -8,13 +8,31 @@ import {
 
 export const adminOrderApi = apiSlice.injectEndpoints({
   endpoints: (build) => ({
-    getAdminOrders: build.query<ApiResponse<Order[]>, void>({
-      query: () => ({
-        url: "/admin/orders",
-        method: "GET",
-      }),
-      providesTags: ["Order"],
-    }),
+    getAdminOrders: build.query<
+  ApiResponse<{
+    orders: Order[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
+  }>,
+  {
+    page?: number;
+    limit?: number;
+  }
+>({
+  query: ({ page = 1, limit = 10 }) => ({
+    url: "/admin/orders",
+    method: "GET",
+    params: {
+      page,
+      limit,
+    },
+  }),
+  providesTags: ["Order"],
+}),
 
     getAdminOrderById: build.query<ApiResponse<Order>, string>({
       query: (orderId) => ({

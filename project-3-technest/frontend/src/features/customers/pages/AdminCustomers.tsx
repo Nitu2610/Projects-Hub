@@ -1,64 +1,91 @@
-import { Box, Flex, Heading, Spinner, Text, VStack } from "@chakra-ui/react";
-
+import { useState } from "react";
+import {
+  Box,
+  Container,
+  Flex,
+  Heading,
+  Text,
+} from "@chakra-ui/react";
 import { CustomerTable } from "../components/CustomerTable";
 import { useGetCustomersQuery } from "../api/customerApi";
+import { LoadingComp } from "../../../components/shared/LoadingComp";
+import { ErrorComp } from "../../../components/shared/ErrorComp";
+import { Pagination } from "../../../components/shared/Pagination";
 
 export const AdminCustomers = () => {
-  const { data, isLoading, isError } = useGetCustomersQuery();
+  const [page, setPage] = useState(1);
 
-  if (isLoading) {
-    return (
-      <Flex minH="400px" align="center" justify="center">
-        <VStack gap={3}>
-          <Spinner size="lg" />
-          <Text color="gray.500">Loading customers...</Text>
-        </VStack>
-      </Flex>
-    );
-  }
+  const {
+    data,
+    isLoading,
+    isError,
+  } = useGetCustomersQuery({
+    page,
+    limit: 10,
+  });
+
+  if (isLoading) return <LoadingComp />;
 
   if (isError || !data?.data) {
     return (
-      <Flex minH="400px" align="center" justify="center">
-        <VStack gap={2}>
-          <Heading size="md">Unable to load customers</Heading>
-
-          <Text color="gray.500">Please try refreshing the page.</Text>
-        </VStack>
-      </Flex>
+      <ErrorComp message="Unable to load customers. Please try again." />
     );
   }
 
-  const customers = data.data;
+  const { customers, pagination } = data.data;
 
   return (
-    <Box color="black" p={{ base: 4, md: 8 }}>
-      <Flex justify="space-between" align="center" mb={6}>
-        <Box>
-          <Heading size="lg">Customers</Heading>
-
-          <Text color="gray.500" mt={1}>
-            View registered customers
-          </Text>
-        </Box>
-
-        <Text color="gray.500">Total: {customers.length}</Text>
-      </Flex>
-
-      {customers.length === 0 ? (
+    <Box bg="bg" minH="100vh" py={{ base: 5, md: 8 }}>
+      <Container maxW="1400px">
         <Flex
-          minH="250px"
-          align="center"
-          justify="center"
-          borderWidth="1px"
-          borderRadius="lg"
-          bg="white"
+          direction={{ base: "column", sm: "row" }}
+          justify="space-between"
+          align={{ base: "flex-start", sm: "center" }}
+          gap={3}
+          mb={6}
         >
-          <Text color="gray.500">No customers available.</Text>
+          <Box>
+            <Heading fontSize={{ base: "2xl", md: "3xl" }}>
+              Customers
+            </Heading>
+
+            <Text mt={1} color="fg.muted">
+              View registered customers.
+            </Text>
+          </Box>
+
+          <Text fontSize="sm" color="fg.muted" fontWeight="medium">
+            Total: {pagination.total}
+          </Text>
         </Flex>
-      ) : (
-        <CustomerTable customers={customers} />
-      )}
+
+        {customers.length === 0 ? (
+          <Box
+            bg="bg.panel"
+            borderWidth="1px"
+            borderColor="border"
+            borderRadius="xl"
+            p={{ base: 6, md: 8 }}
+            textAlign="center"
+          >
+            <Heading size="md">No customers available</Heading>
+
+            <Text mt={2} color="fg.muted">
+              Registered customers will appear here.
+            </Text>
+          </Box>
+        ) : (
+          <>
+            <CustomerTable customers={customers} />
+
+            <Pagination
+              currentPage={pagination.page}
+              totalPages={pagination.totalPages}
+              onPageChange={setPage}
+            />
+          </>
+        )}
+      </Container>
     </Box>
   );
 };

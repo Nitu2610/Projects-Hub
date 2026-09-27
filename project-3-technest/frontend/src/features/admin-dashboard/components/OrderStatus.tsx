@@ -1,8 +1,5 @@
-
 import {
   Box,
-  Grid,
-  GridItem,
   Heading,
   HStack,
   Text,
@@ -27,50 +24,27 @@ interface OrderStatusProps {
 }
 
 const statusConfig = [
-  {
-    key: "PLACED",
-    label: "Placed",
-    icon: FiClock,
-  },
-  {
-    key: "CONFIRMED",
-    label: "Confirmed",
-    icon: FiCheckCircle,
-  },
-  {
-    key: "SHIPPED",
-    label: "Shipped",
-    icon: FiTruck,
-  },
-  {
-    key: "DELIVERED",
-    label: "Delivered",
-    icon: FiPackage,
-  },
-  {
-    key: "CANCELLED",
-    label: "Cancelled",
-    icon: FiXCircle,
-  },
+  { key: "PLACED", label: "Placed", icon: FiClock },
+  { key: "CONFIRMED", label: "Confirmed", icon: FiCheckCircle },
+  { key: "SHIPPED", label: "Shipped", icon: FiTruck },
+  { key: "DELIVERED", label: "Delivered", icon: FiPackage },
+  { key: "CANCELLED", label: "Cancelled", icon: FiXCircle },
 ] as const;
 
 export const OrderStatus = ({ data }: OrderStatusProps) => {
   return (
     <Box
-      bg="white"
+      bg="bg.panel"
       borderWidth="1px"
-      borderColor="gray.200"
+      borderColor="border"
       borderRadius="xl"
       p={5}
-      boxShadow="sm"
       h="100%"
     >
       <Box mb={5}>
-        <Heading size="md" color="gray.800">
-          Order Status
-        </Heading>
+        <Heading size="md">Order Status</Heading>
 
-        <Text fontSize="sm" color="gray.500" mt={1}>
+        <Text fontSize="sm" color="fg.muted" mt={1}>
           Current order distribution
         </Text>
       </Box>
@@ -86,14 +60,14 @@ export const OrderStatus = ({ data }: OrderStatusProps) => {
               justify="space-between"
               p={3}
               borderRadius="lg"
-              bg="gray.50"
+              bg="bg.muted"
             >
               <HStack gap={3}>
                 <Box
                   p={2}
                   borderRadius="md"
-                  bg="white"
-                  color="gray.600"
+                  bg="bg.panel"
+                  color="fg.muted"
                 >
                   <Icon size={18} />
                 </Box>
@@ -101,7 +75,6 @@ export const OrderStatus = ({ data }: OrderStatusProps) => {
                 <Text
                   fontSize="sm"
                   fontWeight="medium"
-                  color="gray.700"
                 >
                   {status.label}
                 </Text>
@@ -110,7 +83,6 @@ export const OrderStatus = ({ data }: OrderStatusProps) => {
               <Text
                 fontSize="lg"
                 fontWeight="bold"
-                color="gray.800"
               >
                 {value}
               </Text>

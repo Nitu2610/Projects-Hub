@@ -1,6 +1,11 @@
-import { Button, Dialog, Portal, Text } from "@chakra-ui/react";
+import {
+  Button,
+  Dialog,
+  Portal,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 import { useState } from "react";
-
 import { useDeactivateProductMutation } from "../../api/productApi";
 
 interface DeactivateProductButtonProps {
@@ -14,12 +19,12 @@ export const DeactivateProductButton = ({
 }: DeactivateProductButtonProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const [deactivateProduct, { isLoading }] = useDeactivateProductMutation();
+  const [deactivateProduct, { isLoading }] =
+    useDeactivateProductMutation();
 
   const handleDeactivate = async () => {
     try {
       await deactivateProduct(productId).unwrap();
-
       setIsOpen(false);
     } catch (error) {
       console.error("Failed to deactivate product:", error);
@@ -32,7 +37,11 @@ export const DeactivateProductButton = ({
       onOpenChange={(details) => setIsOpen(details.open)}
     >
       <Dialog.Trigger asChild>
-        <Button size="sm" variant="outline" colorPalette="red">
+        <Button
+          size="sm"
+          variant="outline"
+          colorPalette="red"
+        >
           Deactivate
         </Button>
       </Dialog.Trigger>
@@ -41,26 +50,39 @@ export const DeactivateProductButton = ({
         <Dialog.Backdrop />
 
         <Dialog.Positioner>
-          <Dialog.Content>
+          <Dialog.Content
+            bg="bg.panel"
+            borderColor="border"
+          >
             <Dialog.Header>
-              <Dialog.Title>Deactivate Product</Dialog.Title>
+              <Dialog.Title>
+                Deactivate Product
+              </Dialog.Title>
             </Dialog.Header>
 
             <Dialog.Body>
-              <Text>
-                Are you sure you want to deactivate{" "}
-                <strong>{productTitle}</strong>?
-              </Text>
+              <Stack gap={3}>
+                <Text>
+                  Are you sure you want to deactivate{" "}
+                  <Text as="span" fontWeight="semibold">
+                    {productTitle}
+                  </Text>
+                  ?
+                </Text>
 
-              <Text mt={2}>
-                The product will no longer be available for customers to
-                purchase.
-              </Text>
+                <Text color="fg.muted">
+                  This product will no longer be available
+                  for customers to purchase.
+                </Text>
+              </Stack>
             </Dialog.Body>
 
             <Dialog.Footer>
               <Dialog.ActionTrigger asChild>
-                <Button variant="ghost" disabled={isLoading}>
+                <Button
+                  variant="ghost"
+                  disabled={isLoading}
+                >
                   Cancel
                 </Button>
               </Dialog.ActionTrigger>

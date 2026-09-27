@@ -1,7 +1,13 @@
-import { Box, Card, Flex, Heading, Stack, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Card,
+  Flex,
+  Heading,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
+
 import { CartItem } from "../../../types/cart.types";
-
-
 
 interface PaymentSummaryProps {
   items: CartItem[];
@@ -17,56 +23,97 @@ export const PaymentSummary = ({
   total,
 }: PaymentSummaryProps) => {
   return (
-    <Card.Root>
+    <Card.Root
+      bg="bg.panel"
+      borderColor="border"
+    >
       <Card.Body>
         <Stack gap={4}>
-          <Heading size="md">Order Summary</Heading>
+          <Heading size="md">
+            Order Summary
+          </Heading>
 
           {items.map((item) => {
             const price =
-              item.productId.discountedPrice ?? item.productId.price;
+              item.productId.discountedPrice ??
+              item.productId.price;
 
-            const itemTotal = price * item.quantity;
+            const itemTotal =
+              price * item.quantity;
 
             return (
-              <Flex key={item.productId._id} justify="space-between" gap={4}>
+              <Flex
+                key={item.productId._id}
+                justify="space-between"
+                gap={4}
+              >
                 <Box>
-                  <Text fontWeight="medium">{item.productId.title}</Text>
+                  <Text fontWeight="500">
+                    {item.productId.title}
+                  </Text>
 
-                  <Text fontSize="sm">
-                    ₹{price.toLocaleString("en-IN")} × {item.quantity}
+                  <Text
+                    fontSize="sm"
+                    color="fg.muted"
+                  >
+                    ₹{price.toLocaleString("en-IN")} ×{" "}
+                    {item.quantity}
                   </Text>
                 </Box>
 
-                <Text fontWeight="medium">
+                <Text
+                  fontWeight="500"
+                  whiteSpace="nowrap"
+                >
                   ₹{itemTotal.toLocaleString("en-IN")}
                 </Text>
               </Flex>
             );
           })}
 
-          <Box borderTopWidth="1px" pt={4}>
+          <Box
+            borderTopWidth="1px"
+            borderColor="border"
+            pt={4}
+          >
             <Stack gap={3}>
               <Flex justify="space-between">
-                <Text>Subtotal</Text>
+                <Text color="fg.muted">
+                  Subtotal
+                </Text>
 
-                <Text>₹{subtotal.toLocaleString("en-IN")}</Text>
+                <Text>
+                  ₹{subtotal.toLocaleString("en-IN")}
+                </Text>
               </Flex>
 
               <Flex justify="space-between">
-                <Text>Shipping</Text>
+                <Text color="fg.muted">
+                  Shipping
+                </Text>
 
                 <Text>
                   {shippingCharges === 0
                     ? "Free"
-                    : `₹${shippingCharges.toLocaleString("en-IN")}`}
+                    : `₹${shippingCharges.toLocaleString(
+                        "en-IN"
+                      )}`}
                 </Text>
               </Flex>
 
-              <Flex justify="space-between" borderTopWidth="1px" pt={3}>
-                <Text fontWeight="bold">Total</Text>
+              <Flex
+                justify="space-between"
+                borderTopWidth="1px"
+                borderColor="border"
+                pt={3}
+              >
+                <Text fontWeight="700">
+                  Total
+                </Text>
 
-                <Text fontWeight="bold">₹{total.toLocaleString("en-IN")}</Text>
+                <Text fontWeight="700">
+                  ₹{total.toLocaleString("en-IN")}
+                </Text>
               </Flex>
             </Stack>
           </Box>

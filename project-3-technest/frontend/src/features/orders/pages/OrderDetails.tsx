@@ -1,11 +1,23 @@
-import { Box, Heading, Spinner, Stack, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Container,
+  Heading,
+  Stack,
+  Text,Button
+} from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
+
 import { useGetOrderByIdQuery } from "../api/orderApi";
 import { OrderStatus } from "../components/OrderStatus";
 import { AddressDetails } from "../components/AddressDetails";
 import { OrderItem } from "../components/OrderItem";
 import { OrderPaymentSummary } from "../components/OrderPaymentSummary";
 import { CancelOrderButton } from "../components/CancelOrderButton";
+
+import { LoadingComp } from "../../../components/shared/LoadingComp";
+import { ErrorComp } from "../../../components/shared/ErrorComp";
+
+import { useNavigate } from "react-router-dom";
 
 export const OrderDetails = () => {
   const { orderId } = useParams();
@@ -14,94 +26,122 @@ export const OrderDetails = () => {
     data: response,
     isLoading,
     isError,
-  } = useGetOrderByIdQuery(orderId!, {
+  } = useGetOrderByIdQuery(orderId ?? "", {
     skip: !orderId,
   });
 
+  const navigate = useNavigate();
+
   if (isLoading) {
-    return (
-      <Box p={6} textAlign="center">
-        <Spinner />
-        <Text mt={3}>Loading order details...</Text>
-      </Box>
-    );
+    return <LoadingComp />;
   }
 
   if (isError || !response?.data) {
     return (
-      <Box p={6}>
-        <Heading size="md">Unable to load order</Heading>
-
-        <Text mt={2}>We couldn't find the requested order.</Text>
-      </Box>
+      <ErrorComp message="Unable to load the requested order." />
     );
   }
 
   const order = response.data;
 
   return (
-    <Box maxW="1000px" mx="auto" p={6}>
-      <Stack gap={6}>
-        {/* Order Header */}
-        <Box>
-          <Heading size="lg">Order Details</Heading>
+    <Box
+      bg="bg"
+      minH="calc(100vh - 80px)"
+      py={{ base: 6, md: 10 }}
+    >
+      <Container maxW="1000px">
+        <Stack gap={{ base: 6, md: 8 }}>
+          {/* Order Header */}
+          <Box>
+            <Heading
+              fontSize={{ base: "2xl", md: "3xl" }}
+            >
+              Order Details
+            </Heading>
 
-          <Text mt={2}>Order ID: {order._id}</Text>
-
-          <OrderStatus status={order.orderStatus} />
-
-          {order.cancelledAt && (
-            <Text>
-              Cancelled At: {new Date(order.cancelledAt).toLocaleString()}
+            <Text
+              mt={2}
+              fontSize="sm"
+              color="fg.muted"
+              wordBreak="break-all"
+            >
+              Order ID: {order._id}
             </Text>
-          )}
 
-          {order.cancellationReason && (
-            <Text>Cancellation Reason: {order.cancellationReason}</Text>
-          )}
-        </Box>
+            <Box mt={4}>
+              <OrderStatus status={order.orderStatus} />
+            </Box>
 
-        {/* Shipping Address */}
-        <Box>
-          <Heading size="md" mb={3}>
-            Shipping Address
-          </Heading>
+            {order.cancelledAt && (
+              <Text mt={3} fontSize="sm" color="fg.muted">
+                Cancelled At:{" "}
+                {new Date(order.cancelledAt).toLocaleString()}
+              </Text>
+            )}
 
-          <AddressDetails address={order.shippingAddress} />
-        </Box>
+            {order.cancellationReason && (
+              <Text mt={1} fontSize="sm" color="fg.muted">
+                Cancellation Reason: {order.cancellationReason}
+              </Text>
+            )}
+          </Box>
 
-        {/* Items */}
-        <Box>
-          <Heading size="md" mb={3}>
-            Items
-          </Heading>
+          {/* Shipping Address */}
+          <Box>
+            <Heading size="md" mb={3}>
+              Shipping Address
+            </Heading>
 
-          <Stack gap={4}>
-            {order.items.map((item) => (
-              <OrderItem key={item.productId} item={item} />
-            ))}
-          </Stack>
-        </Box>
+            <AddressDetails
+              address={order.shippingAddress}
+            />
+          </Box>
 
-        {/* Payment */}
-        <Box>
-          <Heading size="md" mb={3}>
-            Payment
-          </Heading>
+          {/* Order Items */}
+          <Box>
+            <Heading size="md" mb={3}>
+              Items
+            </Heading>
 
-          <OrderPaymentSummary
-            paymentMethod={order.paymentMethod}
-            paymentStatus={order.paymentStatus}
-            totalAmount={order.totalAmount}
+            <Stack gap={4}>
+              {order.items.map((item) => (
+               <OrderItem
+  key={item.productId}
+  item={item}
+  isDelivered={order.orderStatus === "DELIVERED"}
+/>
+              ))}
+            </Stack>
+          </Box>
+
+          {/* Payment */}
+          <Box>
+            <Heading size="md" mb={3}>
+              Payment
+            </Heading>
+
+            <OrderPaymentSummary
+              paymentMethod={order.paymentMethod}
+              paymentStatus={order.paymentStatus}
+              totalAmount={order.totalAmount}
+            />
+          </Box>
+
+          {/* Cancellation */}
+          <CancelOrderButton
+            orderId={order._id}
+            orderStatus={order.orderStatus}
           />
-        </Box>
 
-        {/* Cancel Button */}
-        <CancelOrderButton
-          orderId={order._id}
-          orderStatus={order.orderStatus}
-        />
-      </Stack>
+                <Button
+            variant="outline"
+            onClick={() => navigate("/orders")}
+          >
+            ←  Back to Orders
+          </Button>
+        </Stack>
+      </Container>
     </Box>
   );
 };

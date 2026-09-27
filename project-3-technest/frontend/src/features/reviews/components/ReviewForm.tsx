@@ -9,19 +9,25 @@ import {
 import { useState } from "react";
 import { useCreateReviewMutation } from "../api/reviewApi";
 
-
 interface ReviewFormProps {
   productId: string;
 }
 
-export const ReviewForm = ({ productId }: ReviewFormProps) => {
+export const ReviewForm = ({
+  productId,
+}: ReviewFormProps) => {
   const [rating, setRating] = useState("5");
   const [comment, setComment] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const [createReview, { isLoading }] = useCreateReviewMutation();
+  const [
+    createReview,
+    { isLoading },
+  ] = useCreateReviewMutation();
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
     event.preventDefault();
 
     setErrorMessage("");
@@ -34,7 +40,9 @@ export const ReviewForm = ({ productId }: ReviewFormProps) => {
     }
 
     if (trimmedComment.length < 10) {
-      setErrorMessage("Comment must be at least 10 characters.");
+      setErrorMessage(
+        "Comment must be at least 10 characters."
+      );
       return;
     }
 
@@ -48,7 +56,11 @@ export const ReviewForm = ({ productId }: ReviewFormProps) => {
       setRating("5");
       setComment("");
     } catch (error) {
-      if (typeof error === "object" && error !== null && "data" in error) {
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "data" in error
+      ) {
         const data = error.data;
 
         if (
@@ -62,26 +74,40 @@ export const ReviewForm = ({ productId }: ReviewFormProps) => {
         }
       }
 
-      setErrorMessage("Unable to submit your review. Please try again.");
+      setErrorMessage(
+        "Unable to submit your review. Please try again."
+      );
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <Stack gap={4}>
+      <Stack gap={5}>
         <Field.Root>
           <Field.Label>Rating</Field.Label>
 
           <NativeSelect.Root>
             <NativeSelect.Field
               value={rating}
-              onChange={(event) => setRating(event.target.value)}
+              onChange={(event) =>
+                setRating(event.target.value)
+              }
             >
-              <option value="5">5 - Excellent</option>
-              <option value="4">4 - Good</option>
-              <option value="3">3 - Average</option>
-              <option value="2">2 - Poor</option>
-              <option value="1">1 - Very Poor</option>
+              <option value="5">
+                5 - Excellent
+              </option>
+              <option value="4">
+                4 - Good
+              </option>
+              <option value="3">
+                3 - Average
+              </option>
+              <option value="2">
+                2 - Poor
+              </option>
+              <option value="1">
+                1 - Very Poor
+              </option>
             </NativeSelect.Field>
 
             <NativeSelect.Indicator />
@@ -91,18 +117,36 @@ export const ReviewForm = ({ productId }: ReviewFormProps) => {
         <Field.Root>
           <Field.Label>Comment</Field.Label>
 
-          <Textarea
-            value={comment}
-            onChange={(event) => setComment(event.target.value)}
-            placeholder="Share your experience with this product..."
-            rows={5}
-          />
+         <Textarea
+  value={comment}
+  onChange={(event) => setComment(event.target.value)}
+  placeholder="Share your experience with this product..."
+  rows={5}
+  maxLength={1000}
+/>
+
+          <Field.HelperText>
+            Your review should be between 10 and 1000 characters.
+          </Field.HelperText>
         </Field.Root>
 
-        {errorMessage && <Text color="red.500">{errorMessage}</Text>}
+        {errorMessage && (
+          <Text
+            color="error"
+            fontSize="sm"
+            fontWeight="medium"
+          >
+            {errorMessage}
+          </Text>
+        )}
 
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Submitting..." : "Submit Review"}
+        <Button
+          type="submit"
+          width={{ base: "100%", sm: "fit-content" }}
+          alignSelf={{ base: "stretch", sm: "flex-end" }}
+          loading={isLoading}
+        >
+          Submit Review
         </Button>
       </Stack>
     </form>

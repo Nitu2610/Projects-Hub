@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Button, Field, Input, NativeSelect, Stack } from "@chakra-ui/react";
+import { Address } from "../../../types/address.types";
 
-import type { Address } from "../../features/address/api/addressApi";
+
 
 interface BackendValidationError {
   type: string;

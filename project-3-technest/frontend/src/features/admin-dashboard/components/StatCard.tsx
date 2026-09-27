@@ -1,6 +1,5 @@
-
 import { Box, Flex, Text } from "@chakra-ui/react";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 interface StatCardProps {
   title: string;
@@ -17,34 +16,32 @@ export const StatCard = ({
 }: StatCardProps) => {
   return (
     <Box
-      bg="white"
+      bg="bg.panel"
       borderWidth="1px"
-      borderColor="gray.200"
+      borderColor="border"
       borderRadius="xl"
       p={5}
-      boxShadow="sm"
     >
       <Flex direction="column" gap={2}>
-        {icon && <Box fontSize="xl">{icon}</Box>}
+        {icon && (
+          <Box fontSize="xl" color="primary">
+            {icon}
+          </Box>
+        )}
 
-        <Text
-          fontSize="sm"
-          fontWeight="medium"
-          color="gray.500"
-        >
+        <Text fontSize="sm" fontWeight="medium" color="fg.muted">
           {title}
         </Text>
 
         <Text
           fontSize={{ base: "2xl", md: "3xl" }}
           fontWeight="bold"
-          color="gray.800"
         >
           {value}
         </Text>
 
         {description && (
-          <Text fontSize="xs" color="gray.400">
+          <Text fontSize="xs" color="fg.muted">
             {description}
           </Text>
         )}

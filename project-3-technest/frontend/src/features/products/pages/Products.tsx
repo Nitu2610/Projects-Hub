@@ -1,35 +1,48 @@
 import { useState } from "react";
-
 import {
   Box,
-  Grid,
+  Container,
   Heading,
   Text,
-  Image,
-  Badge,
-  Input,
-  Button,
+  VStack,
 } from "@chakra-ui/react";
+import { useSearchParams } from "react-router-dom";
 
 import { useGetProductsQuery } from "../api/productApi";
 import { useGetCategoriesQuery } from "../../categories/api/categoryApi";
 import { Pagination } from "../../../components/shared/Pagination";
-import { Link } from "react-router-dom";
 import { ProductFilters } from "../components/ProductFilters";
 import { ProductsGrid } from "../components/ProductsGrid";
+import { ErrorComp } from "../../../components/shared/ErrorComp";
+import { useGetUserProfileQuery } from "../../customers/api/customerApi";
+import {
+  mapAdminCategory,
+  mapCustomerCategory,
+} from "../../categories/utils/categoryMapper";
+import {AdminCategory,  CustomerCategory } from "../../../types/category.types";
 
-const Products = () => {
+
+export const Products = () => {
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const categoryId = searchParams.get("category") ?? "";
+
   const [search, setSearch] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [categoryId, setCategoryId] = useState("");
   const [sort, setSort] = useState("");
   const [page, setPage] = useState(1);
 
   const { data: categoryData } = useGetCategoriesQuery();
 
+  const { data: userData } = useGetUserProfileQuery();
+
+const role = userData?.data?.role;
+
   const {
     data: productsData,
     isLoading,
+    isFetching,
     isError,
   } = useGetProductsQuery({
     search: searchTerm || undefined,
@@ -38,8 +51,21 @@ const Products = () => {
     page,
   });
 
-  const childCategories =
-    categoryData?.data.filter((category) => category.parent !== null) ?? [];
+const categories =
+  role === "admin"
+    ? (categoryData?.data as AdminCategory[] ?? []).map(mapAdminCategory)
+    : (categoryData?.data as CustomerCategory[] ?? []).map(
+        mapCustomerCategory
+      );
+
+const childCategories = categories.filter(
+  (category) => category.parentId !== null
+);
+
+  const products = productsData?.data.products ?? [];
+
+  const totalProducts =
+    productsData?.data?.pagination?.total ?? products.length;
 
   const handleSearch = () => {
     setSearchTerm(search.trim());
@@ -47,8 +73,13 @@ const Products = () => {
   };
 
   const handleCategoryChange = (value: string) => {
-    setCategoryId(value);
     setPage(1);
+
+    if (value) {
+      setSearchParams({ category: value });
+    } else {
+      setSearchParams({});
+    }
   };
 
   const handleSortChange = (value: string) => {
@@ -56,42 +87,84 @@ const Products = () => {
     setPage(1);
   };
 
-  if (isLoading) {
-    return <Text>Loading products...</Text>;
-  }
-
-  if (isError) {
-    return <Text>Failed to load products.</Text>;
-  }
-
-  const products = productsData?.data.products ?? [];
   return (
-    <Box p={6}>
-      <Heading mb={6}>Products</Heading>
+    <Box
+      bg="bg"
+      minH="calc(100vh - 80px)"
+      py={{ base: 6, md: 10 }}
+    >
+      <Container maxW="1400px">
+        <VStack align="stretch" gap={8}>
+          <Box>
+            <Heading
+              fontSize={{ base: "2xl", md: "3xl" }}
+              mb={2}
+            >
+              Products
+            </Heading>
 
-      {/* Section 1: Search, Filter & Sort */}
-      <ProductFilters
-        search={search}
-        categoryId={categoryId}
-        sort={sort}
-        categories={childCategories}
-        onSearchChange={setSearch}
-        onSearch={handleSearch}
-        onCategoryChange={handleCategoryChange}
-        onSortChange={handleSortChange}
-      />
+            <Text color="fg.muted">
+              Explore our collection of electronics and technology
+              products.
+            </Text>
+          </Box>
 
-      {/* Section 2: Products Grid */}
-      <ProductsGrid products={products} />
+          <ProductFilters
+            search={search}
+            categoryId={categoryId}
+            sort={sort}
+            categories={childCategories}
+            onSearchChange={setSearch}
+            onSearch={handleSearch}
+            onCategoryChange={handleCategoryChange}
+            onSortChange={handleSortChange}
+          />
 
-      {/* Section 3: Pagination */}
-      <Pagination
-        currentPage={productsData?.data.pagination.page ?? 1}
-        totalPages={productsData?.data.pagination.totalPages ?? 1}
-        onPageChange={setPage}
-      />
+          {!isLoading && !isError && (
+            <Text fontSize="sm" color="fg.muted">
+              {totalProducts}{" "}
+              {totalProducts === 1 ? "product" : "products"} found
+            </Text>
+          )}
+
+          {isLoading && <ProductsGrid isLoading />}
+
+          {isError && (
+            <ErrorComp message="Unable to load products. Please try again." />
+          )}
+
+          {!isLoading && !isError && (
+            <Box position="relative">
+              <ProductsGrid products={products} />
+
+              {isFetching && (
+                <Box
+                  position="absolute"
+                  inset="0"
+                  bg="bg"
+                  opacity={0.45}
+                  pointerEvents="none"
+                  borderRadius="xl"
+                />
+              )}
+            </Box>
+          )}
+
+          {!isLoading &&
+            !isError &&
+            products.length > 0 && (
+              <Pagination
+                currentPage={
+                  productsData?.data.pagination.page ?? 1
+                }
+                totalPages={
+                  productsData?.data.pagination.totalPages ?? 1
+                }
+                onPageChange={setPage}
+              />
+            )}
+        </VStack>
+      </Container>
     </Box>
   );
 };
-
-export default Products;

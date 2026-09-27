@@ -5,20 +5,17 @@ import {
   Heading,
   IconButton,
   SimpleGrid,
-  Spinner,
   Text,
   VStack,
 } from "@chakra-ui/react";
 import { FiRefreshCw } from "react-icons/fi";
+
 import { useGetAdminDashboardStatsQuery } from "../api/adminDashboardApi";
 import { StatCard } from "../components/StatCard";
 import { SalesOverview } from "../components/SalesOverview";
 import { OrderStatus } from "../components/OrderStatus";
 import { InventoryOverview } from "../components/InventoryOverview";
 import { RecentOrders } from "../components/RecentOrders";
-import { AdminProducts } from "../../products/pages/admin/AdminProducts";
-
-
 
 export const AdminDashboard = () => {
   const {
@@ -33,8 +30,7 @@ export const AdminDashboard = () => {
     return (
       <Flex minH="400px" align="center" justify="center">
         <VStack gap={3}>
-          <Spinner size="lg" />
-          <Text color="gray.500">Loading dashboard...</Text>
+          <Text color="fg.muted">Loading dashboard...</Text>
         </VStack>
       </Flex>
     );
@@ -45,7 +41,7 @@ export const AdminDashboard = () => {
       <Flex minH="400px" align="center" justify="center">
         <VStack gap={2}>
           <Heading size="md">Unable to load dashboard</Heading>
-          <Text color="gray.500">Please try refreshing the dashboard.</Text>
+          <Text color="fg.muted">Please try refreshing the dashboard.</Text>
         </VStack>
       </Flex>
     );
@@ -54,9 +50,8 @@ export const AdminDashboard = () => {
   const stats = statsData.data;
 
   return (
-    <Box bg="gray.50" minH="100vh" py={{ base: 5, md: 8 }}>
-      <Container maxW="container.2xl">
-        {/* Header */}
+    <Box bg="bg" minH="100vh" py={{ base: 5, md: 8 }}>
+      <Container maxW="1400px">
         <Flex
           align={{ base: "flex-start", md: "center" }}
           justify="space-between"
@@ -65,11 +60,9 @@ export const AdminDashboard = () => {
           mb={8}
         >
           <Box>
-            <Heading size="lg" color="gray.800">
-              Dashboard
-            </Heading>
+            <Heading size="lg">Dashboard</Heading>
 
-            <Text mt={1} color="gray.500">
+            <Text mt={1} color="fg.muted">
               Overview of your store performance
             </Text>
           </Box>
@@ -79,14 +72,19 @@ export const AdminDashboard = () => {
             onClick={() => refetch()}
             loading={isFetching}
             variant="outline"
-            bg="white"
+            bg="bg.panel"
+            borderColor="border"
           >
             <FiRefreshCw />
           </IconButton>
         </Flex>
 
-        {/* KPI Cards */}
-        <SimpleGrid columns={{ base: 1, sm: 2, xl: 4 }} gap={5} mb={6}>
+        <SimpleGrid 
+        columns={{ base: 1, md: 2, lg: 4 }} 
+        gap={5} 
+        mb={6}
+        textAlign={{base:"center",md:"center",lg:"left"}}
+        >
           <StatCard
             title="Total Revenue"
             value={formatCurrency(stats.overview.totalRevenue)}
@@ -112,7 +110,6 @@ export const AdminDashboard = () => {
           />
         </SimpleGrid>
 
-        {/* Sales + Order Status */}
         <SimpleGrid columns={{ base: 1, xl: 3 }} gap={6} mb={6}>
           <Box gridColumn={{ xl: "span 2" }}>
             <SalesOverview data={stats.salesOverview} />
@@ -121,22 +118,19 @@ export const AdminDashboard = () => {
           <OrderStatus data={stats.orderStatusStats} />
         </SimpleGrid>
 
-        {/* Inventory */}
         <Box mb={6}>
           <InventoryOverview data={stats.inventoryStats} />
         </Box>
 
-        {/* Recent Orders */}
         <RecentOrders orders={stats.recentOrders} />
       </Container>
     </Box>
   );
 };
 
-const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat("en-IN", {
+const formatCurrency = (value: number) =>
+  new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
     maximumFractionDigits: 0,
   }).format(value);
-};

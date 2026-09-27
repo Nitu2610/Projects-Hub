@@ -12,7 +12,7 @@ export const PrivateRoute = () => {
   }
 
   if (isError && "status" in error && error.status === 401) {
-    return <Navigate to="/userLogin" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   if (isError) {

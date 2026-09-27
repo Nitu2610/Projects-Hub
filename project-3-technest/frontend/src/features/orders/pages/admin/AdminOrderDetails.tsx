@@ -1,11 +1,21 @@
-import { Box, Heading, Spinner, Stack, Text } from "@chakra-ui/react";
-import { useParams } from "react-router-dom";
+import {
+  Box,
+  Button,
+  Container,
+  Heading,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
+import { useNavigate, useParams } from "react-router-dom";
+
 import { OrderStatus } from "../../components/OrderStatus";
 import { OrderItem } from "../../components/OrderItem";
 import { AddressDetails } from "../../components/AddressDetails";
 import { OrderPaymentSummary } from "../../components/OrderPaymentSummary";
 import { AdminStatusActions } from "../../components/admin/AdminStatusActions";
 import { AdminCancelOrderButton } from "../../components/admin/AdminCancelOrderButton";
+import { LoadingComp } from "../../../../components/shared/LoadingComp";
+import { ErrorComp } from "../../../../components/shared/ErrorComp";
 import { useGetAdminOrderByIdQuery } from "../../api/adminOrderApi";
 
 export const AdminOrderDetails = () => {
@@ -19,101 +29,171 @@ export const AdminOrderDetails = () => {
     skip: !orderId,
   });
 
+  const navigate = useNavigate();
+
   if (isLoading) {
-    return (
-      <Box p={6} textAlign="center">
-        <Spinner />
-        <Text mt={3}>Loading order...</Text>
-      </Box>
-    );
+    return <LoadingComp />;
   }
 
-  if (isError || !response?.data || Array.isArray(response.data)) {
+  if (
+    isError ||
+    !response?.data ||
+    Array.isArray(response.data)
+  ) {
     return (
-      <Box p={6}>
-        <Heading size="md">Unable to load order</Heading>
-        <Text mt={2}>Something went wrong while loading the order.</Text>
-      </Box>
+      <ErrorComp message="Unable to load this order. Please try again." />
     );
   }
 
   const order = response.data;
-  return (
-    <Box p={6}>
-      <Heading size="lg" mb={6}>
-        Order Details
-      </Heading>
 
-      <Stack gap={6}>
-        {/* Order information */}
-        <Box>
-          <Heading size="md" mb={3}>
-            Order Information
+  return (
+    <Box bg="bg" minH="100vh" py={{ base: 5, md: 8 }}>
+      <Container maxW="1100px">
+        <Box mb={6}>
+          <Heading fontSize={{ base: "2xl", md: "3xl" }}>
+            Order Details
           </Heading>
 
-          <Text>Order ID: {order._id}</Text>
-
-          <OrderStatus status={order.orderStatus} />
-
-          <Text mt={2}>
-            Placed On: {new Date(order.createdAt).toLocaleString()}
+          <Text mt={1} color="fg.muted">
+            Review order information and manage its status.
           </Text>
         </Box>
 
-        {/* Order items */}
-        <Box>
-          <Heading size="md" mb={3}>
-            Order Items
-          </Heading>
+        <Stack gap={6}>
+          {/* Order Information */}
+          <Box
+            bg="bg.panel"
+            borderWidth="1px"
+            borderColor="border"
+            borderRadius="xl"
+            p={{ base: 4, md: 6 }}
+          >
+            <Heading size="md" mb={4}>
+              Order Information
+            </Heading>
 
-          <Stack gap={4}>
-            {order.items.map((item) => (
-              <OrderItem key={item.productId} item={item} />
-            ))}
-          </Stack>
-        </Box>
+            <Stack gap={3}>
+              <Box>
+                <Text fontSize="sm" color="fg.muted">
+                  Order ID
+                </Text>
 
-        {/* Shipping address */}
-        <Box>
-          <Heading size="md" mb={3}>
-            Shipping Address
-          </Heading>
+                <Text
+                  fontSize="sm"
+                  fontWeight="medium"
+                  wordBreak="break-all"
+                >
+                  {order._id}
+                </Text>
+              </Box>
 
-          <AddressDetails address={order.shippingAddress} />
-        </Box>
+              <OrderStatus status={order.orderStatus} />
 
-        {/* Payment summary */}
-        <Box>
-          <Heading size="md" mb={3}>
-            Payment Details
-          </Heading>
+              <Box>
+                <Text fontSize="sm" color="fg.muted">
+                  Placed On
+                </Text>
 
-          <OrderPaymentSummary
-            paymentMethod={order.paymentMethod}
-            paymentStatus={order.paymentStatus}
-            totalAmount={order.totalAmount}
-          />
-        </Box>
+                <Text>
+                  {new Date(order.createdAt).toLocaleString("en-IN")}
+                </Text>
+              </Box>
+            </Stack>
+          </Box>
 
-        {/* Admin actions will come here */}
-        <Box>
-          <Heading size="md" mb={3}>
-            Admin Actions
-          </Heading>
+          {/* Order Items */}
+          <Box
+            bg="bg.panel"
+            borderWidth="1px"
+            borderColor="border"
+            borderRadius="xl"
+            p={{ base: 4, md: 6 }}
+          >
+            <Heading size="md" mb={4}>
+              Order Items
+            </Heading>
 
-          <Stack direction="row">
-            <AdminStatusActions
-              orderId={order._id}
-              currentStatus={order.orderStatus}
+            <Stack gap={4}>
+              {order.items.map((item) => (
+                <OrderItem
+                key={item.productId}
+  item={item}
+  isDelivered={order.orderStatus === "DELIVERED"}
+                />
+              ))}
+            </Stack>
+          </Box>
+
+          {/* Shipping Address */}
+          <Box
+            bg="bg.panel"
+            borderWidth="1px"
+            borderColor="border"
+            borderRadius="xl"
+            p={{ base: 4, md: 6 }}
+          >
+            <Heading size="md" mb={4}>
+              Shipping Address
+            </Heading>
+
+            <AddressDetails address={order.shippingAddress} />
+          </Box>
+
+          {/* Payment Details */}
+          <Box
+            bg="bg.panel"
+            borderWidth="1px"
+            borderColor="border"
+            borderRadius="xl"
+            p={{ base: 4, md: 6 }}
+          >
+            <Heading size="md" mb={4}>
+              Payment Details
+            </Heading>
+
+            <OrderPaymentSummary
+              paymentMethod={order.paymentMethod}
+              paymentStatus={order.paymentStatus}
+              totalAmount={order.totalAmount}
             />
+          </Box>
 
-            <AdminCancelOrderButton
-              orderId={order._id}
-              currentStatus={order.orderStatus}
-            />
-          </Stack>
-        </Box>
-      </Stack>
+          {/* Admin Actions */}
+          <Box
+            bg="bg.panel"
+            borderWidth="1px"
+            borderColor="border"
+            borderRadius="xl"
+            p={{ base: 4, md: 6 }}
+          >
+            <Heading size="md" mb={4}>
+              Admin Actions
+            </Heading>
+
+            <Stack
+              direction={{ base: "column", sm: "row" }}
+              gap={3}
+            >
+              <AdminStatusActions
+                orderId={order._id}
+                currentStatus={order.orderStatus}
+              />
+
+              <AdminCancelOrderButton
+                orderId={order._id}
+                currentStatus={order.orderStatus}
+              />
+            </Stack>
+          </Box>
+          <Button
+  variant="outline"
+  onClick={() => navigate("/admin/orders")}
+>
+  ←  Back to Orders
+</Button>
+        </Stack>
+      </Container>
     </Box>
   );
 };

@@ -24,10 +24,31 @@ export const customerApi = apiSlice.injectEndpoints({
       providesTags: ["User"],
     }),
 
-    getCustomers: build.query<ApiResponse<Customer[]>, void>({
-      query: () => "/users/customers",
-      providesTags: ["User"],
-    }),
+   getCustomers: build.query<
+  ApiResponse<{
+    customers: Customer[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
+  }>,
+  {
+    page?: number;
+    limit?: number;
+  }
+>({
+  query: ({ page = 1, limit = 10 }) => ({
+    url: "/users/customers",
+    method: "GET",
+    params: {
+      page,
+      limit,
+    },
+  }),
+  providesTags: ["User"],
+}),
 
    getUserProfile: build.query<ApiResponse<UserProfile>, void>({
       query: () => "/users/profile",

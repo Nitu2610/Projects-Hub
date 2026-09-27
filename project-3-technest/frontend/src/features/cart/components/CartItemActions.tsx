@@ -1,4 +1,5 @@
 import { Button, HStack, Text } from "@chakra-ui/react";
+
 import {
   useDeleteCartItemMutation,
   useUpdateCartItemMutation,
@@ -19,11 +20,15 @@ export const CartItemActions = ({
   active,
   price,
 }: CartItemActionsProps) => {
-  const [updateCartItem, { isLoading: isUpdating }] =
-    useUpdateCartItemMutation();
+  const [
+    updateCartItem,
+    { isLoading: isUpdating },
+  ] = useUpdateCartItemMutation();
 
-  const [deleteCartItem, { isLoading: isDeleting }] =
-    useDeleteCartItemMutation();
+  const [
+    deleteCartItem,
+    { isLoading: isDeleting },
+  ] = useDeleteCartItemMutation();
 
   const productTotalPrice = price * quantity;
 
@@ -57,31 +62,66 @@ export const CartItemActions = ({
   const isLoading = isUpdating || isDeleting;
 
   return (
-    <HStack mt={4}>
-      <Button onClick={handleDecrease} disabled={isLoading}>
-        −
-      </Button>
+    <HStack
+      mt={4}
+      gap={3}
+      flexWrap="wrap"
+    >
+      <HStack
+        borderWidth="1px"
+        borderColor="border"
+        borderRadius="lg"
+        overflow="hidden"
+        bg="bg.panel"
+      >
+        <Button
+          borderRadius="0"
+          variant="ghost"
+          minW="44px"
+          onClick={handleDecrease}
+          disabled={isLoading}
+          aria-label="Decrease quantity"
+        >
+          −
+        </Button>
 
-      <Text minW="30px" textAlign="center">
-        {quantity}
-      </Text>
+        <Text
+          minW="40px"
+          textAlign="center"
+          fontWeight="600"
+        >
+          {quantity}
+        </Text>
+
+        <Button
+          borderRadius="0"
+          variant="ghost"
+          minW="44px"
+          onClick={handleIncrease}
+          disabled={
+            !active ||
+            quantity >= stock ||
+            isLoading
+          }
+          aria-label="Increase quantity"
+        >
+          +
+        </Button>
+      </HStack>
 
       <Button
-        onClick={handleIncrease}
-        disabled={!active || quantity >= stock || isLoading}
+        variant="outline"
+        onClick={handleRemove}
+        disabled={isLoading}
       >
-        +
+        {isDeleting ? "Removing..." : "Remove"}
       </Button>
 
-      <Button onClick={handleRemove} disabled={isLoading}>
-        Remove
-      </Button>
-      <Text>
-        {" "}
-        Product Total Amount : ₹ {productTotalPrice.toLocaleString(
-          "en-IN",
-        )}{" "}
-        /-{" "}
+      <Text
+        fontWeight="600"
+        ml={{ base: 0, sm: "auto" }}
+      >
+        ₹{productTotalPrice.toLocaleString("en-IN")}
       </Text>
     </HStack>
   );

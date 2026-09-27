@@ -1,11 +1,4 @@
-
-import {
-  Box,
-  Heading,
-  SimpleGrid,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Heading, SimpleGrid, Text, VStack, Flex } from "@chakra-ui/react";
 import {
   FiAlertCircle,
   FiArchive,
@@ -45,78 +38,82 @@ const inventoryItems = [
   },
 ] as const;
 
-export const InventoryOverview = ({
-  data,
-}: InventoryOverviewProps) => {
+export const InventoryOverview = ({ data }: InventoryOverviewProps) => {
   return (
     <Box
-      bg="white"
+      bg="bg.panel"
       borderWidth="1px"
-      borderColor="gray.200"
+      borderColor="border"
       borderRadius="xl"
       p={5}
-      boxShadow="sm"
     >
       <Box mb={5}>
-        <Heading size="md" color="gray.800">
-          Inventory Health
-        </Heading>
+        <Heading size="md">Inventory Health</Heading>
 
-        <Text fontSize="sm" color="gray.500" mt={1}>
+        <Text fontSize="sm" color="fg.muted" mt={1}>
           Current product and stock overview
         </Text>
       </Box>
 
-      <SimpleGrid columns={{ base: 1, sm: 2, lg: 4 }} gap={4}>
-        {inventoryItems.map((item) => {
-          const Icon = item.icon;
-          const value = data[item.key];
+   <SimpleGrid
+  columns={{ base: 1, md: 2, lg: 4 }}
+  gap={4}
+  mb={6}
+>
+  {inventoryItems.map((item) => {
+    const Icon = item.icon;
+    const value = data[item.key];
 
-          const isWarning =
-            item.key === "lowStockProducts" ||
-            item.key === "outOfStockProducts";
+    const isWarning =
+      item.key === "lowStockProducts" ||
+      item.key === "outOfStockProducts";
 
-          return (
-            <Box
-              key={item.key}
-              borderWidth="1px"
-              borderColor="gray.100"
-              borderRadius="lg"
-              p={4}
-              bg={isWarning ? "gray.50" : "white"}
-            >
-              <VStack align="flex-start" gap={3}>
-                <Box
-                  p={2.5}
-                  borderRadius="lg"
-                  bg="gray.100"
-                  color="gray.600"
-                >
-                  <Icon size={20} />
-                </Box>
+    return (
+    <Box
+  key={item.key}
+  borderWidth="1px"
+  borderColor="border"
+  borderRadius="lg"
+  p={4}
+  bg={isWarning ? "bg.muted" : "bg.panel"}
+>
+  <VStack
+    align="center"
+    justify="center"
+    gap={3}
+    textAlign="center"
+    w="full"
+  >
+    <Box
+      p={2.5}
+      borderRadius="lg"
+      bg="bg.muted"
+      color={isWarning ? "warning" : "fg.muted"}
+    >
+      <Icon size={20} />
+    </Box>
 
-                <Box>
-                  <Text
-                    fontSize="sm"
-                    color="gray.500"
-                    mb={1}
-                  >
-                    {item.title}
-                  </Text>
+    <Box>
+      <Text
+        fontSize="sm"
+        color="fg.muted"
+        mb={1}
+      >
+        {item.title}
+      </Text>
 
-                  <Text
-                    fontSize="2xl"
-                    fontWeight="bold"
-                    color="gray.800"
-                  >
-                    {value}
-                  </Text>
-                </Box>
-              </VStack>
-            </Box>
-          );
-        })}
-      </SimpleGrid>
+      <Text
+        fontSize="2xl"
+        fontWeight="bold"
+      >
+        {value}
+      </Text>
+    </Box>
+  </VStack>
+</Box>
+    );
+  })}
+</SimpleGrid>
     </Box>
   );
 };

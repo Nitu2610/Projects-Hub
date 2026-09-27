@@ -23,16 +23,24 @@ export const CancelOrderButton = ({
   orderId,
   orderStatus,
 }: CancelOrderButtonProps) => {
-  const [cancelOrder, { isLoading: isCancelling }] = useCancelOrderMutation();
+  const [
+    cancelOrder,
+    { isLoading: isCancelling },
+  ] = useCancelOrderMutation();
 
-  const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
+  const [
+    isCancelDialogOpen,
+    setIsCancelDialogOpen,
+  ] = useState(false);
 
-  const [cancellationReason, setCancellationReason] = useState<
-    CancellationReason | ""
-  >("");
+  const [
+    cancellationReason,
+    setCancellationReason,
+  ] = useState<CancellationReason | "">("");
 
   const canCancelOrder =
-    orderStatus === "PLACED" || orderStatus === "CONFIRMED";
+    orderStatus === "PLACED" ||
+    orderStatus === "CONFIRMED";
 
   const cancellationReasons: {
     value: CancellationReason;
@@ -61,9 +69,7 @@ export const CancelOrderButton = ({
   ];
 
   const handleCancelOrder = async () => {
-    if (!cancellationReason) {
-      return;
-    }
+    if (!cancellationReason) return;
 
     try {
       await cancelOrder({
@@ -74,7 +80,10 @@ export const CancelOrderButton = ({
       setIsCancelDialogOpen(false);
       setCancellationReason("");
     } catch (error) {
-      console.error("Failed to cancel order:", error);
+      console.error(
+        "Failed to cancel order:",
+        error
+      );
     }
   };
 
@@ -93,15 +102,22 @@ export const CancelOrderButton = ({
   return (
     <>
       <Button
-        onClick={() => setIsCancelDialogOpen(true)}
+        variant="outline"
+        colorPalette="red"
+        onClick={() =>
+          setIsCancelDialogOpen(true)
+        }
         disabled={isCancelling}
+        width={{ base: "100%", sm: "auto" }}
       >
         Cancel Order
       </Button>
 
       <Dialog.Root
         open={isCancelDialogOpen}
-        onOpenChange={(details) => handleDialogChange(details.open)}
+        onOpenChange={(details) =>
+          handleDialogChange(details.open)
+        }
       >
         <Portal>
           <Dialog.Backdrop />
@@ -109,30 +125,40 @@ export const CancelOrderButton = ({
           <Dialog.Positioner>
             <Dialog.Content>
               <Dialog.Header>
-                <Dialog.Title>Cancel Order</Dialog.Title>
+                <Dialog.Title>
+                  Cancel Order
+                </Dialog.Title>
               </Dialog.Header>
 
               <Dialog.Body>
                 <Text mb={4}>
-                  Please select a reason for cancelling your order.
+                  Please select a reason for cancelling
+                  your order.
                 </Text>
 
                 <RadioGroup.Root
                   value={cancellationReason}
                   onValueChange={(details) =>
-                    setCancellationReason(details.value as CancellationReason)
+                    setCancellationReason(
+                      details.value as CancellationReason
+                    )
                   }
                 >
                   <Stack gap={3}>
-                    {cancellationReasons.map((reason) => (
-                      <RadioGroup.Item key={reason.value} value={reason.value}>
-                        <RadioGroup.ItemHiddenInput />
-                        <RadioGroup.ItemIndicator />
-                        <RadioGroup.ItemText>
-                          {reason.label}
-                        </RadioGroup.ItemText>
-                      </RadioGroup.Item>
-                    ))}
+                    {cancellationReasons.map(
+                      (reason) => (
+                        <RadioGroup.Item
+                          key={reason.value}
+                          value={reason.value}
+                        >
+                          <RadioGroup.ItemHiddenInput />
+                          <RadioGroup.ItemIndicator />
+                          <RadioGroup.ItemText>
+                            {reason.label}
+                          </RadioGroup.ItemText>
+                        </RadioGroup.Item>
+                      )
+                    )}
                   </Stack>
                 </RadioGroup.Root>
               </Dialog.Body>
@@ -140,13 +166,16 @@ export const CancelOrderButton = ({
               <Dialog.Footer>
                 <Button
                   variant="outline"
-                  onClick={() => handleDialogChange(false)}
+                  onClick={() =>
+                    handleDialogChange(false)
+                  }
                   disabled={isCancelling}
                 >
                   Keep Order
                 </Button>
 
                 <Button
+                  colorPalette="red"
                   onClick={handleCancelOrder}
                   disabled={!cancellationReason}
                   loading={isCancelling}

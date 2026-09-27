@@ -138,7 +138,7 @@ export const Login = () => {
                 color="blue.500"
                 fontWeight="medium"
                 cursor="pointer"
-                onClick={() => navigate("/userRegister")}
+                onClick={() => navigate("/register")}
               >
                 Sign up
               </Text>

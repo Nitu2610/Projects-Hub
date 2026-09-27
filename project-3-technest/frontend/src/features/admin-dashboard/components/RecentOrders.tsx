@@ -8,8 +8,8 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { FiShoppingBag } from "react-icons/fi";
-import { RecentOrder } from "../../../types/admin-dashboard";
 
+import type { RecentOrder } from "../../../types/admin-dashboard";
 
 interface RecentOrdersProps {
   orders: RecentOrder[];
@@ -47,30 +47,28 @@ const getPaymentColor = (status: string) => {
   }
 };
 
-const formatCurrency = (amount: number) => {
-  return `₹${amount.toLocaleString("en-IN")}`;
-};
+const formatCurrency = (amount: number) =>
+  `₹${amount.toLocaleString("en-IN")}`;
 
-const formatDate = (date: string) => {
-  return new Date(date).toLocaleDateString("en-IN", {
+const formatDate = (date: string) =>
+  new Date(date).toLocaleDateString("en-IN", {
     day: "2-digit",
     month: "short",
     year: "numeric",
   });
-};
 
-export const RecentOrders = ({ orders }: RecentOrdersProps) => {
+export const RecentOrders = ({
+  orders,
+}: RecentOrdersProps) => {
   return (
     <Box
-      bg="white"
+      bg="bg.panel"
       borderWidth="1px"
-      borderColor="gray.200"
+      borderColor="border"
       borderRadius="xl"
       p={5}
-      boxShadow="sm"
       overflow="hidden"
     >
-      {/* Header */}
       <Flex
         justify="space-between"
         align={{ base: "flex-start", md: "center" }}
@@ -80,33 +78,42 @@ export const RecentOrders = ({ orders }: RecentOrdersProps) => {
       >
         <Box>
           <HStack gap={2}>
-            <Box color="gray.600">
+            <Box color="primary">
               <FiShoppingBag size={20} />
             </Box>
 
-            <Heading size="md" color="gray.800">
+            <Heading size="md">
               Recent Orders
             </Heading>
           </HStack>
 
-          <Text fontSize="sm" color="gray.500" mt={1}>
+          <Text
+            fontSize="sm"
+            color="fg.muted"
+            mt={1}
+          >
             Latest customer orders
           </Text>
         </Box>
 
-        <Text fontSize="sm" color="gray.500">
+        <Text fontSize="sm" color="fg.muted">
           {orders.length} orders
         </Text>
       </Flex>
 
-      {/* Empty state */}
       {orders.length === 0 ? (
         <Box py={10} textAlign="center">
-          <Text color="gray.500">No recent orders found.</Text>
+          <Text color="fg.muted">
+            No recent orders found.
+          </Text>
         </Box>
       ) : (
         <Box overflowX="auto">
-          <Table.Root variant="outline" size="md" minW="850px">
+          <Table.Root
+            variant="outline"
+            size="md"
+            minW="850px"
+          >
             <Table.Header>
               <Table.Row>
                 <Table.ColumnHeader>Order</Table.ColumnHeader>
@@ -121,40 +128,51 @@ export const RecentOrders = ({ orders }: RecentOrdersProps) => {
             <Table.Body>
               {orders.map((order) => (
                 <Table.Row key={order._id}>
-                  {/* Order */}
                   <Table.Cell>
-                    <Text fontSize="sm" fontWeight="semibold" color="gray.800">
+                    <Text
+                      fontSize="sm"
+                      fontWeight="semibold"
+                    >
                       #{order._id.slice(-6).toUpperCase()}
                     </Text>
                   </Table.Cell>
 
-                  {/* Customer */}
                   <Table.Cell>
                     <Box>
-                      <Text fontSize="sm" fontWeight="medium" color="gray.800">
-                        {order.customer?.fullName || "Guest Customer"}
+                      <Text
+                        fontSize="sm"
+                        fontWeight="medium"
+                      >
+                        {order.customer?.fullName ||
+                          "Guest Customer"}
                       </Text>
 
                       {order.customer?.email && (
-                        <Text fontSize="xs" color="gray.500">
+                        <Text
+                          fontSize="xs"
+                          color="fg.muted"
+                        >
                           {order.customer.email}
                         </Text>
                       )}
                     </Box>
                   </Table.Cell>
 
-                  {/* Amount */}
                   <Table.Cell>
-                    <Text fontSize="sm" fontWeight="semibold" color="gray.800">
+                    <Text
+                      fontSize="sm"
+                      fontWeight="semibold"
+                    >
                       {formatCurrency(order.totalAmount)}
                     </Text>
                   </Table.Cell>
 
-                  {/* Payment */}
                   <Table.Cell>
                     <Box>
                       <Badge
-                        colorPalette={getPaymentColor(order.paymentStatus)}
+                        colorPalette={getPaymentColor(
+                          order.paymentStatus
+                        )}
                         variant="subtle"
                       >
                         {order.paymentStatus}
@@ -162,7 +180,7 @@ export const RecentOrders = ({ orders }: RecentOrdersProps) => {
 
                       <Text
                         fontSize="xs"
-                        color="gray.500"
+                        color="fg.muted"
                         mt={1}
                         textTransform="uppercase"
                       >
@@ -171,19 +189,22 @@ export const RecentOrders = ({ orders }: RecentOrdersProps) => {
                     </Box>
                   </Table.Cell>
 
-                  {/* Status */}
                   <Table.Cell>
                     <Badge
-                      colorPalette={getStatusColor(order.orderStatus)}
+                      colorPalette={getStatusColor(
+                        order.orderStatus
+                      )}
                       variant="subtle"
                     >
                       {order.orderStatus}
                     </Badge>
                   </Table.Cell>
 
-                  {/* Date */}
                   <Table.Cell>
-                    <Text fontSize="sm" color="gray.600">
+                    <Text
+                      fontSize="sm"
+                      color="fg.muted"
+                    >
                       {formatDate(order.createdAt)}
                     </Text>
                   </Table.Cell>

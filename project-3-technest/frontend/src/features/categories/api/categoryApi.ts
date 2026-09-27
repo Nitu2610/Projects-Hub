@@ -8,10 +8,30 @@ import {
 } from "../../../types/category.types";
 import { apiSlice } from "../../../redux/api/apiSlice";
 
+interface AdminCategoriesResponse {
+  categories: AdminCategory[];
+  parentCategories: AdminCategory[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
 export const categoryApi = apiSlice.injectEndpoints({
   endpoints: (build) => ({
-   getCategories: build.query<ApiResponse<AdminCategory[]>, void>({
-  query: () => "/category",
+getCategories: build.query<
+  ApiResponse<AdminCategoriesResponse | CustomerCategory[]>,
+  {
+    page?: number;
+    limit?: number;
+  } | void
+>({
+  query: (params) => ({
+    url: "/category",
+    params: params ?? undefined,
+  }),
   providesTags: ["Category"],
 }),
 

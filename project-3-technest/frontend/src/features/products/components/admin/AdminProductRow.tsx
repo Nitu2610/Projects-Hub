@@ -1,6 +1,5 @@
-import { Button, Table } from "@chakra-ui/react";
+import { Badge, Button, HStack, Table, Text } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-
 import type { Product } from "../../../../types/product.types";
 import { DeactivateProductButton } from "./DeactivateProductButton";
 
@@ -14,37 +13,62 @@ export const AdminProductRow = ({
   productIndex,
 }: AdminProductRowProps) => {
   const navigate = useNavigate();
+
   const handleEdit = () => {
     navigate(`/admin/products/${product._id}/edit`);
   };
+
   return (
-    <Table.Row color={"black"}>
-      <Table.Cell>{productIndex + 1}</Table.Cell>
-      <Table.Cell>{product.title}</Table.Cell>
-
-      <Table.Cell textAlign={"center"}>₹{product.price}</Table.Cell>
-
-      <Table.Cell textAlign={"center"}>{product.stock}</Table.Cell>
-
-      <Table.Cell textAlign={"center"}>
-        {product.stock > 0 ? "Available" : "Out of Stock"}
+    <Table.Row>
+      <Table.Cell textAlign="center">
+        {productIndex + 1}
       </Table.Cell>
 
-      <Table.Cell textAlign={"center"}>
-        {product.active ? "Active" : "Inactive"}
+      <Table.Cell maxW="320px">
+        <Text fontWeight="medium" truncate>
+          {product.title}
+        </Text>
       </Table.Cell>
 
-      <Table.Cell display={"flex"} justifyContent={"space-evenly"}>
-        <Button size="sm" onClick={handleEdit}>
-          Edit
-        </Button>
+      <Table.Cell textAlign="center">
+        ₹{product.price.toLocaleString("en-IN")}
+      </Table.Cell>
 
-        {product.active && (
-          <DeactivateProductButton
-            productId={product._id}
-            productTitle={product.title}
-          />
-        )}
+      <Table.Cell textAlign="center">
+        {product.stock}
+      </Table.Cell>
+
+      <Table.Cell textAlign="center">
+        <Badge
+          colorPalette={product.stock > 0 ? "green" : "red"}
+          variant="subtle"
+        >
+          {product.stock > 0 ? "Available" : "Out of Stock"}
+        </Badge>
+      </Table.Cell>
+
+      <Table.Cell textAlign="center">
+        <Badge
+          colorPalette={product.active ? "green" : "gray"}
+          variant="subtle"
+        >
+          {product.active ? "Active" : "Inactive"}
+        </Badge>
+      </Table.Cell>
+
+      <Table.Cell>
+        <HStack justify="center" gap={2}>
+          <Button size="sm" variant="outline" onClick={handleEdit}>
+            Edit
+          </Button>
+
+          {product.active && (
+            <DeactivateProductButton
+              productId={product._id}
+              productTitle={product.title}
+            />
+          )}
+        </HStack>
       </Table.Cell>
     </Table.Row>
   );

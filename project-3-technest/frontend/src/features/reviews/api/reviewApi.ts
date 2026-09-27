@@ -48,10 +48,31 @@ export const reviewApi = apiSlice.injectEndpoints({
       invalidatesTags: ["Review"],
     }),
 
-    getAllReviews: build.query<ApiResponse<Review[]>, void>({
-      query: () => "/reviews/admin",
-      providesTags: ["Review"],
-    }),
+  getAllReviews: build.query<
+  ApiResponse<{
+    reviews: Review[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
+  }>,
+  {
+    page?: number;
+    limit?: number;
+  }
+>({
+  query: ({ page = 1, limit = 10 }) => ({
+    url: "/reviews/admin",
+    method: "GET",
+    params: {
+      page,
+      limit,
+    },
+  }),
+  providesTags: ["Review"],
+}),
   }),
 });
 

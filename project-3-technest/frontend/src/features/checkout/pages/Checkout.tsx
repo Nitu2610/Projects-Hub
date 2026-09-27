@@ -11,125 +11,352 @@ import {
 } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+
+import {
+  useAppDispatch,
+  useAppSelector,
+} from "../../../redux/hooks";
+
 import { useGetAddressesQuery } from "../../address/api/addressApi";
 import { useGetCartQuery } from "../../cart/api/cartApi";
+
 import { setSelectedAddressId } from "../../../redux/slices/checkoutSlice";
+
 import { Addresses } from "../../address/components/Addresses";
-import { CartProducts } from "../../cart/components/CartProducts";
 
 export const Checkout = () => {
   const navigate = useNavigate();
-
   const dispatch = useAppDispatch();
 
   const selectedAddressId = useAppSelector(
-    (state) => state?.checkout.selectedAddressId,
+    (state) => state.checkout.selectedAddressId,
   );
 
-  const { data, isLoading, isError } = useGetAddressesQuery();
-  const addresses = data?.data ?? [];
+  const {
+    data: addressData,
+    isLoading: isAddressLoading,
+    isError: isAddressError,
+  } = useGetAddressesQuery();
 
-  const { data: cartData } = useGetCartQuery();
+  const addresses = addressData?.data ?? [];
 
-  const subtotal = cartData?.data?.items.reduce((sum, item) => {
-    const price = item.productId.discountedPrice ?? item.productId.price;
+  const {
+    data: cartData,
+    isLoading: isCartLoading,
+    isError: isCartError,
+  } = useGetCartQuery();
+
+  const cart = cartData?.data;
+  const cartItems = cart?.items ?? [];
+
+  const subtotal = cartItems.reduce((sum, item) => {
+    const price =
+      item.productId.discountedPrice ??
+      item.productId.price;
 
     return sum + price * item.quantity;
   }, 0);
 
   const shippingCharges =
-    subtotal !== undefined
-      ? subtotal <= 1000
-        ? 0
-        : subtotal < 50000
-          ? 500
-          : 1000
-      : 0;
+    subtotal <= 1000
+      ? 0
+      : subtotal < 50000
+        ? 500
+        : 1000;
 
-  const total = (subtotal ?? 0) + shippingCharges;
+  const total = subtotal + shippingCharges;
+
+ const hasInvalidCartItem = cartItems.some((item) => {
+  const product = item.productId;
+
+  const isInactive = product.active === false;
+  const hasInsufficientStock =
+    item.quantity > product.stock;
+
+  return isInactive || hasInsufficientStock;
+});
+
+  const canContinueToPayment =
+    cartItems.length > 0 &&
+    !!selectedAddressId &&
+    !hasInvalidCartItem;
 
   useEffect(() => {
-    if (addresses.length > 0 && !selectedAddressId) {
-      dispatch(setSelectedAddressId(addresses[0]._id));
+    if (
+      addresses.length > 0 &&
+      !selectedAddressId
+    ) {
+      dispatch(
+        setSelectedAddressId(addresses[0]._id),
+      );
     }
-  }, [addresses, selectedAddressId, dispatch]);
+  }, [
+    addresses,
+    selectedAddressId,
+    dispatch,
+  ]);
 
-  if (isLoading) {
+  if (isAddressLoading || isCartLoading) {
     return (
-      <Flex justify="center" align="center" minH="50vh">
+      <Flex
+        justify="center"
+        align="center"
+        minH="50vh"
+      >
         <Spinner size="xl" />
       </Flex>
     );
   }
 
-  if (isError) {
+  if (isAddressError) {
     return (
-      <Flex justify="center" align="center" minH="50vh">
-        <Text>Unable to load your saved addresses. Please try again.</Text>
+      <Flex
+        justify="center"
+        align="center"
+        minH="50vh"
+        px={6}
+      >
+        <Text color="error">
+          Unable to load your saved addresses.
+          Please try again.
+        </Text>
+      </Flex>
+    );
+  }
+
+  if (isCartError || !cart) {
+    return (
+      <Flex
+        justify="center"
+        align="center"
+        minH="50vh"
+        px={6}
+      >
+        <Text color="error">
+          Unable to load your cart. Please try again.
+        </Text>
       </Flex>
     );
   }
 
   return (
-    <Box maxW="1200px" mx="auto" px={6} py={10}>
-      <Heading mb={8}>Checkout</Heading>
+    <Box
+      bg="bg"
+      minH="calc(100vh - 80px)"
+      py={{ base: 6, md: 10 }}
+    >
+      <Box
+        maxW="1200px"
+        mx="auto"
+        px={{ base: 4, md: 6 }}
+      >
+        <Heading
+          fontSize={{ base: "2xl", md: "3xl" }}
+          mb={8}
+        >
+          Checkout
+        </Heading>
 
-      <SimpleGrid columns={{ base: 1, lg: 2 }} gap={8}>
-        <Addresses
-          isCheckout
-          selectedAddressId={selectedAddressId}
-          onSelectAddress={(addressId) =>
-            dispatch(setSelectedAddressId(addressId))
-          }
-        />
+        <SimpleGrid
+          columns={{
+            base: 1,
+            lg: 2,
+          }}
+          gap={{ base: 6, lg: 8 }}
+        >
+          {/* Address Section */}
+          <Box>
+            <Addresses
+              isCheckout
+              selectedAddressId={selectedAddressId}
+              onSelectAddress={(addressId) =>
+                dispatch(
+                  setSelectedAddressId(addressId),
+                )
+              }
+            />
+          </Box>
 
-        <Box>
-          <Heading size="md" mb={4}>
-            Order Summary
-          </Heading>
+          {/* Order Summary */}
+          <Box>
+            <Card.Root
+              bg="bg.panel"
+              borderColor="border"
+            >
+              <Card.Body>
+                <Stack gap={5}>
+                  <Heading size="md">
+                    Order Summary
+                  </Heading>
 
-          <CartProducts />
+                  {/* Items */}
+                  <Stack gap={3}>
+                    {cartItems.map((item) => {
+                      const product = item.productId;
 
-          <Card.Root>
-            <Card.Body>
-              <Stack gap={4}>
-                <Flex justify="space-between">
-                  <Text>Subtotal</Text>
-                  <Text>₹ {subtotal?.toLocaleString("en-IN")}</Text>
-                </Flex>
+                      const price =
+                        product.discountedPrice ??
+                        product.price;
 
-                <Flex justify="space-between">
-                  <Text>Shipping</Text>
-                  <Text>
-                    {shippingCharges === 0
-                      ? "Free"
-                      : `₹ ${shippingCharges.toLocaleString("en-IN")}`}
-                  </Text>
-                </Flex>
+                      return (
+                        <Flex
+                          key={product._id}
+                          justify="space-between"
+                          gap={4}
+                        >
+                          <Box>
+                            <Text
+                              fontWeight="500"
+                              lineClamp={2}
+                            >
+                              {product.title}
+                            </Text>
 
-                <Box borderTopWidth="1px" pt={4}>
-                  <Flex justify="space-between">
-                    <Text fontWeight="bold">Total</Text>
+                            <Text
+                              fontSize="sm"
+                              color="fg.muted"
+                            >
+                              Qty: {item.quantity}
+                            </Text>
+                          </Box>
 
-                    <Text fontWeight="bold">
-                      ₹ {total.toLocaleString("en-IN")}
+                          <Text
+                            fontWeight="500"
+                            whiteSpace="nowrap"
+                          >
+                            ₹
+                            {(
+                              price *
+                              item.quantity
+                            ).toLocaleString("en-IN")}
+                          </Text>
+                        </Flex>
+                      );
+                    })}
+                  </Stack>
+
+                  <Box
+                    borderTopWidth="1px"
+                    borderColor="border"
+                    pt={4}
+                  >
+                    <Stack gap={3}>
+                      <Flex justify="space-between">
+                        <Text color="fg.muted">
+                          Subtotal
+                        </Text>
+
+                        <Text>
+                          ₹
+                          {subtotal.toLocaleString(
+                            "en-IN",
+                          )}
+                        </Text>
+                      </Flex>
+
+                      <Flex justify="space-between">
+                        <Text color="fg.muted">
+                          Shipping
+                        </Text>
+
+                        <Text>
+                          {shippingCharges === 0
+                            ? "Free"
+                            : `₹ ${shippingCharges.toLocaleString(
+                                "en-IN",
+                              )}`}
+                        </Text>
+                      </Flex>
+                    </Stack>
+                  </Box>
+
+                  <Box
+                    borderTopWidth="1px"
+                    borderColor="border"
+                    pt={4}
+                  >
+                    <Flex
+                      justify="space-between"
+                      align="center"
+                    >
+                      <Text fontWeight="600">
+                        Total
+                      </Text>
+
+                      <Text
+                        fontSize="xl"
+                        fontWeight="700"
+                      >
+                        ₹
+                        {total.toLocaleString(
+                          "en-IN",
+                        )}
+                      </Text>
+                    </Flex>
+                  </Box>
+
+                  {/* Validation Message */}
+                  {cartItems.length === 0 && (
+                    <Text
+                      fontSize="sm"
+                      color="warning"
+                    >
+                      Your cart is empty.
                     </Text>
-                  </Flex>
-                </Box>
+                  )}
 
-                <Button
-                  width="100%"
-                  disabled={!selectedAddressId}
-                  onClick={() => navigate("/payment")}
-                >
-                  Continue to Payment
-                </Button>
-              </Stack>
-            </Card.Body>
-          </Card.Root>
-        </Box>
-      </SimpleGrid>
+                  {hasInvalidCartItem && (
+                    <Text
+                      fontSize="sm"
+                      color="warning"
+                    >
+                      Please resolve the unavailable
+                      product or stock issue before
+                      continuing.
+                    </Text>
+                  )}
+
+                  {!selectedAddressId &&
+                    addresses.length > 0 && (
+                      <Text
+                        fontSize="sm"
+                        color="warning"
+                      >
+                        Please select a delivery
+                        address.
+                      </Text>
+                    )}
+
+                  {addresses.length === 0 && (
+                    <Text
+                      fontSize="sm"
+                      color="warning"
+                    >
+                      Please add a delivery address
+                      before continuing.
+                    </Text>
+                  )}
+
+                  <Button
+                    width="100%"
+                    bg="primary"
+                    color="white"
+                    _hover={{
+                      bg: "primary.hover",
+                    }}
+                    disabled={!canContinueToPayment}
+                    onClick={() =>
+                      navigate("/payment")
+                    }
+                  >
+                    Continue to Payment
+                  </Button>
+                </Stack>
+              </Card.Body>
+            </Card.Root>
+          </Box>
+        </SimpleGrid>
+      </Box>
     </Box>
   );
 };

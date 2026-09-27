@@ -1,52 +1,54 @@
 import {
   Box,
   Button,
+  Container,
   Flex,
   Heading,
-  Spinner,
   Text,
-  VStack,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import {
-  useGetCategoriesQuery,
-} from "../../../features/categories/api/categoryApi";
-import { AdminCategory} from "../../../types/category.types";
+import { useGetCategoriesQuery } from "../../../features/categories/api/categoryApi";
+import { AdminCategory } from "../../../types/category.types";
 import { CategoryTable } from "../components/CategoryTable";
 import { CategoryForm } from "../components/CategoryForm";
-
+import { LoadingComp } from "../../../components/shared/LoadingComp";
+import { ErrorComp } from "../../../components/shared/ErrorComp";
+import { Pagination } from "../../../components/shared/Pagination";
 
 export const AdminCategories = () => {
-  const { data, isLoading, isError } = useGetCategoriesQuery();
-
+  const [page, setPage] = useState(1);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<
-    AdminCategory | undefined
-  >(undefined);
+  const [selectedCategory, setSelectedCategory] =
+    useState<AdminCategory | undefined>(undefined);
 
-  if (isLoading) {
-    return (
-      <Flex minH="400px" align="center" justify="center">
-        <VStack gap={3}>
-          <Spinner size="lg" />
-          <Text color="gray.500">Loading categories...</Text>
-        </VStack>
-      </Flex>
-    );
-  }
+  const {
+    data,
+    isLoading,
+    isError,
+  } = useGetCategoriesQuery({
+    page,
+    limit: 10,
+  });
+
+  if (isLoading) return <LoadingComp />;
 
   if (isError || !data?.data) {
     return (
-      <Flex minH="400px" align="center" justify="center">
-        <VStack gap={2}>
-          <Heading size="md">Unable to load categories</Heading>
-          <Text color="gray.500">Please try refreshing the page.</Text>
-        </VStack>
-      </Flex>
+      <ErrorComp message="Unable to load categories. Please try again." />
     );
   }
 
-const categories = data.data;
+  const { categories, parentCategories, pagination } =
+  data.data as {
+    categories: AdminCategory[];
+    parentCategories: AdminCategory[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
+  };
 
   const handleAddCategory = () => {
     setSelectedCategory(undefined);
@@ -64,39 +66,70 @@ const categories = data.data;
   };
 
   return (
-    <Box color="black" p={{ base: 4, md: 8 }}>
-      <Flex justify="space-between" align="center" mb={6} gap={4}>
-        <Box>
-          <Heading size="lg">Categories</Heading>
-          <Text color="gray.500" mt={1}>
-            Manage your store categories
-          </Text>
-        </Box>
-
-        <Button onClick={handleAddCategory}>+ Add Category</Button>
-      </Flex>
-
-      {categories.length === 0 ? (
+    <Box bg="bg" minH="100vh" py={{ base: 5, md: 8 }}>
+      <Container maxW="1400px">
         <Flex
-          minH="250px"
-          align="center"
-          justify="center"
-          borderWidth="1px"
-          borderRadius="lg"
-          bg="white"
+          direction={{ base: "column", sm: "row" }}
+          justify="space-between"
+          align={{ base: "stretch", sm: "center" }}
+          gap={4}
+          mb={6}
         >
-          <Text color="gray.500">No categories available.</Text>
-        </Flex>
-      ) : (
-        <CategoryTable categories={categories} onEdit={handleEditCategory} />
-      )}
+          <Box>
+            <Heading fontSize={{ base: "2xl", md: "3xl" }}>
+              Categories
+            </Heading>
 
-      <CategoryForm
-        isOpen={isFormOpen}
-        onClose={handleCloseForm}
-        category={selectedCategory}
-        parentCategories={categories}
-      />
+            <Text mt={1} color="fg.muted">
+              Manage your store categories.
+            </Text>
+          </Box>
+
+          <Button
+            width={{ base: "100%", sm: "auto" }}
+            onClick={handleAddCategory}
+          >
+            + Add Category
+          </Button>
+        </Flex>
+
+        {categories.length === 0 ? (
+          <Box
+            bg="bg.panel"
+            borderWidth="1px"
+            borderColor="border"
+            borderRadius="xl"
+            p={{ base: 6, md: 8 }}
+            textAlign="center"
+          >
+            <Heading size="md">No categories available</Heading>
+
+            <Text mt={2} color="fg.muted">
+              Add a category to start organizing your products.
+            </Text>
+          </Box>
+        ) : (
+          <>
+            <CategoryTable
+              categories={categories}
+              onEdit={handleEditCategory}
+            />
+
+            <Pagination
+              currentPage={pagination.page}
+              totalPages={pagination.totalPages}
+              onPageChange={setPage}
+            />
+          </>
+        )}
+
+        <CategoryForm
+          isOpen={isFormOpen}
+          onClose={handleCloseForm}
+          category={selectedCategory}
+          parentCategories={parentCategories}
+        />
+      </Container>
     </Box>
   );
 };

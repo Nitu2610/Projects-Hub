@@ -1,9 +1,5 @@
 import { apiSlice } from "../../../redux/api/apiSlice";
 
-
-
-
-
 interface LoginRequest {
   email: string;
   password: string;
@@ -61,7 +57,10 @@ export const authApi = apiSlice.injectEndpoints({
       invalidatesTags: ["Auth"],
     }),
 
-    userLogout: build.mutation<{ success: boolean; message: string }, void>({
+    userLogout: build.mutation<
+      { success: boolean; message: string },
+      void
+    >({
       query: () => ({
         url: "/users/logout",
         method: "POST",

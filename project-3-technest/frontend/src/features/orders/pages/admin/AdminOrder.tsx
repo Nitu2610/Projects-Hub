@@ -1,46 +1,84 @@
-import { Box, Heading, Spinner, Text } from "@chakra-ui/react";
+import { useState } from "react";
+import {
+  Box,
+  Container,
+  Heading,
+  Text,
+} from "@chakra-ui/react";
+
 import { AdminOrderTable } from "../../components/admin/AdminOrderTable";
+import { LoadingComp } from "../../../../components/shared/LoadingComp";
+import { ErrorComp } from "../../../../components/shared/ErrorComp";
+import { Pagination } from "../../../../components/shared/Pagination";
 import { useGetAdminOrdersQuery } from "../../api/adminOrderApi";
 
 export const AdminOrders = () => {
-  const { data: response, isLoading, isError } = useGetAdminOrdersQuery();
+  const [page, setPage] = useState(1);
 
-  if (isLoading) {
-    return (
-      <Box p={6} textAlign="center">
-        <Spinner />
-        <Text mt={3}>Loading orders...</Text>
-      </Box>
-    );
-  }
+  const {
+    data: response,
+    isLoading,
+    isError,
+  } = useGetAdminOrdersQuery({
+    page,
+    limit: 10,
+  });
+
+  if (isLoading) return <LoadingComp />;
 
   if (isError || !response?.data) {
     return (
-      <Box p={6}>
-        <Heading size="md">Unable to load orders</Heading>
-        <Text mt={2}>Something went wrong while loading orders.</Text>
-      </Box>
+      <ErrorComp message="Unable to load orders. Please try again." />
     );
   }
 
-  const orders = Array.isArray(response.data) ? response.data : [];
-
-  if (orders.length === 0) {
-    return (
-      <Box p={6}>
-        <Heading size="lg">Orders</Heading>
-        <Text mt={4}>No orders found.</Text>
-      </Box>
-    );
-  }
-  
+  const { orders, pagination } = response.data;
   return (
-    <Box p={6}>
-      <Heading size="lg" mb={6}>
-        Orders
-      </Heading>
+    <Box
+      bg="bg"
+      minH="100vh"
+      py={{ base: 5, md: 8 }}
+    >
+      <Container maxW="1400px">
+        <Box mb={6}>
+          <Heading fontSize={{ base: "2xl", md: "3xl" }}>
+            Orders
+          </Heading>
 
-      <AdminOrderTable orders={orders} />
+          <Text mt={1} color="fg.muted">
+            Manage and monitor customer orders.
+          </Text>
+        </Box>
+
+        {orders.length === 0 ? (
+          <Box
+            bg="bg.panel"
+            borderWidth="1px"
+            borderColor="border"
+            borderRadius="xl"
+            p={{ base: 6, md: 8 }}
+            textAlign="center"
+          >
+            <Heading size="md">
+              No orders found.
+            </Heading>
+
+            <Text mt={2} color="fg.muted">
+              Customer orders will appear here after purchases are made.
+            </Text>
+          </Box>
+        ) : (
+          <>
+            <AdminOrderTable orders={orders} />
+
+            <Pagination
+              currentPage={pagination.page}
+              totalPages={pagination.totalPages}
+              onPageChange={setPage}
+            />
+          </>
+        )}
+      </Container>
     </Box>
   );
 };

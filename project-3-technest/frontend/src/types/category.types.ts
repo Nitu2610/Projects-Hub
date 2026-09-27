@@ -35,3 +35,23 @@ export interface AdminCategory {
   productCount: number;
   parent: ParentCategory | null;
 }
+
+export interface CategoryViewModel {
+  _id: string;
+  name: string;
+  active: boolean;
+  parentId: string | null;
+  parentName: string | null;
+  productCount?: number;
+}
+
+export interface AdminCategoriesResponse {
+  categories: AdminCategory[];
+  parentCategories: AdminCategory[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}

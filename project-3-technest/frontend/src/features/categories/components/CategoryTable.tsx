@@ -1,8 +1,13 @@
-import { Box, Button, Flex, Table } from "@chakra-ui/react";
-import { useState } from "react";
 import {
-  useUpdateCategoryStatusMutation,
-} from "../api/categoryApi";
+  Badge,
+  Box,
+  Button,
+  Flex,
+  Table,
+  Text,
+} from "@chakra-ui/react";
+import { useState } from "react";
+import { useUpdateCategoryStatusMutation } from "../api/categoryApi";
 import { AdminCategory } from "../../../types/category.types";
 
 interface CategoryTableProps {
@@ -10,15 +15,23 @@ interface CategoryTableProps {
   onEdit: (category: AdminCategory) => void;
 }
 
-export const CategoryTable = ({ categories, onEdit }: CategoryTableProps) => {
-  const [updateCategoryStatus, { isLoading }] =
-    useUpdateCategoryStatusMutation();
+export const CategoryTable = ({
+  categories,
+  onEdit,
+}: CategoryTableProps) => {
+  const [
+    updateCategoryStatus,
+    { isLoading },
+  ] = useUpdateCategoryStatusMutation();
 
-  const [updatingCategoryId, setUpdatingCategoryId] = useState<string | null>(
-    null,
-  );
+  const [
+    updatingCategoryId,
+    setUpdatingCategoryId,
+  ] = useState<string | null>(null);
 
-  const handleStatusChange = async (category: AdminCategory) => {
+  const handleStatusChange = async (
+    category: AdminCategory
+  ) => {
     setUpdatingCategoryId(category._id);
 
     try {
@@ -27,42 +40,93 @@ export const CategoryTable = ({ categories, onEdit }: CategoryTableProps) => {
         active: !category.active,
       }).unwrap();
     } catch (error) {
-      console.error("Failed to update category status:", error);
+      console.error(
+        "Failed to update category status:",
+        error
+      );
     } finally {
       setUpdatingCategoryId(null);
     }
   };
 
+ const getParentName = (parent: AdminCategory["parent"]) => {
+  return parent?.name ?? "—";
+};
+
   return (
-    <Box overflowX="auto" bg="white" borderWidth="1px" borderRadius="lg">
-      <Table.Root variant="outline">
+    <Box
+      overflowX="auto"
+      bg="bg.panel"
+      borderWidth="1px"
+      borderColor="border"
+      borderRadius="xl"
+    >
+      <Table.Root
+        variant="outline"
+        minW="750px"
+      >
         <Table.Header>
           <Table.Row>
-            <Table.ColumnHeader>Name</Table.ColumnHeader>
-            <Table.ColumnHeader>Parent</Table.ColumnHeader>
-            <Table.ColumnHeader>Products</Table.ColumnHeader>
-            <Table.ColumnHeader>Status</Table.ColumnHeader>
-            <Table.ColumnHeader>Actions</Table.ColumnHeader>
+            <Table.ColumnHeader>
+              Name
+            </Table.ColumnHeader>
+
+            <Table.ColumnHeader>
+              Parent
+            </Table.ColumnHeader>
+
+            <Table.ColumnHeader textAlign="center">
+              Products
+            </Table.ColumnHeader>
+
+            <Table.ColumnHeader textAlign="center">
+              Status
+            </Table.ColumnHeader>
+
+            <Table.ColumnHeader textAlign="center">
+              Actions
+            </Table.ColumnHeader>
           </Table.Row>
         </Table.Header>
 
         <Table.Body>
           {categories.map((category) => (
             <Table.Row key={category._id}>
-              <Table.Cell color="black">{category.name}</Table.Cell>
-
-              <Table.Cell color="black">
-                {category.parent ? category.parent.name : "—"}
+              <Table.Cell>
+                <Text fontWeight="medium">
+                  {category.name}
+                </Text>
               </Table.Cell>
 
-              <Table.Cell color="black">{category.productCount}</Table.Cell>
+              <Table.Cell color="fg.muted">
+                {getParentName(category.parent)}
+              </Table.Cell>
 
-              <Table.Cell color="black">
-                {category.active ? "Active" : "Inactive"}
+              <Table.Cell textAlign="center">
+                {category.productCount}
+              </Table.Cell>
+
+              <Table.Cell textAlign="center">
+                <Badge
+                  colorPalette={
+                    category.active
+                      ? "green"
+                      : "gray"
+                  }
+                  variant="subtle"
+                >
+                  {category.active
+                    ? "Active"
+                    : "Inactive"}
+                </Badge>
               </Table.Cell>
 
               <Table.Cell>
-                <Flex gap={2}>
+                <Flex
+                  justify="center"
+                  gap={2}
+                  flexWrap="wrap"
+                >
                   <Button
                     size="sm"
                     variant="outline"
@@ -74,10 +138,23 @@ export const CategoryTable = ({ categories, onEdit }: CategoryTableProps) => {
                   <Button
                     size="sm"
                     variant="outline"
-                    loading={isLoading && updatingCategoryId === category._id}
-                    onClick={() => handleStatusChange(category)}
+                    colorPalette={
+                      category.active
+                        ? "red"
+                        : "green"
+                    }
+                    loading={
+                      isLoading &&
+                      updatingCategoryId ===
+                        category._id
+                    }
+                    onClick={() =>
+                      handleStatusChange(category)
+                    }
                   >
-                    {category.active ? "Deactivate" : "Activate"}
+                    {category.active
+                      ? "Deactivate"
+                      : "Activate"}
                   </Button>
                 </Flex>
               </Table.Cell>

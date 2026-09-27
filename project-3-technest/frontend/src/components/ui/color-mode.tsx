@@ -65,14 +65,18 @@ export const ColorModeButton = forwardRef<
   HTMLButtonElement,
   ColorModeButtonProps
 >(function ColorModeButton(props, ref) {
-  const { toggleColorMode } = useColorMode();
+  const { toggleColorMode, colorMode } = useColorMode();
 
   return (
     <ClientOnly fallback={<Skeleton boxSize="9" />}>
       <IconButton
         onClick={toggleColorMode}
         variant="ghost"
-        aria-label="Toggle color mode"
+        aria-label={
+          colorMode === "dark"
+            ? "Switch to light mode"
+            : "Switch to dark mode"
+        }
         size="sm"
         ref={ref}
         {...props}
@@ -83,7 +87,7 @@ export const ColorModeButton = forwardRef<
           },
         }}
       >
-        <ColorModeIcon />
+        {colorMode === "dark" ? <LuSun /> : <LuMoon />}
       </IconButton>
     </ClientOnly>
   );

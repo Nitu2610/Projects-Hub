@@ -1,20 +1,21 @@
-import { Box, Heading, Spinner, Text } from "@chakra-ui/react";
+import { Box, Container, Heading, Text } from "@chakra-ui/react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import {
   useGetProductDetailsQuery,
   useUpdateProductMutation,
 } from "../../api/productApi";
+
 import {
   ProductForm,
   ProductFormData,
 } from "../../components/admin/ProductForm";
 
-export const EditProduct = () => {
-  const { productId } = useParams<{
-    productId: string;
-  }>();
+import { LoadingComp } from "../../../../components/shared/LoadingComp";
+import { ErrorComp } from "../../../../components/shared/ErrorComp";
 
+export const EditProduct = () => {
+  const { productId } = useParams<{ productId: string }>();
   const navigate = useNavigate();
 
   const {
@@ -25,24 +26,16 @@ export const EditProduct = () => {
     skip: !productId,
   });
 
-  const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
+  const [updateProduct, { isLoading: isUpdating }] =
+    useUpdateProductMutation();
 
   if (isProductLoading) {
-    return (
-      <Box p={6} textAlign="center">
-        <Spinner />
-        <Text mt={3}>Loading product...</Text>
-      </Box>
-    );
+    return <LoadingComp />;
   }
 
   if (isError || !response?.data) {
     return (
-      <Box p={6}>
-        <Heading size="md">Unable to load product</Heading>
-
-        <Text mt={2}>Something went wrong while loading the product.</Text>
-      </Box>
+      <ErrorComp message="Unable to load this product. Please try again." />
     );
   }
 
@@ -64,16 +57,32 @@ export const EditProduct = () => {
   };
 
   return (
-    <Box p={6}>
-      <Heading size="lg" mb={6}>
-        Edit Product
-      </Heading>
+    <Box bg="bg" minH="100vh" py={{ base: 5, md: 8 }}>
+      <Container maxW="1100px">
+        <Box mb={6}>
+          <Heading fontSize={{ base: "2xl", md: "3xl" }}>
+            Edit Product
+          </Heading>
 
-      <ProductForm
-        product={product}
-        onSubmit={handleSubmit}
-        isLoading={isUpdating}
-      />
+          <Text mt={1} color="fg.muted">
+            Update product information and inventory details.
+          </Text>
+        </Box>
+
+        <Box
+          bg="bg.panel"
+          borderWidth="1px"
+          borderColor="border"
+          borderRadius="xl"
+          p={{ base: 4, md: 6 }}
+        >
+          <ProductForm
+            product={product}
+            onSubmit={handleSubmit}
+            isLoading={isUpdating}
+          />
+        </Box>
+      </Container>
     </Box>
   );
 };

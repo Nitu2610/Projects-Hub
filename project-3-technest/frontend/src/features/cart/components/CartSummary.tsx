@@ -1,26 +1,87 @@
-import { Button, Box, Heading, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Heading,
+  Separator,
+  Text,
+} from "@chakra-ui/react";
+
 import { useClearCartMutation } from "../api/cartApi";
 
 interface CartSummaryProps {
   total: number;
 }
 
-export const CartSummary = ({ total }: CartSummaryProps) => {
-  const [clearCart, { isLoading }] = useClearCartMutation();
+export const CartSummary = ({
+  total,
+}: CartSummaryProps) => {
+  const [
+    clearCart,
+    { isLoading },
+  ] = useClearCartMutation();
+
+  const handleClearCart = async () => {
+    await clearCart();
+  };
 
   return (
-    <>
-      <Box borderWidth="1px" p={5} mt={8}>
-        <Heading size="md">Cart Summary</Heading>
+    <Box
+      borderWidth="1px"
+      borderColor="border"
+      borderRadius="xl"
+      bg="bg.panel"
+      p={{ base: 5, md: 6 }}
+    >
+      <Heading size="md">
+        Cart Summary
+      </Heading>
 
-        <Text mt={4} fontSize="xl" fontWeight="bold">
-          Total: ₹{total.toFixed(2)}
+      <Separator my={5} />
+
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+      >
+        <Text color="fg.muted">
+          Subtotal
         </Text>
 
-        <Button mt={4} onClick={() => clearCart()} disabled={isLoading}>
-          {isLoading ? "Clearing..." : "Clear Cart"}
-        </Button>
+        <Text fontWeight="600">
+          ₹{total.toLocaleString("en-IN")}
+        </Text>
       </Box>
-    </>
+
+      <Separator my={5} />
+
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+      >
+        <Text fontWeight="600">
+          Total
+        </Text>
+
+        <Text
+          fontSize="xl"
+          fontWeight="700"
+        >
+          ₹{total.toLocaleString("en-IN")}
+        </Text>
+      </Box>
+
+      <Button
+        mt={5}
+        width="100%"
+        variant="outline"
+        onClick={handleClearCart}
+        disabled={isLoading || total <= 0}
+      >
+        {isLoading
+          ? "Clearing..."
+          : "Clear Cart"}
+      </Button>
+    </Box>
   );
 };

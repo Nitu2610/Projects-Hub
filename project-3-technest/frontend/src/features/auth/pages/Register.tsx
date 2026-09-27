@@ -118,7 +118,7 @@ export const Register = () => {
         mobile: formData.mobile.trim(),
       }).unwrap();
 
-      navigate("/userLogin");
+      navigate("/login");
     } catch (err) {
       console.log(err);
     }
@@ -301,7 +301,7 @@ export const Register = () => {
                 color="blue.500"
                 fontWeight="medium"
                 cursor="pointer"
-                onClick={() => navigate("/userLogin")}
+                onClick={() => navigate("/login")}
               >
                 Sign in
               </Text>

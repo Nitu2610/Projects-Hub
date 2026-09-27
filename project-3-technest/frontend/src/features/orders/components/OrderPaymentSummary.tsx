@@ -1,6 +1,8 @@
 import { Stack, Text } from "@chakra-ui/react";
-
-import type { PaymentMethod, PaymentStatus } from "../../../types/order.types";
+import type {
+  PaymentMethod,
+  PaymentStatus,
+} from "../../../types/order.types";
 
 export interface OrderPaymentSummaryProps {
   paymentMethod: PaymentMethod;
@@ -14,12 +16,34 @@ export const OrderPaymentSummary = ({
   totalAmount,
 }: OrderPaymentSummaryProps) => {
   return (
-    <Stack gap={1}>
-      <Text>Method: {paymentMethod}</Text>
+    <Stack
+      gap={3}
+      borderWidth="1px"
+      borderColor="border"
+      borderRadius="lg"
+      bg="bg.panel"
+      p={5}
+    >
+      <Text>
+        <Text as="span" color="fg.muted">
+          Method:{" "}
+        </Text>
+        {paymentMethod}
+      </Text>
 
-      <Text>Status: {paymentStatus}</Text>
+      <Text>
+        <Text as="span" color="fg.muted">
+          Status:{" "}
+        </Text>
+        {paymentStatus}
+      </Text>
 
-      <Text fontWeight="bold">Total: ₹{totalAmount}</Text>
+      <Text
+        fontSize="lg"
+        fontWeight="700"
+      >
+        Total: ₹{totalAmount.toLocaleString("en-IN")}
+      </Text>
     </Stack>
   );
 };

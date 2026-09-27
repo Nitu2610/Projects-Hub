@@ -1,11 +1,9 @@
-
 import {
   Box,
   Flex,
   Heading,
   Text,
 } from "@chakra-ui/react";
-
 import {
   CartesianGrid,
   Line,
@@ -29,49 +27,46 @@ interface SalesOverviewProps {
 export const SalesOverview = ({
   data,
 }: SalesOverviewProps) => {
-
   const formatChartDate = (dateString: string) => {
-  const [year, month, day] = dateString.split("-");
+    const [year, month, day] = dateString.split("-");
 
-  return new Date(
-    Number(year),
-    Number(month) - 1,
-    Number(day),
-  ).toLocaleDateString("en-IN", {
-    day: "2-digit",
-    month: "short",
-  });
-};
+    return new Date(
+      Number(year),
+      Number(month) - 1,
+      Number(day)
+    ).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+    });
+  };
 
-const chartData = data.map((item) => ({
-  ...item,
-  formattedDate: formatChartDate(item.date),
-}));
+  const chartData = data.map((item) => ({
+    ...item,
+    formattedDate: formatChartDate(item.date),
+  }));
 
   return (
     <Box
-      bg="white"
+      bg="bg.panel"
       borderWidth="1px"
-      borderColor="gray.200"
+      borderColor="border"
       borderRadius="xl"
       p={5}
-      boxShadow="sm"
       h="100%"
     >
-      {/* Header */}
       <Flex
         justify="space-between"
         align="flex-start"
         mb={6}
       >
         <Box>
-          <Heading size="md" color="gray.800">
+          <Heading size="md">
             Sales Overview
           </Heading>
 
           <Text
             fontSize="sm"
-            color="gray.500"
+            color="fg.muted"
             mt={1}
           >
             Revenue over the last 7 days
@@ -79,12 +74,8 @@ const chartData = data.map((item) => ({
         </Box>
       </Flex>
 
-      {/* Chart */}
       <Box h="320px" w="100%">
-        <ResponsiveContainer
-          width="100%"
-          height="100%"
-        >
+        <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={chartData}
             margin={{
@@ -111,26 +102,26 @@ const chartData = data.map((item) => ({
               tickLine={false}
               tick={{ fontSize: 12 }}
               tickFormatter={(value) =>
-                `₹${(Number(value) / 100000).toFixed(1)}L`
+                `₹${(
+                  Number(value) / 100000
+                ).toFixed(1)}L`
               }
             />
 
             <Tooltip
-              formatter={(value, name) => {
-                if (name === "revenue") {
-                  return [
-                    `₹${Number(value).toLocaleString(
-                      "en-IN"
-                    )}`,
-                    "Revenue",
-                  ];
-                }
-
-                return [
-                  Number(value).toLocaleString("en-IN"),
-                  "Orders",
-                ];
-              }}
+              formatter={(value, name) =>
+                name === "revenue"
+                  ? [
+                      `₹${Number(value).toLocaleString(
+                        "en-IN"
+                      )}`,
+                      "Revenue",
+                    ]
+                  : [
+                      Number(value).toLocaleString("en-IN"),
+                      "Orders",
+                    ]
+              }
               labelFormatter={(label) =>
                 `Date: ${label}`
               }
@@ -140,6 +131,7 @@ const chartData = data.map((item) => ({
               type="monotone"
               dataKey="revenue"
               name="Revenue"
+              stroke="var(--chakra-colors-primary)"
               strokeWidth={3}
               dot={{ r: 4 }}
               activeDot={{ r: 6 }}

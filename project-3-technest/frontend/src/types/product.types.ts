@@ -12,6 +12,7 @@ export interface Product {
   _id: string;
   title: string;
   description: string;
+  brand: string;
   images: ProductImage[];
   color?: string;
   price: number;
@@ -35,6 +36,7 @@ export interface ProductQueryParams {
 export interface ProductFormData {
   title: string;
   description: string;
+  brand: string;
   price: number;
   discountedPrice?: number;
   category: string;

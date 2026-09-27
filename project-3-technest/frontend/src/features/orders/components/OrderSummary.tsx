@@ -11,8 +11,20 @@ export const OrderSummary = ({
 }: OrderSummaryProps) => {
   return (
     <Stack gap={1}>
-      <Text>Order ID: {orderId}</Text>
-      <Text>Total: ₹{totalAmount}</Text>
+      <Text
+        fontSize="sm"
+        color="fg.muted"
+        wordBreak="break-all"
+      >
+        Order ID: {orderId}
+      </Text>
+
+      <Text
+        fontSize="lg"
+        fontWeight="700"
+      >
+        ₹{totalAmount.toLocaleString("en-IN")}
+      </Text>
     </Stack>
   );
 };

@@ -1,32 +1,45 @@
-import { Box, Button, Center, Heading, Stack, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Center,
+  Heading,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 
 export const Unauthorized = () => {
   const navigate = useNavigate();
 
   return (
-    <Center minH="100vh" bg="gray.50" px={4}>
+    <Center minH="calc(100vh - 80px)" bg="bg" px={4}>
       <Box
         w="full"
         maxW="500px"
-        bg="white"
+        bg="bg.panel"
         borderWidth="1px"
-        borderColor="gray.200"
+        borderColor="border"
         borderRadius="xl"
-        shadow="lg"
-        p={8}
+        p={{ base: 6, md: 8 }}
         textAlign="center"
       >
         <Stack gap={5} align="center">
-          <Heading size="2xl" color="red.500">
+          <Heading
+            size="2xl"
+            color="error"
+          >
             Access Denied
           </Heading>
 
-          <Text color="gray.600">
+          <Text color="fg.muted">
             You do not have permission to access this page.
           </Text>
 
-          <Button colorPalette="blue" size="lg" onClick={() => navigate("/")}>
+          <Button
+            colorPalette="blue"
+            size="lg"
+            onClick={() => navigate("/")}
+          >
             Back to Home
           </Button>
         </Stack>
