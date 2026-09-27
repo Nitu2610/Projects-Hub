@@ -1,15 +1,12 @@
 import { Types } from "mongoose";
 import type {
   CreateOrderData,
-  OrderItem,
   PaymentMethod,
   PaymentStatus,
   OrderStatus,
 } from "../types/order.types";
 
-const Address = require("../models/address.model");
 const Product = require("../models/product.model");
-const Cart = require("../models/cart.model");
 const Order = require("../models/order.model");
 
 type OrderCancellationReason =

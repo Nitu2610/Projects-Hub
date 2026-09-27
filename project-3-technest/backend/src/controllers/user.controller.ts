@@ -36,12 +36,12 @@ const userController = {
       }
     }
 
-    res.cookie("accessToken", response.data.token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
-    });
+   res.cookie("accessToken", response.data.token, {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+  maxAge: 24 * 60 * 60 * 1000,
+});
 
     return res.status(200).json({
       success: response.success,

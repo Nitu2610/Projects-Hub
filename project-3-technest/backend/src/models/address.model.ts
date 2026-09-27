@@ -13,7 +13,7 @@ import mongoose, { Types, Schema } from "mongoose";
   country?: string;
 }
 
-const addressSchema = new mongoose.Schema<AddressDataFormat>(
+const addressSchema = new Schema<AddressDataFormat>(
   {
     userId: {
       type: Types.ObjectId,

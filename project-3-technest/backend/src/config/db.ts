@@ -1,4 +1,3 @@
-import { error } from "console";
 
 const mongoose = require("mongoose");
 
