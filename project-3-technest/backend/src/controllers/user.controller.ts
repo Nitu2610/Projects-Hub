@@ -105,11 +105,23 @@ const userController = {
     return res.status(response.success ? 200 : 400).json(response);
   },
 
-  getAllCustomers: async (req: Request, res: Response) => {
-  const response = await userService.getAllCustomers();
+getAllCustomers: async (req: Request, res: Response) => {
+  const page = Number(req.query.page ?? 1);
+  const limit = Number(req.query.limit ?? 10);
+
+  const response = await userService.getAllCustomers(page, limit);
+
+  if (!response.success) {
+    if (response.code === "INVALID_REQUEST") {
+      return res.status(400).json({
+        success: false,
+        message: response.message,
+      });
+    }
+  }
 
   return res.status(200).json({
-    success: response.success,
+    success: true,
     message: response.message,
     data: response.data,
   });

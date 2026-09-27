@@ -124,88 +124,150 @@ const categoryService = {
     }
   },
 
-  getCategories: async (role: string) => {
-
-    if (role === "customer") {
-      const categories = await Category.find({ active: true }).select(
-        "_id name parent",
-      );
-
-      return {
-        success: true,
-        message:
-          categories.length === 0
-            ? "No Category at present, need to add."
-            : "Categories data fetched successfully.",
-        data: categories,
-      };
-    }
-
-    if (role === "admin") {
-      const categories = await Category.aggregate([
-        {
-          $lookup: {
-            from: "products",
-            localField: "_id",
-            foreignField: "category",
-            as: "products",
-          },
-        },
-        {
-          $addFields: {
-            productCount: {
-              $size: "$products",
-            },
-          },
-        },
-        {
-          $lookup: {
-            from: "categories",
-            localField: "parent",
-            foreignField: "_id",
-            as: "parentCategory",
-          },
-        },
-        {
-          $project: {
-            _id: 1,
-            name: 1,
-            active: 1,
-            productCount: 1,
-            parent: {
-              $cond: [
-                { $eq: ["$parent", null] },
-                null,
-                {
-                  _id: {
-                    $arrayElemAt: ["$parentCategory._id", 0],
-                  },
-                  name: {
-                    $arrayElemAt: ["$parentCategory.name", 0],
-                  },
-                },
-              ],
-            },
-          },
-        },
-      ]);
-
-      return {
-        success: true,
-        message:
-          categories.length === 0
-            ? "No Category at present, need to add."
-            : "Categories data fetched successfully.",
-        data: categories,
-      };
-    }
+ getCategories: async (
+  role: string,
+  page: number = 1,
+  limit: number = 10
+) => {
+  if (role === "customer") {
+    const categories = await Category.find({ active: true }).select(
+      "_id name parent"
+    );
 
     return {
-      success: false,
-      message: "Invalid role.",
-      code: "INVALID_ROLE",
+      success: true,
+      message:
+        categories.length === 0
+          ? "No Category at present, need to add."
+          : "Categories data fetched successfully.",
+      data: categories,
     };
-  },
+  }
+
+if (role === "admin") {
+  if (
+    !Number.isInteger(page) ||
+    !Number.isInteger(limit) ||
+    page < 1 ||
+    limit < 1
+  ) {
+    return {
+      success: false,
+      message: "Invalid pagination request.",
+      code: "INVALID_REQUEST",
+    };
+  }
+
+  const skip = (page - 1) * limit;
+
+  const pipeline = [
+    {
+      $lookup: {
+        from: "products",
+        localField: "_id",
+        foreignField: "category",
+        as: "products",
+      },
+    },
+    {
+      $addFields: {
+        productCount: {
+          $size: "$products",
+        },
+      },
+    },
+    {
+      $lookup: {
+        from: "categories",
+        localField: "parent",
+        foreignField: "_id",
+        as: "parentCategory",
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        name: 1,
+        active: 1,
+        productCount: 1,
+        parent: {
+          $cond: [
+            { $eq: ["$parent", null] },
+            null,
+            {
+              _id: {
+                $arrayElemAt: ["$parentCategory._id", 0],
+              },
+              name: {
+                $arrayElemAt: ["$parentCategory.name", 0],
+              },
+            },
+          ],
+        },
+      },
+    },
+    {
+      $sort: {
+        name: 1,
+      },
+    },
+    {
+      $facet: {
+        categories: [
+          { $skip: skip },
+          { $limit: limit },
+        ],
+        parentCategories: [
+          {
+            $match: {
+              parent: null,
+            },
+          },
+          {
+            $project: {
+              _id: 1,
+              name: 1,
+              active: 1,
+              productCount: 1,
+              parent: 1,
+            },
+          },
+        ],
+        totalCount: [
+          {
+            $count: "total",
+          },
+        ],
+      },
+    },
+  ];
+
+  const result = await Category.aggregate(pipeline);
+
+  const categories = result[0]?.categories ?? [];
+  const parentCategories = result[0]?.parentCategories ?? [];
+  const total = result[0]?.totalCount[0]?.total ?? 0;
+  const totalPages = Math.ceil(total / limit);
+
+  return {
+    success: true,
+    message:
+      categories.length === 0
+        ? "No Category at present, need to add."
+        : "Categories data fetched successfully.",
+    data: {
+      categories,
+      parentCategories,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+      },
+    },
+  };
+}
+},
 
   updateCategory: async (updateCategory: UpdateCategoryData) => {
     const category = await Category.findById(updateCategory.categoryId);

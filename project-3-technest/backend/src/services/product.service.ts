@@ -113,8 +113,9 @@ const productService = {
     search?: string,
     sort?: string,
     page: number = 1,
-    limit: number = 10
+    limit: number = 12
   ) => {
+
     if (
       !Number.isInteger(page) ||
       !Number.isInteger(limit) ||
@@ -246,7 +247,6 @@ const productService = {
       select: "name",
     });
 
-    console.log("Products Data:", productsData);
     return {
       success: true,
       message:
@@ -273,9 +273,8 @@ const productService = {
         code: "INVALID_PRODUCT_ID",
       };
     }
-
     let productDetailsFilter: Record<string, unknown>;
-
+    
     if (role === "customer") {
       productDetailsFilter = {
         _id: productId,
@@ -292,11 +291,11 @@ const productService = {
         code: "FORBIDDEN",
       };
     }
-
+    
     const productDetails = await Product.findOne(
       productDetailsFilter
     ).populate("category", "name");
-
+    
     if (!productDetails) {
       return {
         success: false,

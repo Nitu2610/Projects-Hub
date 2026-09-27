@@ -1,19 +1,20 @@
 const express = require("express");
-
 const authMiddleware = require("../middlewares/authentication.middleware");
 const authorize = require("../middlewares/authorization.middleware");
 const validatorMiddleware = require("../middlewares/validator.middleware");
 const asyncHandler = require("../utils/asyncHandler");
-
+const optionalAuthenticationMiddleware = require("../middlewares/optionalAuthentication.middleware");
 const {
   createReviewValidator,
   updateReviewValidator,
+  productIdParamValidator
 } = require("../validators/review.validator");
 
 const reviewController = require("../controllers/review.controller");
 
 const reviewRouter = express.Router();
 
+// Admin
 reviewRouter.get(
   "/admin",
   authMiddleware,
@@ -21,13 +22,23 @@ reviewRouter.get(
   asyncHandler(reviewController.getAllReviews)
 );
 
+reviewRouter.delete(
+  "/:reviewId",
+  authMiddleware,
+  authorize("admin"),
+  asyncHandler(reviewController.deleteReview)
+);
+
+// Public
 reviewRouter.get(
   "/product/:productId",
-  authMiddleware,
-  authorize("customer"),
+  optionalAuthenticationMiddleware,
+  productIdParamValidator,
+  validatorMiddleware,
   asyncHandler(reviewController.getProductReviews)
 );
 
+// Customer
 reviewRouter.post(
   "/",
   authMiddleware,
@@ -37,6 +48,7 @@ reviewRouter.post(
   asyncHandler(reviewController.createReview)
 );
 
+// Existing customer update functionality
 reviewRouter.patch(
   "/:reviewId",
   authMiddleware,
@@ -44,13 +56,6 @@ reviewRouter.patch(
   updateReviewValidator,
   validatorMiddleware,
   asyncHandler(reviewController.updateReview)
-);
-
-reviewRouter.delete(
-  "/:reviewId",
-  authMiddleware,
-  authorize("customer"),
-  asyncHandler(reviewController.deleteReview)
 );
 
 module.exports = reviewRouter;

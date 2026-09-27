@@ -1,5 +1,13 @@
 const { body, param } = require("express-validator");
 
+const OrderStatuses = {
+  PLACED: "PLACED",
+  CONFIRMED: "CONFIRMED",
+  SHIPPED: "SHIPPED",
+  DELIVERED: "DELIVERED",
+  CANCELLED: "CANCELLED",
+};
+
 const PaymentMethods = {
   COD: "COD",
   UPI: "UPI",
@@ -18,6 +26,12 @@ const CancellationReasons = {
   DELIVERY_DELAY: "DELIVERY_DELAY",
   OTHER: "OTHER",
 };
+
+const getOrderByIdValidation = [
+  param("orderId")
+    .isMongoId()
+    .withMessage("Invalid order ID."),
+];
 
 const createOrderValidation = [
   body("addressId")
@@ -56,6 +70,20 @@ const createOrderValidation = [
     .withMessage("Card type must be CREDIT or DEBIT."),
 ];
 
+const updateOrderStatusValidation = [
+  param("orderId")
+    .isMongoId()
+    .withMessage("Invalid order ID."),
+
+  body("orderStatus")
+    .isString()
+    .trim()
+    .notEmpty()
+    .withMessage("Order status is required.")
+    .isIn(Object.values(OrderStatuses))
+    .withMessage("Invalid order status."),
+];
+
 const cancelOrderValidation = [
   param("orderId")
     .isMongoId()
@@ -71,6 +99,8 @@ const cancelOrderValidation = [
 ];
 
 module.exports = {
+  getOrderByIdValidation,
   createOrderValidation,
+  updateOrderStatusValidation,
   cancelOrderValidation,
 };

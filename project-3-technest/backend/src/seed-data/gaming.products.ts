@@ -1,7 +1,7 @@
-const gamingProducts = [
+const gamingProducts =[
   {
     brand: 'Sony',
-    title: 'Sony PlayStation 5 Slim',
+    title: 'PlayStation 5 Slim',
     description: 'Compact next-generation gaming console with high-speed SSD storage, ray tracing and immersive 4K gaming support.',
     color: 'White',
     price: 54990,
@@ -20,7 +20,7 @@ const gamingProducts = [
   },
   {
     brand: 'Sony',
-    title: 'Sony PlayStation 5 Digital Edition',
+    title: 'PlayStation 5 Digital Edition',
     description: 'Digital-only next-generation gaming console designed for fast downloads, smooth 4K gameplay and immersive gaming experiences.',
     color: 'White',
     price: 44990,
@@ -39,7 +39,7 @@ const gamingProducts = [
   },
   {
     brand: 'Microsoft',
-    title: 'Microsoft Xbox Series X',
+    title: 'Xbox Series X',
     description: 'Powerful 4K gaming console with fast SSD storage, high frame-rate support and backward compatibility with selected Xbox games.',
     color: 'Black',
     price: 54990,
@@ -58,7 +58,7 @@ const gamingProducts = [
   },
   {
     brand: 'Microsoft',
-    title: 'Microsoft Xbox Series S',
+    title: 'Xbox Series S',
     description: 'Compact all-digital gaming console offering fast loading, high frame-rate gaming and access to the Xbox Game Pass ecosystem.',
     color: 'White',
     price: 34990,
@@ -77,7 +77,7 @@ const gamingProducts = [
   },
   {
     brand: 'Nintendo',
-    title: 'Nintendo Switch OLED',
+    title: 'Switch OLED',
     description: 'Hybrid gaming console featuring a vibrant OLED display, detachable controllers and flexible handheld, tabletop and TV gaming modes.',
     color: 'White',
     price: 37990,
@@ -96,7 +96,7 @@ const gamingProducts = [
   },
   {
     brand: 'Nintendo',
-    title: 'Nintendo Switch 2',
+    title: 'Switch 2',
     description: 'Next-generation Nintendo hybrid console designed for handheld, tabletop and TV gaming with improved performance and display capabilities.',
     color: 'Black',
     price: 44990,
@@ -115,7 +115,7 @@ const gamingProducts = [
   },
   {
     brand: 'Valve',
-    title: 'Valve Steam Deck OLED 512GB',
+    title: 'Steam Deck OLED 512GB',
     description: 'Portable PC gaming console with an OLED display, fast storage and access to a large library of PC games through Steam.',
     color: 'Black',
     price: 54999,
@@ -134,7 +134,7 @@ const gamingProducts = [
   },
   {
     brand: 'ASUS',
-    title: 'ASUS ROG Ally X',
+    title: 'ROG Ally X',
     description: 'High-performance handheld gaming PC featuring a large battery, fast memory and Windows-based access to PC gaming platforms.',
     color: 'Black',
     price: 89990,
@@ -153,7 +153,7 @@ const gamingProducts = [
   },
   {
     brand: 'Lenovo',
-    title: 'Lenovo Legion Go',
+    title: 'Legion Go',
     description: 'Large-screen Windows gaming handheld with detachable controllers, high refresh rate display and powerful AMD processing.',
     color: 'Shadow Black',
     price: 79990,
@@ -172,7 +172,7 @@ const gamingProducts = [
   },
   {
     brand: 'Sony',
-    title: 'Sony PlayStation Portal',
+    title: 'PlayStation Portal',
     description: 'Remote gaming handheld designed to stream compatible PlayStation 5 games over a home Wi-Fi connection.',
     color: 'White',
     price: 21990,
@@ -191,7 +191,7 @@ const gamingProducts = [
   },
   {
     brand: 'Sony',
-    title: 'Sony DualSense Wireless Controller',
+    title: 'DualSense Wireless Controller',
     description: 'Wireless PlayStation controller featuring adaptive triggers, haptic feedback and an integrated microphone.',
     color: 'White',
     price: 6990,
@@ -210,7 +210,7 @@ const gamingProducts = [
   },
   {
     brand: 'Microsoft',
-    title: 'Xbox Wireless Controller',
+    title: 'Wireless Controller',
     description: 'Ergonomic wireless gaming controller with textured grips, responsive controls and broad Xbox and PC compatibility.',
     color: 'Black',
     price: 5990,
@@ -229,7 +229,7 @@ const gamingProducts = [
   },
   {
     brand: 'Logitech',
-    title: 'Logitech G502 X Gaming Mouse',
+    title: 'G502 X Gaming Mouse',
     description: 'High-precision gaming mouse featuring programmable controls, hybrid optical-mechanical switches and customizable settings.',
     color: 'Black',
     price: 7995,
@@ -248,7 +248,7 @@ const gamingProducts = [
   },
   {
     brand: 'Razer',
-    title: 'Razer DeathAdder V3 Gaming Mouse',
+    title: 'DeathAdder V3 Gaming Mouse',
     description: 'Lightweight ergonomic gaming mouse designed for fast and precise competitive gameplay.',
     color: 'Black',
     price: 6999,
@@ -267,7 +267,7 @@ const gamingProducts = [
   },
   {
     brand: 'HyperX',
-    title: 'HyperX Cloud III Gaming Headset',
+    title: 'Cloud III Gaming Headset',
     description: 'Comfortable wired gaming headset with spatial audio, clear voice capture and durable construction.',
     color: 'Black',
     price: 9990,
@@ -286,7 +286,7 @@ const gamingProducts = [
   },
   {
     brand: 'Razer',
-    title: 'Razer BlackShark V2 X Gaming Headset',
+    title: 'BlackShark V2 X Gaming Headset',
     description: 'Lightweight gaming headset with surround sound support, noise-isolating ear cushions and a flexible microphone.',
     color: 'Black',
     price: 4999,
@@ -305,7 +305,7 @@ const gamingProducts = [
   },
   {
     brand: 'Logitech',
-    title: 'Logitech G213 Prodigy Gaming Keyboard',
+    title: 'G213 Prodigy Gaming Keyboard',
     description: 'Full-size gaming keyboard with dedicated media controls, programmable lighting and spill-resistant construction.',
     color: 'Black',
     price: 4995,
@@ -324,7 +324,7 @@ const gamingProducts = [
   },
   {
     brand: 'Razer',
-    title: 'Razer BlackWidow V3 Mechanical Keyboard',
+    title: 'BlackWidow V3 Mechanical Keyboard',
     description: 'Mechanical gaming keyboard with tactile switches, customizable RGB lighting and dedicated media controls.',
     color: 'Black',
     price: 12999,
@@ -343,7 +343,7 @@ const gamingProducts = [
   },
   {
     brand: 'Logitech',
-    title: 'Logitech G29 Driving Force Racing Wheel',
+    title: 'G29 Driving Force Racing Wheel',
     description: 'Force-feedback racing wheel with responsive pedals and realistic controls for compatible racing games.',
     color: 'Black',
     price: 29995,
@@ -362,7 +362,7 @@ const gamingProducts = [
   },
   {
     brand: 'Cosmic Byte',
-    title: 'Cosmic Byte GS430 Gaming Chair',
+    title: 'GS430 Gaming Chair',
     description: 'Ergonomic gaming chair with adjustable reclining support, padded seating and integrated armrests.',
     color: 'Black',
     price: 11999,
@@ -381,7 +381,7 @@ const gamingProducts = [
   },
   {
     brand: 'WD_BLACK',
-    title: 'WD_BLACK C50 Expansion Card 1TB',
+    title: 'C50 Expansion Card 1TB',
     description: 'High-speed storage expansion designed to increase compatible Xbox console storage without sacrificing performance.',
     color: 'Black',
     price: 16999,
@@ -397,7 +397,7 @@ const gamingProducts = [
       StorageType: 'NVMe SSD',
       Purpose: 'Console Storage Expansion'
     }
-  },
+  }
 ]
 
 module.exports = gamingProducts;

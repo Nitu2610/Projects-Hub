@@ -43,7 +43,18 @@ const updateReviewValidator = [
     .withMessage("Comment must be between 10 and 1000 characters."),
 ];
 
+const productIdParamValidator = [
+  param("productId")
+    .notEmpty()
+    .withMessage("Product ID is required.")
+    .custom((value: string) =>
+      mongoose.Types.ObjectId.isValid(value)
+    )
+    .withMessage("Invalid product ID."),
+];
+
 module.exports = {
   createReviewValidator,
   updateReviewValidator,
+  productIdParamValidator
 };

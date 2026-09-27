@@ -66,10 +66,10 @@ const reviewService = {
     };
   },
 
-  getProductReviews: async (
-    userId: string,
-    productId: string
-  ) => {
+ getProductReviews: async (
+  userId: string | undefined,
+  productId: string
+) => {
     const reviews = await Review.find({
       product: productId,
     })
@@ -159,41 +159,65 @@ const reviewService = {
     };
   },
 
-  deleteReview: async (
-    userId: string,
-    reviewId: string
-  ) => {
-    const review = await Review.findOneAndDelete({
-      _id: reviewId,
-      user: userId,
-    });
+ deleteReview: async (reviewId: string) => {
+  const review = await Review.findByIdAndDelete(reviewId);
 
-    if (!review) {
-      return {
-        success: false,
-        message: "Review not found.",
-        code: "NOT_FOUND",
-      };
-    }
-
+  if (!review) {
     return {
-      success: true,
-      message: "Review deleted successfully.",
+      success: false,
+      message: "Review not found.",
+      code: "NOT_FOUND",
     };
-  },
+  }
 
-  getAllReviews: async () => {
-    const reviews = await Review.find()
+  return {
+    success: true,
+    message: "Review deleted successfully.",
+  };
+},
+
+ getAllReviews: async (page: number = 1, limit: number = 10) => {
+  if (
+    !Number.isInteger(page) ||
+    !Number.isInteger(limit) ||
+    page < 1 ||
+    limit < 1
+  ) {
+    return {
+      success: false,
+      message: "Invalid pagination request.",
+      code: "INVALID_REQUEST",
+    };
+  }
+
+  const skip = (page - 1) * limit;
+
+  const [reviews, total] = await Promise.all([
+    Review.find()
       .populate("user", "fullName email")
       .populate("product", "title")
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit),
+    Review.countDocuments({}),
+  ]);
 
-    return {
-      success: true,
-      message: "Reviews fetched successfully.",
-      data: reviews,
-    };
-  },
+  const totalPages = Math.ceil(total / limit);
+
+  return {
+    success: true,
+    message: "Reviews fetched successfully.",
+    data: {
+      reviews,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+      },
+    },
+  };
+},
 };
 
 module.exports = reviewService;

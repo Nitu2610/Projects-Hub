@@ -1,148 +1,179 @@
-import type { OrderStatus } from "../types/order.types";
+// import type { OrderStatus } from "../types/order.types";
 
-const Product = require("../models/product.model");
-const Order = require("../models/order.model");
+// const Product = require("../models/product.model");
+// const Order = require("../models/order.model");
 
-type OrderCancellationReason =
-  | "CHANGED_MIND"
-  | "ORDERED_BY_MISTAKE"
-  | "FOUND_BETTER_PRICE"
-  | "DELIVERY_DELAY"
-  | "OTHER";
+// type OrderCancellationReason =
+//   | "CHANGED_MIND"
+//   | "ORDERED_BY_MISTAKE"
+//   | "FOUND_BETTER_PRICE"
+//   | "DELIVERY_DELAY"
+//   | "OTHER";
 
-const allowedOrderStatusTransitions: Record<
-  OrderStatus,
-  OrderStatus[]
-> = {
-  PLACED: ["CONFIRMED", "CANCELLED"],
-  CONFIRMED: ["SHIPPED", "CANCELLED"],
-  SHIPPED: ["DELIVERED"],
-  DELIVERED: [],
-  CANCELLED: [],
-};
+// const allowedOrderStatusTransitions: Record<
+//   OrderStatus,
+//   OrderStatus[]
+// > = {
+//   PLACED: ["CONFIRMED", "CANCELLED"],
+//   CONFIRMED: ["SHIPPED", "CANCELLED"],
+//   SHIPPED: ["DELIVERED"],
+//   DELIVERED: [],
+//   CANCELLED: [],
+// };
 
-const adminOrderService = {
-  getOrders: async () => {
-    const orders = await Order.find({})
-      .sort({ createdAt: -1 })
-      .populate("userId", "fullName");
+// const adminOrderService = {
+//  getOrders: async (page: number = 1, limit: number = 10) => {
+//   if (
+//     !Number.isInteger(page) ||
+//     !Number.isInteger(limit) ||
+//     page < 1 ||
+//     limit < 1
+//   ) {
+//     return {
+//       success: false,
+//       message: "Invalid pagination request.",
+//       code: "INVALID_REQUEST",
+//     };
+//   }
 
-    return {
-      success: true,
-      message: "Orders fetched successfully.",
-      data: orders,
-    };
-  },
+//   const skip = (page - 1) * limit;
 
-  getOrderById: async (orderId: string) => {
-    const order = await Order.findById(orderId);
+//   const [orders, total] = await Promise.all([
+//     Order.find({})
+//       .sort({ createdAt: -1 })
+//       .skip(skip)
+//       .limit(limit)
+//       .populate("userId", "fullName"),
 
-    if (!order) {
-      return {
-        success: false,
-        message: "Order not found.",
-        code: "NOT_FOUND",
-      };
-    }
+//     Order.countDocuments({}),
+//   ]);
 
-    return {
-      success: true,
-      message: "Order fetched successfully.",
-      data: order,
-    };
-  },
+//   const totalPages = Math.ceil(total / limit);
 
-  updateOrderStatus: async (
-    orderId: string,
-    orderStatus: OrderStatus
-  ) => {
-    const order = await Order.findById(orderId);
+//   return {
+//     success: true,
+//     message: "Orders fetched successfully.",
+//     data: {
+//       orders,
+//       pagination: {
+//         page,
+//         limit,
+//         total,
+//         totalPages,
+//       },
+//     },
+//   };
+// },
 
-    if (!order) {
-      return {
-        success: false,
-        message: "Order not found.",
-        code: "NOT_FOUND",
-      };
-    }
+//   getOrderById: async (orderId: string) => {
+//     const order = await Order.findById(orderId);
 
-    const currentStatus: OrderStatus = order.orderStatus;
+//     if (!order) {
+//       return {
+//         success: false,
+//         message: "Order not found.",
+//         code: "NOT_FOUND",
+//       };
+//     }
 
-    const allowedStatuses =
-      allowedOrderStatusTransitions[currentStatus];
+//     return {
+//       success: true,
+//       message: "Order fetched successfully.",
+//       data: order,
+//     };
+//   },
 
-    if (!allowedStatuses.includes(orderStatus)) {
-      return {
-        success: false,
-        message: `Order cannot be changed from ${currentStatus} to ${orderStatus}.`,
-        code: "INVALID_STATUS_TRANSITION",
-      };
-    }
+//   updateOrderStatus: async (
+//     orderId: string,
+//     orderStatus: OrderStatus
+//   ) => {
+//     const order = await Order.findById(orderId);
 
-    order.orderStatus = orderStatus;
+//     if (!order) {
+//       return {
+//         success: false,
+//         message: "Order not found.",
+//         code: "NOT_FOUND",
+//       };
+//     }
 
-    await order.save();
+//     const currentStatus: OrderStatus = order.orderStatus;
 
-    return {
-      success: true,
-      message: "Order status updated successfully.",
-      data: order,
-    };
-  },
+//     const allowedStatuses =
+//       allowedOrderStatusTransitions[currentStatus];
 
-  cancelOrder: async (
-    orderId: string,
-    cancellationReason: OrderCancellationReason
-  ) => {
-    const order = await Order.findById(orderId);
+//     if (!allowedStatuses.includes(orderStatus)) {
+//       return {
+//         success: false,
+//         message: `Order cannot be changed from ${currentStatus} to ${orderStatus}.`,
+//         code: "INVALID_STATUS_TRANSITION",
+//       };
+//     }
 
-    if (!order) {
-      return {
-        success: false,
-        message: "Order not found.",
-        code: "NOT_FOUND",
-      };
-    }
+//     order.orderStatus = orderStatus;
 
-    if (
-      order.orderStatus !== "PLACED" &&
-      order.orderStatus !== "CONFIRMED"
-    ) {
-      return {
-        success: false,
-        message: "Order cannot be cancelled at this stage.",
-        code: "CANCELLATION_NOT_ALLOWED",
-      };
-    }
+//     await order.save();
 
-    for (const item of order.items) {
-      const product = await Product.findById(item.productId);
+//     return {
+//       success: true,
+//       message: "Order status updated successfully.",
+//       data: order,
+//     };
+//   },
 
-      if (!product) {
-        return {
-          success: false,
-          message: `Product ${item.productName} no longer exists.`,
-          code: "PRODUCT_NOT_FOUND",
-        };
-      }
+//   cancelOrder: async (
+//     orderId: string,
+//     cancellationReason: OrderCancellationReason
+//   ) => {
+//     const order = await Order.findById(orderId);
 
-      product.stock += item.quantity;
+//     if (!order) {
+//       return {
+//         success: false,
+//         message: "Order not found.",
+//         code: "NOT_FOUND",
+//       };
+//     }
 
-      await product.save();
-    }
+//     if (
+//       order.orderStatus !== "PLACED" &&
+//       order.orderStatus !== "CONFIRMED"
+//     ) {
+//       return {
+//         success: false,
+//         message: "Order cannot be cancelled at this stage.",
+//         code: "CANCELLATION_NOT_ALLOWED",
+//       };
+//     }
 
-    order.orderStatus = "CANCELLED";
-    order.cancellationReason = cancellationReason;
-    order.cancelledAt = new Date();
+//     for (const item of order.items) {
+//       const product = await Product.findById(item.productId);
 
-    await order.save();
+//       if (!product) {
+//         return {
+//           success: false,
+//           message: `Product ${item.productName} no longer exists.`,
+//           code: "PRODUCT_NOT_FOUND",
+//         };
+//       }
 
-    return {
-      success: true,
-      message: "Order cancelled successfully.",
-      data: order,
-    };
-  },
-};
+//       product.stock += item.quantity;
 
-module.exports = adminOrderService;
+//       await product.save();
+//     }
+
+//     order.orderStatus = "CANCELLED";
+//     order.cancellationReason = cancellationReason;
+//     order.cancelledAt = new Date();
+
+//     await order.save();
+
+//     return {
+//       success: true,
+//       message: "Order cancelled successfully.",
+//       data: order,
+//     };
+//   },
+// };
+
+// module.exports = adminOrderService;

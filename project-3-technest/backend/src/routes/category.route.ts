@@ -28,6 +28,8 @@ categoryRoute.post(
 
 categoryRoute.get(
   "/",
+   authMiddleware,
+  authorize(["admin", "customer"]),
   asyncHandler(categoryController.getCategories)
 );
 

@@ -43,29 +43,40 @@ const categoryController = {
     });
   },
 
-  getCategories: async (req: Request, res: Response) => {
-  
-    const role = req?.user?.role ?? "customer";
+getCategories: async (req: Request, res: Response) => {
+  const role = req.user?.role;
 
+  const page = Number(req.query.page ?? 1);
+  const limit = Number(req.query.limit ?? 10);
 
-    const response =
-      await categoryService.getCategories(role);
+  const response = await categoryService.getCategories(
+    role,
+    page,
+    limit
+  );
 
-    if (!response.success) {
-      if (response.code === "FORBIDDEN") {
-        return res.status(403).json({
-          success: false,
-          message: response.message,
-        });
-      }
+  if (!response.success) {
+    if (response.code === "INVALID_REQUEST") {
+      return res.status(400).json({
+        success: false,
+        message: response.message,
+      });
     }
 
-    return res.status(200).json({
-      success: true,
-      message: response.message,
-      data: response.data,
-    });
-  },
+    if (response.code === "INVALID_ROLE") {
+      return res.status(403).json({
+        success: false,
+        message: response.message,
+      });
+    }
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: response.message,
+    data: response.data,
+  });
+},
 
   updateCategory: async (req: Request, res: Response) => {
     const { id } = req.params;

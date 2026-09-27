@@ -1,10 +1,10 @@
 import { Types } from "mongoose";
-
 import type {
   CreateOrderData,
   OrderItem,
   PaymentMethod,
   PaymentStatus,
+  OrderStatus,
 } from "../types/order.types";
 
 const Address = require("../models/address.model");
@@ -12,15 +12,27 @@ const Product = require("../models/product.model");
 const Cart = require("../models/cart.model");
 const Order = require("../models/order.model");
 
+type OrderCancellationReason =
+  | "CHANGED_MIND"
+  | "ORDERED_BY_MISTAKE"
+  | "FOUND_BETTER_PRICE"
+  | "DELIVERY_DELAY"
+  | "OTHER";
+
+const allowedOrderStatusTransitions: Record<
+  OrderStatus,
+  OrderStatus[]
+> = {
+  PLACED: ["CONFIRMED", "CANCELLED"],
+  CONFIRMED: ["SHIPPED", "CANCELLED"],
+  SHIPPED: ["DELIVERED"],
+  DELIVERED: [],
+  CANCELLED: [],
+};
+
 const calculateShippingCharge = (subtotal: number) => {
-  if (subtotal <= 1000) {
-    return 0;
-  }
-
-  if (subtotal < 50000) {
-    return 500;
-  }
-
+  if (subtotal <= 1000) return 0;
+  if (subtotal < 50000) return 500;
   return 1000;
 };
 
@@ -96,171 +108,19 @@ const getPaymentStatus = (
 };
 
 const orderService = {
+  // -------------------------
+  // Customer operations
+  // -------------------------
+
   createOrder: async (
     basicOrderDetails: CreateOrderData,
     userId: Types.ObjectId
   ) => {
-    const address = await Address.findOne({
-      _id: basicOrderDetails.addressId,
-      userId,
-    });
-
-    if (!address) {
-      return {
-        success: false,
-        message: "Address not found.",
-        code: "NOT_FOUND",
-      };
-    }
-
-    const shippingAddress = {
-      fullName: address.fullName,
-      phone: address.phone,
-      addressLine1: address.addressLine1,
-      addressLine2: address.addressLine2,
-      city: address.city,
-      state: address.state,
-      postalCode: address.postalCode,
-      country: address.country,
-    };
-
-    const cart = await Cart.findOne({ userId });
-
-    if (!cart) {
-      return {
-        success: false,
-        message: "Cart not found.",
-        code: "NOT_FOUND",
-      };
-    }
-
-    if (cart.items.length === 0) {
-      return {
-        success: false,
-        message: "Cart is empty.",
-        code: "CART_EMPTY",
-      };
-    }
-
-    const items: OrderItem[] = [];
-
-    for (const cartItem of cart.items) {
-      const product = await Product.findById(
-        cartItem.productId
-      );
-
-      if (!product) {
-        return {
-          success: false,
-          message: "Product not found.",
-          code: "NOT_FOUND",
-        };
-      }
-
-      if (!product.active) {
-        return {
-          success: false,
-          message: "Product not active.",
-          code: "INACTIVE_PRODUCT",
-        };
-      }
-
-      if (cartItem.quantity > product.stock) {
-        return {
-          success: false,
-          message: "Product quantity should be within stock.",
-          code: "INVALID_QUANTITY",
-        };
-      }
-
-      const purchasedPrice =
-        product.discountedPrice ?? product.price;
-
-      const subtotal =
-        cartItem.quantity * purchasedPrice;
-
-      items.push({
-        productId: product._id,
-        productName: product.title,
-        quantity: cartItem.quantity,
-        purchasedPrice,
-        subtotal,
-      });
-    }
-
-    const totalProductAmount = items.reduce(
-      (total, item) => total + item.subtotal,
-      0
-    );
-
-    const shippingCharge =
-      calculateShippingCharge(totalProductAmount);
-
-    const totalAmount =
-      totalProductAmount + shippingCharge;
-
-    const paymentResult = getPaymentStatus(
-      basicOrderDetails.paymentMethod,
-      basicOrderDetails.paymentData
-    );
-
-    if (!paymentResult.success) {
-      return paymentResult;
-    }
-
-    if (paymentResult.paymentStatus === "FAILED") {
-      return {
-        success: false,
-        message: "Payment failed, cannot place the order.",
-        code: "PAYMENT_FAILED",
-      };
-    }
-
-    const orderStatus = "PLACED";
-
-    const orderDetails = {
-      userId,
-      items,
-      shippingAddress,
-      totalAmount,
-      paymentMethod: basicOrderDetails.paymentMethod,
-      paymentStatus: paymentResult.paymentStatus,
-      orderStatus,
-    };
-
-    for (const item of items) {
-      const product = await Product.findById(item.productId);
-
-      if (!product) {
-        return {
-          success: false,
-          message: "Product not found while updating stock.",
-          code: "NOT_FOUND",
-        };
-      }
-
-      product.stock -= item.quantity;
-
-      await product.save();
-    }
-
-    await Cart.findByIdAndUpdate(cart._id, {
-      items: [],
-    });
-
-    const order = await Order.create(orderDetails);
-
-    return {
-      success: true,
-      message: "Order created successfully.",
-      data: order,
-    };
+    // KEEP YOUR EXISTING createOrder CODE HERE
   },
 
   getOrders: async (userId: Types.ObjectId) => {
-    const orders = await Order.find({
-      userId,
-    }).sort({
+    const orders = await Order.find({ userId }).sort({
       createdAt: -1,
     });
 
@@ -303,11 +163,127 @@ const orderService = {
     };
   },
 
-  cancelOrder: async (
-    orderId: string,
-    userId: Types.ObjectId,
-    cancellationReason: string
+cancelOrder: async (
+  orderId: string,
+  cancellationReason: OrderCancellationReason,
+  userId?: Types.ObjectId
+) => {
+  if (!Types.ObjectId.isValid(orderId)) {
+    return {
+      success: false,
+      message: "Invalid order ID.",
+      code: "INVALID_ORDER_ID",
+    };
+  }
+
+  const orderQuery: Record<string, unknown> = {
+    _id: orderId,
+  };
+
+  if (userId) {
+    orderQuery.userId = userId;
+  }
+
+  const order = await Order.findOne(orderQuery);
+
+  if (!order) {
+    return {
+      success: false,
+      message: "Order not found.",
+      code: "NOT_FOUND",
+    };
+  }
+
+  if (
+    order.orderStatus !== "PLACED" &&
+    order.orderStatus !== "CONFIRMED"
+  ) {
+    return {
+      success: false,
+      message: "Order cannot be cancelled at this stage.",
+      code: "CANCELLATION_NOT_ALLOWED",
+    };
+  }
+
+  for (const item of order.items) {
+    const product = await Product.findById(item.productId);
+
+    if (!product) {
+      return {
+        success: false,
+        message: `Product ${item.productName} no longer exists.`,
+        code: "PRODUCT_NOT_FOUND",
+      };
+    }
+
+    product.stock += item.quantity;
+    await product.save();
+  }
+
+  order.orderStatus = "CANCELLED";
+  order.cancellationReason = cancellationReason;
+  order.cancelledAt = new Date();
+
+  await order.save();
+
+  return {
+    success: true,
+    message: "Order cancelled successfully.",
+    data: order,
+  };
+},
+
+  // -------------------------
+  // Admin operations
+  // -------------------------
+
+  getAllOrders: async (
+    page: number = 1,
+    limit: number = 10
   ) => {
+    if (
+      !Number.isInteger(page) ||
+      !Number.isInteger(limit) ||
+      page < 1 ||
+      limit < 1
+    ) {
+      return {
+        success: false,
+        message: "Invalid pagination request.",
+        code: "INVALID_REQUEST",
+      };
+    }
+
+    const skip = (page - 1) * limit;
+
+    const [orders, total] = await Promise.all([
+      Order.find({})
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate("userId", "fullName"),
+
+      Order.countDocuments({}),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      success: true,
+      message: "Orders fetched successfully.",
+      data: {
+        orders,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages,
+        },
+      },
+    };
+  },
+
+  getAdminOrderById: async (orderId: string) => {
     if (!Types.ObjectId.isValid(orderId)) {
       return {
         success: false,
@@ -316,10 +292,7 @@ const orderService = {
       };
     }
 
-    const order = await Order.findOne({
-      _id: orderId,
-      userId,
-    });
+    const order = await Order.findById(orderId);
 
     if (!order) {
       return {
@@ -329,42 +302,47 @@ const orderService = {
       };
     }
 
-    if (
-      order.orderStatus !== "PLACED" &&
-      order.orderStatus !== "CONFIRMED"
-    ) {
+    return {
+      success: true,
+      message: "Order fetched successfully.",
+      data: order,
+    };
+  },
+
+  updateOrderStatus: async (
+    orderId: string,
+    orderStatus: OrderStatus
+  ) => {
+    const order = await Order.findById(orderId);
+
+    if (!order) {
       return {
         success: false,
-        message: "Order cannot be cancelled at this stage.",
-        code: "CANCELLATION_NOT_ALLOWED",
+        message: "Order not found.",
+        code: "NOT_FOUND",
       };
     }
 
-    for (const item of order.items) {
-      const product = await Product.findById(item.productId);
+    const currentStatus: OrderStatus = order.orderStatus;
 
-      if (!product) {
-        return {
-          success: false,
-          message: `Product ${item.productName} no longer exists.`,
-          code: "PRODUCT_NOT_FOUND",
-        };
-      }
+    const allowedStatuses =
+      allowedOrderStatusTransitions[currentStatus];
 
-      product.stock += item.quantity;
-
-      await product.save();
+    if (!allowedStatuses.includes(orderStatus)) {
+      return {
+        success: false,
+        message: `Order cannot be changed from ${currentStatus} to ${orderStatus}.`,
+        code: "INVALID_STATUS_TRANSITION",
+      };
     }
 
-    order.orderStatus = "CANCELLED";
-    order.cancellationReason = cancellationReason;
-    order.cancelledAt = new Date();
+    order.orderStatus = orderStatus;
 
     await order.save();
 
     return {
       success: true,
-      message: "Order cancelled successfully.",
+      message: "Order status updated successfully.",
       data: order,
     };
   },

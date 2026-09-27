@@ -220,17 +220,47 @@ const userService = {
     };
   },
 
-  getAllCustomers: async () => {
-    const customers = await User.find({ role: "customer" })
-      .select("-password")
-      .sort({ createdAt: -1 });
-
+  getAllCustomers: async (page: number = 1, limit: number = 10) => {
+  if (
+    !Number.isInteger(page) ||
+    !Number.isInteger(limit) ||
+    page < 1 ||
+    limit < 1
+  ) {
     return {
-      success: true,
-      message: "Customers fetched successfully.",
-      data: customers,
+      success: false,
+      message: "Invalid pagination request.",
+      code: "INVALID_REQUEST",
     };
-  },
+  }
+
+  const skip = (page - 1) * limit;
+
+  const [customers, total] = await Promise.all([
+    User.find({ role: "customer" })
+      .select("-password")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit),
+    User.countDocuments({ role: "customer" }),
+  ]);
+
+  const totalPages = Math.ceil(total / limit);
+
+  return {
+    success: true,
+    message: "Customers fetched successfully.",
+    data: {
+      customers,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+      },
+    },
+  };
+},
 };
 
 module.exports = userService;

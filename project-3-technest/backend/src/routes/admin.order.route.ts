@@ -4,14 +4,14 @@ const {
   getOrderByIdValidation,
   updateOrderStatusValidation,
   cancelOrderValidation,
-} = require("../validators/admin.order.validator");
+} = require("../validators/order.validator");
 
 const validatorMiddleware = require("../middlewares/validator.middleware");
 const authMiddleware = require("../middlewares/authentication.middleware");
 const authorize = require("../middlewares/authorization.middleware");
 const asyncHandler = require("../utils/asyncHandler");
 
-const adminOrderController = require("../controllers/admin.order.controller");
+const orderController = require("../controllers/order.controller");
 
 const adminOrderRoute = express.Router();
 
@@ -19,7 +19,7 @@ adminOrderRoute.get(
   "/",
   authMiddleware,
   authorize("admin"),
-  asyncHandler(adminOrderController.getOrders)
+  asyncHandler(orderController.getAllOrders)
 );
 
 adminOrderRoute.get(
@@ -28,7 +28,7 @@ adminOrderRoute.get(
   authorize("admin"),
   getOrderByIdValidation,
   validatorMiddleware,
-  asyncHandler(adminOrderController.getOrderById)
+  asyncHandler(orderController.getAdminOrderById)
 );
 
 adminOrderRoute.patch(
@@ -37,7 +37,7 @@ adminOrderRoute.patch(
   authorize("admin"),
   updateOrderStatusValidation,
   validatorMiddleware,
-  asyncHandler(adminOrderController.updateOrderStatus)
+  asyncHandler(orderController.updateOrderStatus)
 );
 
 adminOrderRoute.patch(
@@ -46,7 +46,7 @@ adminOrderRoute.patch(
   authorize("admin"),
   cancelOrderValidation,
   validatorMiddleware,
-  asyncHandler(adminOrderController.cancelOrder)
+  asyncHandler(orderController.cancelAdminOrder)
 );
 
 module.exports = adminOrderRoute;
