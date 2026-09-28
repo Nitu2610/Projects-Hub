@@ -4,9 +4,9 @@ import type {
   CustomerCategory,
 } from "../../../types/category.types";
 
-export const mapAdminCategory = 
-(category: AdminCategory): CategoryViewModel =>
-   ({
+export const mapAdminCategory = (
+  category: AdminCategory
+): CategoryViewModel => ({
   _id: category._id,
   name: category.name,
   active: category.active,
@@ -21,6 +21,6 @@ export const mapCustomerCategory = (
   _id: category._id,
   name: category.name,
   active: category.active,
-  parentId: category.parent,
-  parentName: null,
+  parentId: category.parent?._id ?? null,
+  parentName: category.parent?.name ?? null,
 });

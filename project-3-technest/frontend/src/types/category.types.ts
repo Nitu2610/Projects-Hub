@@ -3,7 +3,6 @@ export interface ParentCategory {
   name: string | null;
 }
 
-
 export interface AddCategoryRequest {
   name: string;
   parent?: string | null;
@@ -19,21 +18,33 @@ export interface UpdateCategoryStatusRequest {
   active: boolean;
 }
 
-
 export interface CustomerCategory {
   _id: string;
   name: string;
   active: boolean;
-  parent: string | null;
+  parent: ParentCategory | null;
+  productCount?: number;
 }
-
 
 export interface AdminCategory {
   _id: string;
   name: string;
   active: boolean;
-  productCount: number;
   parent: ParentCategory | null;
+  productCount: number;
+}
+
+export interface CategoryPagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+export interface CategoriesResponse {
+  categories: CustomerCategory[];
+  parentCategories: ParentCategory[];
+  pagination: CategoryPagination;
 }
 
 export interface CategoryViewModel {
@@ -43,15 +54,4 @@ export interface CategoryViewModel {
   parentId: string | null;
   parentName: string | null;
   productCount?: number;
-}
-
-export interface AdminCategoriesResponse {
-  categories: AdminCategory[];
-  parentCategories: AdminCategory[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
 }

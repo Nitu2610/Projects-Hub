@@ -1,41 +1,33 @@
 import { ApiResponse } from "../../../types/api.types";
 import {
   AddCategoryRequest,
-  AdminCategory,
+  CategoriesResponse,
   CustomerCategory,
   UpdateCategoryRequest,
   UpdateCategoryStatusRequest,
 } from "../../../types/category.types";
 import { apiSlice } from "../../../redux/api/apiSlice";
 
-interface AdminCategoriesResponse {
-  categories: AdminCategory[];
-  parentCategories: AdminCategory[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}
-
 export const categoryApi = apiSlice.injectEndpoints({
   endpoints: (build) => ({
-getCategories: build.query<
-  ApiResponse<AdminCategoriesResponse | CustomerCategory[]>,
-  {
-    page?: number;
-    limit?: number;
-  } | void
->({
-  query: (params) => ({
-    url: "/category",
-    params: params ?? undefined,
-  }),
-  providesTags: ["Category"],
-}),
+    getCategories: build.query<
+      ApiResponse<CategoriesResponse>,
+      {
+        page?: number;
+        limit?: number;
+      } | void
+    >({
+      query: (params) => ({
+        url: "/category",
+        params: params ?? undefined,
+      }),
+      providesTags: ["Category"],
+    }),
 
-    addCategory: build.mutation<ApiResponse<CustomerCategory>, AddCategoryRequest>({
+    addCategory: build.mutation<
+      ApiResponse<CustomerCategory>,
+      AddCategoryRequest
+    >({
       query: (body) => ({
         url: "/category/add-category",
         method: "POST",

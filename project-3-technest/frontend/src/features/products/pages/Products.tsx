@@ -16,10 +16,9 @@ import { ProductsGrid } from "../components/ProductsGrid";
 import { ErrorComp } from "../../../components/shared/ErrorComp";
 import { useGetUserProfileQuery } from "../../customers/api/customerApi";
 import {
-  mapAdminCategory,
   mapCustomerCategory,
 } from "../../categories/utils/categoryMapper";
-import {AdminCategory,  CustomerCategory } from "../../../types/category.types";
+
 
 
 export const Products = () => {
@@ -35,9 +34,6 @@ export const Products = () => {
 
   const { data: categoryData } = useGetCategoriesQuery();
 
-  const { data: userData } = useGetUserProfileQuery();
-
-const role = userData?.data?.role;
 
   const {
     data: productsData,
@@ -51,12 +47,9 @@ const role = userData?.data?.role;
     page,
   });
 
-const categories =
-  role === "admin"
-    ? (categoryData?.data as AdminCategory[] ?? []).map(mapAdminCategory)
-    : (categoryData?.data as CustomerCategory[] ?? []).map(
-        mapCustomerCategory
-      );
+const rawCategories = categoryData?.data?.categories ?? [];
+
+const categories = rawCategories.map(mapCustomerCategory);
 
 const childCategories = categories.filter(
   (category) => category.parentId !== null

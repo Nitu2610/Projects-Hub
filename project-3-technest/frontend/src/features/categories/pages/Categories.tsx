@@ -6,31 +6,49 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
+import { useState } from "react";
 
 import { useGetCategoriesQuery } from "../api/categoryApi";
 import { CategoryCard } from "../components/CategoryCard";
 import { useGetUserProfileQuery } from "../../customers/api/customerApi";
-import { mapAdminCategory, mapCustomerCategory } from "../utils/categoryMapper";
-import {AdminCategory, CustomerCategory } from "../../../types/category.types";
+import {
+  mapAdminCategory,
+  mapCustomerCategory,
+} from "../utils/categoryMapper";
+import {
+  AdminCategory,
+  CustomerCategory,
+} from "../../../types/category.types";
+import { Pagination } from "../../../components/shared/Pagination";
 
 export const Categories = () => {
+  const [currentPage, setCurrentPage] = useState(1);
+
   const {
-    data:categoryData,
+    data: categoryData,
     isLoading,
     isError,
-  } = useGetCategoriesQuery();
+  } = useGetCategoriesQuery({
+    page: currentPage,
+    limit: 10,
+  });
 
-  const {data:userData} = useGetUserProfileQuery();
- const role= userData?.data?.role;
+  const { data: userData } = useGetUserProfileQuery();
 
-const categories= 
-role === "admin" ? 
-((categoryData?.data ?? [])as AdminCategory[])?.map(mapAdminCategory) :
-((categoryData?.data ?? []) as CustomerCategory[])?.map(mapCustomerCategory);
+  const role = userData?.data?.role;
 
-  const parentCategories = categories.filter(
-    (category) => category.parentId === null
-  );
+  const categoriesData = categoryData?.data;
+
+  const rawCategories = categoriesData?.categories ?? [];
+
+  const categories =
+    role === "admin"
+      ? (rawCategories as AdminCategory[]).map(mapAdminCategory)
+      : (rawCategories as CustomerCategory[]).map(mapCustomerCategory);
+
+  const parentCategories = categoriesData?.parentCategories ?? [];
+
+  const pagination = categoriesData?.pagination;
 
   if (isLoading) {
     return (
@@ -72,8 +90,7 @@ role === "admin" ?
             <Stack gap={10}>
               {parentCategories.map((parent) => {
                 const childCategories = categories.filter(
-                  (category) =>
-                    role === "admin" ? category.parentId === parent._id : category.parentId === parent._id
+                  (category) => category.parentId === parent._id
                 );
 
                 return (
@@ -110,6 +127,14 @@ role === "admin" ?
                 );
               })}
             </Stack>
+          )}
+
+          {pagination && (
+            <Pagination
+              currentPage={pagination.page}
+              totalPages={pagination.totalPages}
+              onPageChange={setCurrentPage}
+            />
           )}
         </Stack>
       </Container>

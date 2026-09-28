@@ -17,7 +17,6 @@ export const CategoryCard = ({
   const handleClick = () => {
     navigate(`/products?category=${categoryId}`);
   };
-
   return (
     <Box
       borderWidth="1px"
