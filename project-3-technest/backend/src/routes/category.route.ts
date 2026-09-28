@@ -15,8 +15,6 @@ const categoryController = require("../controllers/category.controller");
 
 const categoryRoute = express.Router(); 
 
-
-
 categoryRoute.post(
   "/add-category",
   authMiddleware,
