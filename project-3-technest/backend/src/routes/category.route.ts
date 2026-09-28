@@ -10,7 +10,7 @@ const validatorMiddleware = require("../middlewares/validator.middleware");
 const authMiddleware = require("../middlewares/authentication.middleware");
 const authorize = require("../middlewares/authorization.middleware");
 const asyncHandler = require("../utils/asyncHandler");
-
+const optionalAuthenticationMiddleware= require("../middlewares/optionalAuthentication.middleware")
 const categoryController = require("../controllers/category.controller");
 
 const categoryRoute = express.Router(); 
@@ -28,8 +28,9 @@ categoryRoute.post(
 
 categoryRoute.get(
   "/",
-   authMiddleware,
-  authorize(["admin", "customer"]),
+  optionalAuthenticationMiddleware,
+  //  authMiddleware,
+  // authorize(["admin", "customer"]),
   asyncHandler(categoryController.getCategories)
 );
 

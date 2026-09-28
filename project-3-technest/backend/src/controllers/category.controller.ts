@@ -44,7 +44,7 @@ const categoryController = {
   },
 
 getCategories: async (req: Request, res: Response) => {
-  const role = req.user?.role;
+  const role = req.user?.role ?? "guest";
 
   const page = Number(req.query.page ?? 1);
   const limit = Number(req.query.limit ?? 10);
@@ -55,21 +55,21 @@ getCategories: async (req: Request, res: Response) => {
     limit
   );
 
-  if (!response.success) {
-    if (response.code === "INVALID_REQUEST") {
-      return res.status(400).json({
-        success: false,
-        message: response.message,
-      });
-    }
+  // if (!response.success) {
+  //   if (response.code === "INVALID_REQUEST") {
+  //     return res.status(400).json({
+  //       success: false,
+  //       message: response.message,
+  //     });
+  //   }
 
-    if (response.code === "INVALID_ROLE") {
-      return res.status(403).json({
-        success: false,
-        message: response.message,
-      });
-    }
-  }
+  //   if (response.code === "INVALID_ROLE") {
+  //     return res.status(403).json({
+  //       success: false,
+  //       message: response.message,
+  //     });
+  //   }
+  // }
 
   return res.status(200).json({
     success: true,

@@ -45,3 +45,4 @@ const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
 };
 
 module.exports = authMiddleware;
+ 
