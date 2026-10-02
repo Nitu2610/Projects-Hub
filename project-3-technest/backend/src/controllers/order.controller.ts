@@ -7,42 +7,49 @@ const orderController = {
   // Customer
   // =========================
 
-  createOrder: async (req: Request, res: Response) => {
-    const userId = req.user.userId;
+createOrder: async (req: Request, res: Response) => {
+  const userId = req.user.userId;
 
-    const response = await orderService.createOrder(
-      req.body,
-      userId
-    );
+  const response = await orderService.createOrder(
+    req.body,
+    userId
+  );
 
-    if (!response.success) {
-      if (response.code === "NOT_FOUND") {
-        return res.status(404).json({
-          success: false,
-          message: response.message,
-        });
-      }
-
-      if (
-        response.code === "INVALID_PAYMENT" ||
-        response.code === "PAYMENT_FAILED" ||
-        response.code === "INACTIVE_PRODUCT" ||
-        response.code === "INVALID_QUANTITY" ||
-        response.code === "CART_EMPTY"
-      ) {
-        return res.status(400).json({
-          success: false,
-          message: response.message,
-        });
-      }
+  if (!response.success) {
+    if (
+      response.code === "NOT_FOUND" ||
+      response.code === "ADDRESS_NOT_FOUND"
+    ) {
+      return res.status(404).json({
+        success: false,
+        message: response.message,
+      });
     }
 
-    return res.status(201).json({
-      success: true,
+    if (
+      response.code === "CART_EMPTY" ||
+      response.code === "INVALID_QUANTITY" ||
+      response.code === "INVALID_PAYMENT" ||
+      response.code === "PAYMENT_FAILED"
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: response.message,
+      });
+    }
+
+    return res.status(400).json({
+      success: false,
       message: response.message,
-      data: response.data,
     });
-  },
+  }
+
+  return res.status(201).json({
+    success: true,
+    message: response.message,
+    data: response.data,
+  });
+},
 
   getOrders: async (req: Request, res: Response) => {
     const userId = req.user.userId;
@@ -89,6 +96,7 @@ const orderController = {
   },
 
   cancelOrder: async (req: Request, res: Response) => {
+   // console.log("Request reached controller /-----------------------/")
     const userId = req.user.userId;
     const { orderId } = req.params;
     const { cancellationReason } = req.body;
@@ -224,40 +232,41 @@ const orderController = {
     });
   },
 
-  cancelAdminOrder: async (req: Request, res: Response) => {
-    const { orderId } = req.params;
-    const { cancellationReason } = req.body;
+cancelAdminOrder: async (req: Request, res: Response) => {
+  console.log("🔥 ADMIN CANCEL CONTROLLER REACHED");
+  const { orderId } = req.params;
+  const { cancellationReason } = req.body;
 
-    const response = await orderService.cancelOrder(
-      orderId,
-      cancellationReason
-    );
+  const response = await orderService.cancelAdminOrder(
+    orderId,
+    cancellationReason
+  );
 
-    if (!response.success) {
-      if (response.code === "NOT_FOUND") {
-        return res.status(404).json({
-          success: false,
-          message: response.message,
-        });
-      }
-
-      if (
-        response.code === "CANCELLATION_NOT_ALLOWED" ||
-        response.code === "PRODUCT_NOT_FOUND"
-      ) {
-        return res.status(400).json({
-          success: false,
-          message: response.message,
-        });
-      }
+  if (!response.success) {
+    if (response.code === "NOT_FOUND") {
+      return res.status(404).json({
+        success: false,
+        message: response.message,
+      });
     }
 
-    return res.status(200).json({
-      success: true,
-      message: response.message,
-      data: response.data,
-    });
-  },
+    if (
+      response.code === "CANCELLATION_NOT_ALLOWED" ||
+      response.code === "PRODUCT_NOT_FOUND"
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: response.message,
+      });
+    }
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: response.message,
+    data: response.data,
+  });
+},
 };
 
 module.exports = orderController;
