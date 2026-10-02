@@ -535,6 +535,7 @@ cancelOrder: async (
     await product.save();
   }
 
+  console.log(cancellationReason);
   order.orderStatus = "CANCELLED";
   order.cancellationReason = cancellationReason;
   order.cancelledAt = new Date();

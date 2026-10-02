@@ -27,16 +27,20 @@ const CancellationReasons = {
   OTHER: "OTHER",
 };
 
+const AdminCancellationReasons = {
+  CUSTOMER_REQUEST: "CUSTOMER_REQUEST",
+  OUT_OF_STOCK: "OUT_OF_STOCK",
+  PAYMENT_FAILED: "PAYMENT_FAILED",
+  OPERATIONAL_ISSUE: "OPERATIONAL_ISSUE",
+  OTHER: "OTHER",
+};
+
 const getOrderByIdValidation = [
-  param("orderId")
-    .isMongoId()
-    .withMessage("Invalid order ID."),
+  param("orderId").isMongoId().withMessage("Invalid order ID."),
 ];
 
 const createOrderValidation = [
-  body("addressId")
-    .isMongoId()
-    .withMessage("Invalid address ID."),
+  body("addressId").isMongoId().withMessage("Invalid address ID."),
 
   body("paymentMethod")
     .isString()
@@ -44,9 +48,7 @@ const createOrderValidation = [
     .notEmpty()
     .withMessage("Payment method can't be empty.")
     .isIn(Object.values(PaymentMethods))
-    .withMessage(
-      "Invalid payment method, select COD/UPI/Card mode."
-    ),
+    .withMessage("Invalid payment method, select COD/UPI/Card mode."),
 
   body("paymentData")
     .optional()
@@ -71,9 +73,7 @@ const createOrderValidation = [
 ];
 
 const updateOrderStatusValidation = [
-  param("orderId")
-    .isMongoId()
-    .withMessage("Invalid order ID."),
+  param("orderId").isMongoId().withMessage("Invalid order ID."),
 
   body("orderStatus")
     .isString()
@@ -85,9 +85,7 @@ const updateOrderStatusValidation = [
 ];
 
 const cancelOrderValidation = [
-  param("orderId")
-    .isMongoId()
-    .withMessage("Invalid order ID."),
+  param("orderId").isMongoId().withMessage("Invalid order ID."),
 
   body("cancellationReason")
     .isString()
@@ -98,9 +96,23 @@ const cancelOrderValidation = [
     .withMessage("Invalid cancellation reason."),
 ];
 
+const cancelAdminOrderValidation = [
+  param("orderId").isMongoId().withMessage("Invalid order ID."),
+
+  body("adminCancellationReasons")
+    .isString()
+    .withMessage("Cancellation reason must be a string.")
+    .trim()
+    .notEmpty()
+    .withMessage("Cancellation reason is required.")
+    .isIn(Object.values(AdminCancellationReasons))
+    .withMessage("Invalid admin cancellation reason."),
+];
+
 module.exports = {
   getOrderByIdValidation,
   createOrderValidation,
   updateOrderStatusValidation,
   cancelOrderValidation,
+  cancelAdminOrderValidation,
 };

@@ -3,7 +3,7 @@ const express = require("express");
 const {
   getOrderByIdValidation,
   updateOrderStatusValidation,
-  cancelOrderValidation,
+  cancelAdminOrderValidation,
 } = require("../validators/order.validator");
 
 const validatorMiddleware = require("../middlewares/validator.middleware");
@@ -14,6 +14,8 @@ const asyncHandler = require("../utils/asyncHandler");
 const orderController = require("../controllers/order.controller");
 
 const adminOrderRoute = express.Router();
+
+// /admin/orders
 
 adminOrderRoute.get(
   "/",
@@ -40,13 +42,16 @@ adminOrderRoute.patch(
   asyncHandler(orderController.updateOrderStatus)
 );
 
+
+
 adminOrderRoute.patch(
   "/:orderId/cancel",
   authMiddleware,
   authorize("admin"),
-  cancelOrderValidation,
+  cancelAdminOrderValidation,
   validatorMiddleware,
   asyncHandler(orderController.cancelAdminOrder)
 );
 
 module.exports = adminOrderRoute;
+

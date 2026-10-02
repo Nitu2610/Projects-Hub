@@ -96,7 +96,6 @@ createOrder: async (req: Request, res: Response) => {
   },
 
   cancelOrder: async (req: Request, res: Response) => {
-   // console.log("Request reached controller /-----------------------/")
     const userId = req.user.userId;
     const { orderId } = req.params;
     const { cancellationReason } = req.body;
@@ -235,7 +234,7 @@ createOrder: async (req: Request, res: Response) => {
 cancelAdminOrder: async (req: Request, res: Response) => {
   console.log("🔥 ADMIN CANCEL CONTROLLER REACHED");
   const { orderId } = req.params;
-  const { cancellationReason } = req.body;
+  const { adminCancellationReasons :  cancellationReason } = req.body;
 
   const response = await orderService.cancelAdminOrder(
     orderId,

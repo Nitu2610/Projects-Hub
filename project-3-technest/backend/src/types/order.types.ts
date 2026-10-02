@@ -20,6 +20,13 @@ export type CancellationReason =
   | "DELIVERY_DELAY"
   | "OTHER";
 
+export type AdminCancellationReason =
+  | "CUSTOMER_REQUEST"
+  | "OUT_OF_STOCK"
+  | "PAYMENT_FAILED"
+  | "OPERATIONAL_ISSUE"
+  | "OTHER";
+// CONFIRMED
 export interface PaymentData {
   upiId?: string;
   cardType?: CardType;

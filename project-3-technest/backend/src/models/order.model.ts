@@ -2,6 +2,7 @@ import mongoose, { Schema, Types } from "mongoose";
 
 import type {
   CancellationReason,
+  AdminCancellationReason,
   OrderStatus,
   PaymentMethod,
   PaymentStatus,
@@ -13,11 +14,19 @@ interface OrderData {
   userId: Types.ObjectId;
   items: OrderItem[];
   shippingAddress: ShippingAddressSnapshot;
+
+  subtotal: number;
+  shippingFee: number;
   totalAmount: number;
+
   paymentMethod: PaymentMethod;
   paymentStatus: PaymentStatus;
   orderStatus: OrderStatus;
-  cancellationReason?: CancellationReason;
+
+  cancellationReason?:
+    | CancellationReason
+    | AdminCancellationReason;
+
   cancelledAt?: Date;
 }
 
@@ -128,7 +137,8 @@ const orderSchema = new Schema<OrderData>(
       type: [orderItemSchema],
       required: true,
       validate: {
-        validator: (items: OrderItem[]) => items.length > 0,
+        validator: (items: OrderItem[]) =>
+          items.length > 0,
         message: "Order must contain at least one item.",
       },
     },
@@ -136,6 +146,18 @@ const orderSchema = new Schema<OrderData>(
     shippingAddress: {
       type: shippingAddressSchema,
       required: true,
+    },
+
+    subtotal: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+
+    shippingFee: {
+      type: Number,
+      required: true,
+      min: 0,
     },
 
     totalAmount: {
@@ -171,11 +193,20 @@ const orderSchema = new Schema<OrderData>(
     cancellationReason: {
       type: String,
       enum: [
+        // Customer
         "CHANGED_MIND",
         "ORDERED_BY_MISTAKE",
         "FOUND_BETTER_PRICE",
         "DELIVERY_DELAY",
+
+        // Shared
         "OTHER",
+
+        // Admin
+        "CUSTOMER_REQUEST",
+        "OUT_OF_STOCK",
+        "PAYMENT_FAILED",
+        "OPERATIONAL_ISSUE",
       ],
     },
 
@@ -188,6 +219,9 @@ const orderSchema = new Schema<OrderData>(
   }
 );
 
-const Order = mongoose.model<OrderData>("Order", orderSchema);
+const Order = mongoose.model<OrderData>(
+  "Order",
+  orderSchema
+);
 
 module.exports = Order;
