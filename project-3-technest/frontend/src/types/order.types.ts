@@ -1,6 +1,9 @@
 export type PaymentMethod = "COD" | "UPI" | "CARD";
 
-export type PaymentStatus = "PENDING" | "PAID" | "FAILED";
+export type PaymentStatus =
+  | "PENDING"
+  | "PAID"
+  | "FAILED";
 
 export type OrderStatus =
   | "PLACED"
@@ -14,6 +17,13 @@ export type CancellationReason =
   | "ORDERED_BY_MISTAKE"
   | "FOUND_BETTER_PRICE"
   | "DELIVERY_DELAY"
+  | "OTHER";
+
+export type AdminCancellationReason =
+  | "CUSTOMER_REQUEST"
+  | "OUT_OF_STOCK"
+  | "PAYMENT_FAILED"
+  | "OPERATIONAL_ISSUE"
   | "OTHER";
 
 export interface OrderItem {
@@ -35,13 +45,14 @@ export interface ShippingAddressSnapshot {
   country: string;
 }
 
-interface UserIdDataFormat{
-  _id:string;
-  fullName:string;
-  email:string;
+interface UserIdDataFormat {
+  _id: string;
+  fullName: string;
+  email: string;
 }
+
 export interface Order {
-  _id: string ;
+  _id: string;
   userId: UserIdDataFormat;
   items: OrderItem[];
   shippingAddress: ShippingAddressSnapshot;
@@ -49,12 +60,11 @@ export interface Order {
   paymentMethod: PaymentMethod;
   paymentStatus: PaymentStatus;
   orderStatus: OrderStatus;
-  cancellationReason?: CancellationReason;
+  cancellationReason?: CancellationReason | AdminCancellationReason;
   cancelledAt?: string;
   createdAt: string;
   updatedAt: string;
 }
-
 
 export interface PaymentData {
   upiId?: string;
@@ -72,8 +82,6 @@ export interface CancelOrderRequest {
   cancellationReason: CancellationReason;
 }
 
-
-
 export interface UpdateOrderStatusRequest {
   orderId: string;
   orderStatus: OrderStatus;
@@ -81,5 +89,5 @@ export interface UpdateOrderStatusRequest {
 
 export interface AdminCancelOrderRequest {
   orderId: string;
-  cancellationReason: CancellationReason;
+  adminCancellationReasons: AdminCancellationReason;
 }

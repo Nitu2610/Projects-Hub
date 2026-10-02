@@ -232,7 +232,6 @@ export const Payment = () => {
 
               <AddressDetails address={address} />
             </Box>
-
             <PaymentMethod
               paymentMethod={paymentMethod}
               setPaymentMethod={setPaymentMethod}

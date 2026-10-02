@@ -9,30 +9,30 @@ import {
 export const adminOrderApi = apiSlice.injectEndpoints({
   endpoints: (build) => ({
     getAdminOrders: build.query<
-  ApiResponse<{
-    orders: Order[];
-    pagination: {
-      page: number;
-      limit: number;
-      total: number;
-      totalPages: number;
-    };
-  }>,
-  {
-    page?: number;
-    limit?: number;
-  }
->({
-  query: ({ page = 1, limit = 10 }) => ({
-    url: "/admin/orders",
-    method: "GET",
-    params: {
-      page,
-      limit,
-    },
-  }),
-  providesTags: ["Order"],
-}),
+      ApiResponse<{
+        orders: Order[];
+        pagination: {
+          page: number;
+          limit: number;
+          total: number;
+          totalPages: number;
+        };
+      }>,
+      {
+        page?: number;
+        limit?: number;
+      }
+    >({
+      query: ({ page = 1, limit = 10 }) => ({
+        url: "/admin/orders",
+        method: "GET",
+        params: {
+          page,
+          limit,
+        },
+      }),
+      providesTags: ["Order"],
+    }),
 
     getAdminOrderById: build.query<ApiResponse<Order>, string>({
       query: (orderId) => ({
@@ -58,12 +58,15 @@ export const adminOrderApi = apiSlice.injectEndpoints({
       ApiResponse<Order>,
       AdminCancelOrderRequest
     >({
-      query: ({ orderId, cancellationReason }) => ({
-        url: `/admin/orders/${orderId}/cancel`,
+      query: ({ orderId, adminCancellationReasons }) => ({
+        url: `admin/orders/${orderId}/cancel`,
         method: "PATCH",
-        body: { cancellationReason },
+        body: {  adminCancellationReasons, },
       }),
-      invalidatesTags: ["Order"],
+      invalidatesTags: (_result, _error, { orderId }) => [
+        "Order",
+        { type: "Order", id: orderId },
+      ],
     }),
   }),
 });

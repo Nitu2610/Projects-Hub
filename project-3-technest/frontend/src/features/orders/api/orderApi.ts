@@ -52,20 +52,11 @@ export const orderApi = apiSlice.injectEndpoints({
     }),
 
     cancelOrder: builder.mutation<ApiResponse<Order>, CancelOrderRequest>({
-      query: ({
-        orderId,
-        cancellationReason,
-      }: {
-        orderId: string;
-        cancellationReason: string;
-      }) => ({
+      query: ({ orderId, cancellationReason }) => ({
         url: `/orders/${orderId}/cancel`,
         method: "PATCH",
-        body: {
-          cancellationReason,
-        },
+        body: { cancellationReason },
       }),
-
       invalidatesTags: (_result, _error, { orderId }) => [
         "Order",
         { type: "Order", id: orderId },

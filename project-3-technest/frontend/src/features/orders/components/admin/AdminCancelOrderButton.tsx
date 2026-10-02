@@ -1,9 +1,7 @@
 import { Button, Dialog, Portal, Stack, Text } from "@chakra-ui/react";
 import { useState } from "react";
-
-
 import type {
-  CancellationReason,
+  AdminCancellationReason,
   OrderStatus,
 } from "../../../../types/order.types";
 import { useCancelAdminOrderMutation } from "../../api/adminOrderApi";
@@ -13,25 +11,25 @@ interface AdminCancelOrderButtonProps {
   currentStatus: OrderStatus;
 }
 
-const cancellationReasons: {
+const adminCancellationReasons: {
   label: string;
-  value: CancellationReason;
+  value: AdminCancellationReason;
 }[] = [
   {
-    label: "Changed mind",
-    value: "CHANGED_MIND",
+    label: "Customer Request",
+    value: "CUSTOMER_REQUEST",
   },
   {
-    label: "Ordered by mistake",
-    value: "ORDERED_BY_MISTAKE",
+    label: "Out of Stock",
+    value: "OUT_OF_STOCK",
   },
   {
-    label: "Found better price",
-    value: "FOUND_BETTER_PRICE",
+    label: "Payment Failed",
+    value: "PAYMENT_FAILED",
   },
   {
-    label: "Delivery delay",
-    value: "DELIVERY_DELAY",
+    label: "Operational Issue",
+    value: "OPERATIONAL_ISSUE",
   },
   {
     label: "Other",
@@ -47,20 +45,17 @@ export const AdminCancelOrderButton = ({
 
   const [cancelAdminOrder, { isLoading }] = useCancelAdminOrderMutation();
 
-  const canCancel =
-    currentStatus === "PLACED" ||
-    currentStatus === "CONFIRMED" ||
-    currentStatus === "SHIPPED";
+  const canCancel = currentStatus === "PLACED" || currentStatus === "CONFIRMED";
 
-  if (!canCancel) {
-    return null;
-  }
+  if (!canCancel) return null;
 
-  const handleCancel = async (cancellationReason: CancellationReason) => {
+  const handleCancel = async (
+    adminCancellationReasons: AdminCancellationReason,
+  ) => {
     try {
       await cancelAdminOrder({
         orderId,
-        cancellationReason,
+        adminCancellationReasons,
       }).unwrap();
 
       setIsOpen(false);
@@ -68,7 +63,6 @@ export const AdminCancelOrderButton = ({
       console.error("Failed to cancel order:", error);
     }
   };
-
   return (
     <Dialog.Root
       open={isOpen}
@@ -93,7 +87,7 @@ export const AdminCancelOrderButton = ({
               <Text mb={4}>Select a reason for cancelling this order.</Text>
 
               <Stack gap={3}>
-                {cancellationReasons.map((reason) => (
+                {adminCancellationReasons.map((reason) => (
                   <Button
                     key={reason.value}
                     variant="outline"
