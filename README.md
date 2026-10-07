@@ -14,7 +14,7 @@ A frontend-focused e-commerce website inspired by the ASOS shopping experience.
 
 The project focuses on building a responsive e-commerce interface, reusable React components, product presentation, navigation, and frontend user interactions.
 
-**Key Focus Areas**
+#### Key Focus Areas
 
 - E-commerce UI development
 - Responsive design
@@ -23,14 +23,15 @@ The project focuses on building a responsive e-commerce interface, reusable Reac
 - Navigation and user interactions
 - Frontend state management
 
-**Tech Stack**
+#### Tech Stack
 
-`React` · `JavaScript` · `HTML` · `CSS`
+`React` · `Redux` · `Redux Thunk` · `Chakra UI` · `Axios` · `React Router DOM` · `Node.js` · `json-server` · `CORS`
 
-**Links**
+#### Links
 
-- [Live Demo](https://gleeful-sfogliatella-08b371.netlify.app/)
-- [Source Code](https://github.com/Nitu2610/Projects-Hub/tree/main/project-1-ecommerce_website)
+- **Frontend:** https://nitesh01.netlify.app/signup
+- **Backend API:** https://project-1-ecommerce-website-backend.onrender.com/api/products
+- **Source Code:** [project-1-ecommerce_website](./project-1-ecommerce_website)
 
 ---
 
@@ -40,7 +41,7 @@ A full-stack customer support platform designed to manage support tickets across
 
 The application provides separate workflows for customers, support agents, and administrators, including ticket creation, assignment, status management, searching, filtering, sorting, and pagination.
 
-**Key Features**
+#### Key Features
 
 - Customer, Agent, and Admin roles
 - JWT-based authentication
@@ -51,15 +52,24 @@ The application provides separate workflows for customers, support agents, and a
 - Role-based workflows
 - REST API integration
 - MongoDB-based data persistence
+- Dashboard and data visualization
 
-**Tech Stack**
+#### Tech Stack
 
-`React` · `Vite` · `Chakra UI` · `React Router` · `Node.js` · `Express.js` · `MongoDB` · `Mongoose` · `JWT` · `bcrypt`
+**Frontend**
 
-**Links**
+`React` · `Vite` · `React Router` · `Chakra UI` · `Axios` · `Context API` · `Custom React Hooks` · `Recharts`
 
-- [Live Demo](https://supportdesk-ei3l.onrender.com)
-- [Source Code](https://github.com/Nitu2610/Projects-Hub/tree/main/project-2-customer-support-ticket-system)
+**Backend**
+
+`Node.js` · `Express.js` · `MongoDB` · `Mongoose` · `JWT` · `bcrypt` · `express-validator` · `Morgan` · `CORS` · `dotenv`
+
+#### Links
+
+- **Frontend:** https://customer-support-ticket-01.netlify.app
+- **Alternative Frontend Deployment:** https://supportdesk-ei3l.onrender.com
+- **Backend API:** https://customer-support-ticket-api.onrender.com
+- **Source Code:** [project-2-customer-support-ticket-system](./project-2-customer-support-ticket-system)
 
 ---
 
@@ -71,7 +81,7 @@ TechNest includes separate customer and administrator workflows covering product
 
 The project follows a layered backend architecture and focuses heavily on implementing business rules and handling real-world application workflows.
 
-**Key Features**
+#### Key Features
 
 - Customer and Admin workflows
 - JWT authentication using HTTP-only cookies
@@ -93,7 +103,7 @@ The project follows a layered backend architecture and focuses heavily on implem
 - REST API architecture
 - Backend validation and business-rule enforcement
 
-**Backend Architecture**
+#### Backend Architecture
 
 ```text
 Route
@@ -111,18 +121,32 @@ Mongoose
 MongoDB
 ```
 
-**Tech Stack**
+#### Tech Stack
 
-`React` · `TypeScript` · `Vite` · `Redux Toolkit` · `RTK Query` · `React Router` · `Chakra UI` · `Node.js` · `Express.js` · `MongoDB` · `Mongoose` · `JWT` · `bcrypt` · `Cloudinary`
+**Frontend**
 
-**Deployment**
+`React` · `TypeScript` · `Vite` · `Redux Toolkit` · `RTK Query` · `React Router` · `Chakra UI`
 
-`Vercel` · `Railway` · `MongoDB Atlas` · `Cloudinary`
+**Backend**
 
-**Links**
+`Node.js` · `Express.js` · `TypeScript` · `MongoDB` · `Mongoose` · `JWT` · `HTTP-only Cookies` · `Express Validator` · `bcrypt`
 
-- [Live Demo](https://technest-nitesh.vercel.app)
-- [Source Code](https://github.com/Nitu2610/Projects-Hub/tree/main/project-3-technest)
+**Supporting Services**
+
+`Cloudinary` · `MongoDB Atlas`
+
+#### Deployment
+
+- **Frontend:** Vercel
+- **Backend:** Railway
+- **Database:** MongoDB Atlas
+- **Product Images:** Cloudinary
+
+#### Links
+
+- **Frontend:** https://technest-nitesh.vercel.app
+- **Backend API:** https://projects-hub-production-bb41.up.railway.app
+- **Source Code:** [project-3-technest](./project-3-technest)
 
 ---
 
@@ -136,10 +160,16 @@ Across these projects, I have worked with:
 - TypeScript
 - JavaScript
 - Vite
+- Redux
 - Redux Toolkit
+- Redux Thunk
 - RTK Query
 - React Router
 - Chakra UI
+- Axios
+- Context API
+- Custom React Hooks
+- Recharts
 - Responsive UI development
 
 ### Backend
@@ -152,6 +182,7 @@ Across these projects, I have worked with:
 - Request validation
 - Error handling
 - Business-rule implementation
+- `json-server`
 
 ### Database
 
@@ -169,6 +200,7 @@ Across these projects, I have worked with:
 - Protected routes
 - Role-based access control
 - Customer/Admin authorization
+- Password hashing with bcrypt
 
 ### Development & Deployment
 

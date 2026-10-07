@@ -7,7 +7,6 @@ This project demonstrates real-world frontend architecture, API handling, authen
 ---
 ### 🚀 Live Demo
 
-(Add deployed link if available)
 Frontend: https://nitesh01.netlify.app/signup
 Backend API: https://project-1-ecommerce-website-backend.onrender.com/api/products
 
@@ -131,7 +130,6 @@ Nitesh Kumar
 Frontend / Aspiring Full Stack Developer
 
 - GitHub: https://github.com/Nitu2610/Projects-Hub/tree/main/project-1-ecommerce_website
-- LinkedIn: (add link)
 
 --- 
 
